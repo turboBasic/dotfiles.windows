@@ -1,0 +1,22 @@
+<filetype binary="false" description="PowerShell" name="PowerShell">
+  <highlighting>
+    <options>
+      <option name="LINE_COMMENT" value="#" />
+      <option name="COMMENT_START" value="&lt;#" />
+      <option name="COMMENT_END" value="#&gt;" />
+      <option name="HEX_PREFIX" value="" />
+      <option name="NUM_POSTFIXES" value="" />
+      <option name="HAS_BRACES" value="true" />
+      <option name="HAS_BRACKETS" value="true" />
+      <option name="HAS_PARENS" value="true" />
+      <option name="HAS_STRING_ESCAPES" value="true" />
+    </options>
+    <keywords keywords="begin;break;catch;class;continue;data;define;do;dynamicparam;else;elseif;end;exit;filter;finally;for;foreach;from;function;if;in;inlinescript;parallel;param;process;return;sequence;switch;throw;trap;try;until;using;var;while;workflow" ignore_case="true" />
+    <keywords2 keywords="ac;add-content;add-history;add-member;add-pssnapin;asnp;cat;cd;chdir;clc;clear;clear-content;clear-item;clear-variable;clhy;cli;clp;cls;clv;cnsn;compare;compare-object;convert-path;convertfrom-securestring;convertto-html;convertto-securestring;copy;copy-item;copy-itemproperty;cp;cpi;cpp;curl;cvpa;dbp;del;diff;dir;dnsn;ebp;echo;epal;epcsv;epsn;erase;etsn;export-alias;export-clixml;export-console;export-csv;exsn;fc;fl;foreach;foreach-object;format-custom;format-list;format-table;format-wide;ft;fw;gal;gbp;gc;gci;gcm;gcs;gdr;get-acl;get-alias;get-authenticodesignature;get-childitem;get-command;get-content;get-credential;get-culture;get-date;get-eventlog;get-executionpolicy;get-help;get-history;get-host;get-item;get-itemproperty;get-location;get-member;get-pfxcertificate;get-process;get-psdrive;get-psprovider;get-pssnapin;get-service;get-tracesource;get-uiculture;get-unique;get-variable;get-wmiobject;ghy;gi;gjb;gl;gm;gmo;gp;gps;group;group-object;gsn;gsnp;gsv;gu;gv;gwmi;h;history;icm;iex;ihy;ii;import-alias;import-clixml;import-csv;invoke-expression;invoke-history;invoke-item;ipal;ipcsv;ipmo;ipsn;irm;ise;iwmi;iwr;join-path;kill;lp;ls;man;md;measure;measure-command;measure-object;mi;mount;move;move-item;move-itemproperty;mp;mv;nal;ndr;new-alias;new-item;new-itemproperty;new-object;new-psdrive;new-service;new-timespan;new-variable;ni;nmo;npssc;nsn;nv;ogv;oh;out-default;out-file;out-host;out-null;out-printer;out-string;pop-location;popd;property;ps;push-location;pushd;pwd;r;rbp;rcjb;rcsn;rd;rdr;read-host;remove-item;remove-itemproperty;remove-psdrive;remove-pssnapin;remove-variable;ren;rename-item;rename-itemproperty;resolve-path;restart-service;resume-service;ri;rjb;rm;rmdir;rmo;rni;rnp;rp;rsn;rsnp;rujb;rv;rvpa;rwmi;sajb;sal;saps;sasv;sbp;sc;select;select-object;select-string;set;set-acl;set-alias;set-authenticodesignature;set-content;set-date;set-executionpolicy;set-item;set-itemproperty;set-location;set-psdebug;set-service;set-tracesource;set-variable;shcm;si;sl;sleep;sls;sort;sort-object;sp;spjb;split-path;spps;spsv;start;start-service;start-sleep;start-transcript;stop-process;stop-service;stop-transcript;sujb;suspend-service;sv;swmi;tee;tee-object;test-path;trace-command;trcm;type;update-formatdata;update-typedata;wget;where;where-object;wjb;write;write-debug;write-error;write-host;write-output;write-progress;write-verbose;write-warning" />
+    <keywords3 keywords="bool;byte;char;decimal;double;float;int;long;object;sbyte;short;string;uint;ulong;ushort" />
+    <keywords4 keywords="%=;&amp;;*=;+=;-=;-and;-as;-band;-bor;-bxor;-ccontains;-ceq;-cge;-cgt;-cle;-clike;-clt;-cmatch;-cne;-cnotcontains;-cnotlike;-cnotmatch;-contains;-creplace;-csplit;-eq;-ge;-gt;-icontains;-ieq;-ige;-igt;-ile;-ilike;-ilt;-imatch;-ine;-inotcontains;-inotlike;-inotmatch;-ireplace;-is;-isnot;-isplit;-join;-le;-like;-lt;-match;-ne;-notcontains;-notlike;-notmatch;-or;-replace;-split;-xor;.;/=;=" />
+  </highlighting>
+  <extensionMap>
+    <mapping ext="ps1" />
+  </extensionMap>
+</filetype>

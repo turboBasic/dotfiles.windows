@@ -1,0 +1,1 @@
+lgpo /r parsed.txt /w registry.pol

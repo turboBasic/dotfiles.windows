@@ -1,0 +1,201 @@
+﻿Boxstarter: Installing package https://gist.githubusercontent.com/maoizm/7d0192e9b9493dcd503449fa6a389b49/raw/d1199421be438f03515274a43af8f29e45871865/boxstarter.ps1
+Boxstarter Version 2.9.5
+(c) 2016 Matt Wrock. http://boxstarter.org
+
+Boxstarter: Disabling Automatic Updates from Windows Update
+Attempting to build package from 'tmp87AC.tmp.nuspec'.
+Successfully created package 'C:\Users\mao\AppData\Local\Apps\2.0\NZ76897R.NLC\H10MX1ZG.EJ4\boxs..tion_6b092740f7261cd0_0002.0009_f858729d9219af15\BuildPackages\tmp87AC.tmp.1.0.0.nupkg'
+Boxstarter: Created a temporary package tmp87AC.tmp from https://gist.githubusercontent.com/maoizm/7d0192e9b9493dcd503449fa6a389b49/raw/d1199421be438f03515274a43af8f29e45871865/boxstarter.ps1 in C:\Users\mao\AppData\Local\Apps\2.0\NZ76897R.NLC\H10MX1ZG.EJ4\boxs..tion_6b092740f7261cd0_0002.0009_f858729d9219af15\BuildPackages
+++ Boxstarter starting Calling Chocolatey to install tmp87AC.tmp. This may take several minutes to complete...
+Installing the following packages:
+tmp87AC.tmp
+By installing you accept licenses for the packages.
+[NuGet] Installing 'tmp87AC.tmp 1.0.0'.
+[NuGet] Successfully installed 'tmp87AC.tmp 1.0.0'.
+
+tmp87AC.tmp v1.0.0 (forced)
+tmp87ac.tmp package files install completed. Performing other installation steps.
+WARNING: This command is deprecated, use Set-WindowsExplorerOptions instead.
+WARNING: Your call to this function will now be routed to the Set-WindowsExplorerOptions function.
+Boxstarter: Setting Windows Explorer options...
+Boxstarter: Setting Windows Explorer options...
+Boxstarter: Restarting the Windows Explorer process...
+Boxstarter: Restarting the Windows Explorer process...
+Boxstarter: Setting Windows Explorer options...
+Boxstarter: Setting Windows Explorer options...
+Boxstarter: Restarting the Windows Explorer process...
+Boxstarter: Restarting the Windows Explorer process...
+Boxstarter: Setting Windows Explorer options...
+Boxstarter: Setting Windows Explorer options...
+Boxstarter: Restarting the Windows Explorer process...
+Boxstarter: Restarting the Windows Explorer process...
+Boxstarter: Enabling Remote Desktop...
+Boxstarter: Enabling Remote Desktop...
+Boxstarter: Enabling Remote Desktop NLA ...
+Boxstarter: Enabling Remote Desktop NLA ...
++ Boxstarter starting Calling Chocolatey to install . This may take several minutes to complete...
++ Boxstarter starting Calling Chocolatey to install . This may take several minutes to complete...
+Installing the following packages:
+;chocolatey
+By installing you accept licenses for the packages.
+Progress: Downloading chocolatey 0.10.5... 100%
+Progress: Downloading chocolatey 0.10.5... 100%
+[NuGet] Installing 'chocolatey 0.10.5'.
+[NuGet] Successfully installed 'chocolatey 0.10.5'.
+
+chocolatey v0.10.5 [Approved]
+chocolatey package files install completed. Performing other installation steps.
+Creating ChocolateyInstall as an environment variable (targeting 'Machine')
+  Setting ChocolateyInstall to 'C:\ProgramData\chocolatey'
+WARNING: It's very likely you will need to close and reopen your shell
+  before you can use choco.
+WARNING: It's very likely you will need to close and reopen your shell
+  before you can use choco.
+Restricting write permissions to Administrators
+We are setting up the Chocolatey package repository.
+The packages themselves go to 'C:\ProgramData\chocolatey\lib'
+  (i.e. C:\ProgramData\chocolatey\lib\yourPackageName).
+A shim file for the command line goes to 'C:\ProgramData\chocolatey\bin'
+  and points to an executable in 'C:\ProgramData\chocolatey\lib\yourPackageName'.
+
+Creating Chocolatey folders if they do not already exist.
+
+WARNING: You can safely ignore errors related to missing log files when
+  upgrading from a version of Chocolatey less than 0.9.9.
+  'Batch file could not be found' is also safe to ignore.
+  'The system cannot find the file specified' - also safe.
+WARNING: You can safely ignore errors related to missing log files when
+  upgrading from a version of Chocolatey less than 0.9.9.
+  'Batch file could not be found' is also safe to ignore.
+  'The system cannot find the file specified' - also safe.
+PATH environment variable does not have C:\ProgramData\chocolatey\bin in it. Adding...
+PATH environment variable does not have C:\ProgramData\chocolatey\bin in it. Adding...
+WARNING: Not setting tab completion: Profile file does not exist at 'C:\Users\mao\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1'.
+Chocolatey (choco.exe) is now ready.
+You can call choco from anywhere, command line or powershell by typing choco.
+Run choco /? for a list of functions.
+You may need to shut down and restart powershell and/or consoles
+ first prior to using choco.
+Environment Vars (like PATH) have changed. Close/reopen your shell to
+ see the changes (or in powershell/cmd.exe just type `refreshenv`).
+ The install of chocolatey was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 0 packages failed.
+ See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).
++ Boxstarter finished Calling Chocolatey to install . This may take several minutes to complete... 00:00:15.2020396
++ Boxstarter finished Calling Chocolatey to install . This may take several minutes to complete... 00:00:15.2020396
++ Boxstarter starting Calling Chocolatey to install . This may take several minutes to complete...
++ Boxstarter starting Calling Chocolatey to install . This may take several minutes to complete...
+Installing the following packages:
+;NuGet.CommandLine
+By installing you accept licenses for the packages.
+Progress: Downloading NuGet.CommandLine 3.4.3... 100%
+Progress: Downloading NuGet.CommandLine 3.4.3... 100%
+Progress: Downloading NuGet.CommandLine 3.4.3... 100%
+[NuGet] Installing 'NuGet.CommandLine 3.4.3'.
+[NuGet] Successfully installed 'NuGet.CommandLine 3.4.3'.
+
+NuGet.CommandLine v3.4.3 [Approved]
+nuget.commandline package files install completed. Performing other installation steps.
+ ShimGen has successfully created a shim for NuGet.exe
+ The install of nuget.commandline was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 1/1 packages. 0 packages failed.
+ See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).
++ Boxstarter finished Calling Chocolatey to install . This may take several minutes to complete... 00:00:04.7443849
++ Boxstarter finished Calling Chocolatey to install . This may take several minutes to complete... 00:00:04.7443849
++ Boxstarter starting Calling Chocolatey to install . This may take several minutes to complete...
++ Boxstarter starting Calling Chocolatey to install . This may take several minutes to complete...
+Installing the following packages:
+;7zip
+By installing you accept licenses for the packages.
+[NuGet] Attempting to resolve dependency '7zip.install (= 16.4.0.20170403)'.
+Progress: Downloading 7zip.install 16.4.0.20170403... 100%
+Progress: Downloading 7zip.install 16.4.0.20170403... 100%
+Progress: Downloading 7zip.install 16.4.0.20170403... 100%
+Progress: Downloading 7zip.install 16.4.0.20170403... 100%
+[NuGet] Attempting to resolve dependency 'chocolatey-core.extension (≥ 1.2)'.
+Progress: Downloading chocolatey-core.extension 1.2.0... 100%
+Progress: Downloading chocolatey-core.extension 1.2.0... 100%
+Progress: Downloading chocolatey-core.extension 1.2.0... 100%
+Progress: Downloading chocolatey-core.extension 1.2.0... 100%
+Progress: Downloading 7zip 16.4.0.20170403... 100%
+Progress: Downloading 7zip 16.4.0.20170403... 100%
+Progress: Downloading 7zip 16.4.0.20170403... 100%
+Progress: Downloading 7zip 16.4.0.20170403... 100%
+[NuGet] Installing 'chocolatey-core.extension 1.2.0'.
+[NuGet] Successfully installed 'chocolatey-core.extension 1.2.0'.
+
+chocolatey-core.extension v1.2.0 [Approved]
+chocolatey-core.extension package files install completed. Performing other installation steps.
+ Installed/updated chocolatey-core extensions.
+ The install of chocolatey-core.extension was successful.
+  Software installed to 'C:\ProgramData\chocolatey\extensions\chocolatey-core'
+[NuGet] Installing '7zip.install 16.4.0.20170403'.
+[NuGet] Successfully installed '7zip.install 16.4.0.20170403'.
+
+7zip.install v16.4.0.20170403 [Approved]
+7zip.install package files install completed. Performing other installation steps.
+Installing 64 bit version
+Installing 64 bit version
+Installing 7zip.install...
+Installing 7zip.install...
+7zip.install has been installed.
+7zip.install has been installed.
+7zip installed to 'C:\Program Files\7-Zip'
+7zip installed to 'C:\Program Files\7-Zip'
+Added C:\ProgramData\chocolatey\bin\7z.exe shim pointed to 'c:\program files\7-zip\7z.exe'.
+Added C:\ProgramData\chocolatey\bin\7z.exe shim pointed to 'c:\program files\7-zip\7z.exe'.
+ The install of 7zip.install was successful.
+  Software installed to 'C:\Program Files\7-Zip\'
+[NuGet] Installing '7zip 16.4.0.20170403'.
+[NuGet] Successfully installed '7zip 16.4.0.20170403'.
+
+7zip v16.4.0.20170403 [Approved]
+7zip package files install completed. Performing other installation steps.
+ The install of 7zip was successful.
+  Software install location not explicitly set, could be in package or
+  default install location if installer.
+
+Chocolatey installed 3/3 packages. 0 packages failed.
+ See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).
+
+Enjoy using Chocolatey? Explore more amazing features to take your
+experience to the next level at
+ https://chocolatey.org/compare
++ Boxstarter finished Calling Chocolatey to install . This may take several minutes to complete... 00:00:12.4951089
++ Boxstarter finished Calling Chocolatey to install . This may take several minutes to complete... 00:00:12.4951089
+
+SUCCESS: Specified value was saved.
+
+SUCCESS: Specified value was saved.
+ERROR: The response content cannot be parsed because the Internet Explorer engine is not available, or Internet Explorer's first-launch configuration is not complete. Specify the UseBasicParsing parameter and try again.
+Environment Vars (like PATH) have changed. Close/reopen your shell to
+ see the changes (or in powershell/cmd.exe just type `refreshenv`).
+The install of tmp87ac.tmp was NOT successful.
+Error while running 'C:\ProgramData\chocolatey\lib\tmp87AC.tmp\tools\ChocolateyInstall.ps1'.
+ See log for details.
+
+Chocolatey installed 0/1 packages. 1 packages failed.
+ See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).
+
+Failures
+ - tmp87ac.tmp (exited -1) - Error while running 'C:\ProgramData\chocolatey\lib\tmp87AC.tmp\tools\ChocolateyInstall.ps1'.
+ See log for details.
+Chocolatey : Chocolatey reported an unsuccessful exit code of -1. See
+C:\Users\mao\AppData\Local\Boxstarter\boxstarter.log for details.
+At C:\Users\mao\AppData\Local\Apps\2.0\NZ76897R.NLC\H10MX1ZG.EJ4\boxs..tion_6b092740f7261cd0_0002.0009_f858729d9219af15
+\Boxstarter.Chocolatey\Invoke-ChocolateyBoxstarter.ps1:201 char:5
++     Chocolatey install $bootstrapPackage -source $source -force:$forc ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,chocolatey
+
+++ Boxstarter finished Calling Chocolatey to install tmp87AC.tmp. This may take several minutes to complete... 00:00:43.6787401
+True
+Boxstarter: Restore Automatic Updates from Windows Update
+Type ENTER to exit:

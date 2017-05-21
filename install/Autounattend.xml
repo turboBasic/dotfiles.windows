@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+    <servicing>
+        <package action="configure">
+            <assemblyIdentity name="Microsoft-Windows-Foundation-Package" version="10.0.15063.0" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="" />
+            <selection name="Microsoft-Hyper-V-All" state="true" />
+            <selection name="Microsoft-Hyper-V" state="true" />
+            <selection name="Microsoft-Hyper-V-Hypervisor" state="true" />
+            <selection name="Microsoft-Hyper-V-Services" state="true" />
+            <selection name="Microsoft-Hyper-V-Tools-All" state="true" />
+            <selection name="Microsoft-Hyper-V-Management-Clients" state="true" />
+            <selection name="Microsoft-Hyper-V-Management-PowerShell" state="true" />
+            <selection name="Containers" state="true" />
+            <selection name="Microsoft-Windows-Subsystem-Linux" state="true" />
+            <selection name="NetFx3" state="false" />
+            <selection name="WorkFolders-Client" state="false" />
+        </package>
+    </servicing>
+    <settings pass="windowsPE">
+        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <SetupUILanguage>
+                <UILanguage>en-US</UILanguage>
+            </SetupUILanguage>
+            <InputLocale>en-US;uk-UA</InputLocale>
+            <SystemLocale>uk-UA</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>uk-UA</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <DiskConfiguration>
+                <Disk wcm:action="add">
+                    <CreatePartitions>
+                        <CreatePartition wcm:action="add">
+                            <Order>1</Order>
+                            <Size>450</Size>
+                            <Type>Primary</Type>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>2</Order>
+                            <Type>EFI</Type>
+                            <Size>184</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>3</Order>
+                            <Type>MSR</Type>
+                            <Size>16</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>4</Order>
+                            <Type>Primary</Type>
+                            <Size>20000</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>5</Order>
+                            <Type>Primary</Type>
+                            <Extend>true</Extend>
+                        </CreatePartition>
+                    </CreatePartitions>
+                    <ModifyPartitions>
+                        <ModifyPartition wcm:action="add">
+                            <Order>1</Order>
+                            <PartitionID>1</PartitionID>
+                            <Label>Windows RE tools</Label>
+                            <Format>NTFS</Format>
+                            <TypeID>de94bba4-06d1-4d40-a16a-bfd50179d6ac</TypeID>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>2</Order>
+                            <PartitionID>2</PartitionID>
+                            <Label>System</Label>
+                            <Format>FAT32</Format>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>3</Order>
+                            <PartitionID>4</PartitionID>
+                            <Label>w10mao</Label>
+                            <Format>NTFS</Format>
+                            <Letter>C</Letter>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>4</Order>
+                            <PartitionID>5</PartitionID>
+                            <Label>UserData</Label>
+                            <Format>NTFS</Format>
+                            <Letter>D</Letter>
+                        </ModifyPartition>
+                    </ModifyPartitions>
+                    <WillWipeDisk>true</WillWipeDisk>
+                    <DiskID>0</DiskID>
+                </Disk>
+                <WillShowUI>OnError</WillShowUI>
+            </DiskConfiguration>
+            <Display>
+                <ColorDepth>32</ColorDepth>
+                <HorizontalResolution>1280</HorizontalResolution>
+                <VerticalResolution>720</VerticalResolution>
+            </Display>
+            <ImageInstall>
+                <OSImage>
+                    <InstallFrom>
+                        <MetaData wcm:action="add">
+                            <Key>/IMAGE/NAME</Key>
+                            <Value>Windows 10 Enterprise</Value>
+                        </MetaData>
+                    </InstallFrom>
+                    <InstallTo>
+                        <DiskID>0</DiskID>
+                        <PartitionID>4</PartitionID>
+                    </InstallTo>
+                    <WillShowUI>OnError</WillShowUI>
+                    <InstallToAvailablePartition>false</InstallToAvailablePartition>
+                </OSImage>
+                <DataImage wcm:action="add">
+                    <InstallTo>
+                        <DiskID>0</DiskID>
+                        <PartitionID>5</PartitionID>
+                    </InstallTo>
+                    <InstallFrom>
+                        <Path>\disk_d.wim</Path>
+                    </InstallFrom>
+                    <Order>2</Order>
+                </DataImage>
+                <DataImage wcm:action="add">
+                    <InstallTo>
+                        <DiskID>0</DiskID>
+                        <PartitionID>4</PartitionID>
+                    </InstallTo>
+                    <InstallFrom>
+                        <Path>\disk_c.wim</Path>
+                    </InstallFrom>
+                    <Order>1</Order>
+                </DataImage>
+            </ImageInstall>
+            <EnableNetwork>true</EnableNetwork>
+            <UserData>
+                <ProductKey>
+                    <WillShowUI>OnError</WillShowUI>
+                    <Key>NPPR9-FWDCX-D2C8J-H872K-2YT43</Key>
+                </ProductKey>
+                <AcceptEula>true</AcceptEula>
+                <FullName>ƋБ</FullName>
+                <Organization>ƋБ</Organization>
+            </UserData>
+        </component>
+    </settings>
+    <settings pass="offlineServicing">
+        <component name="Microsoft-Windows-LUA-Settings" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <EnableLUA>false</EnableLUA>
+        </component>
+    </settings>
+    <settings pass="specialize">
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <InputLocale>en-US;uk-UA</InputLocale>
+            <SystemLocale>uk-UA</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>uk-UA</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-Security-SPP-UX" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <SkipAutoActivation>true</SkipAutoActivation>
+        </component>
+        <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <CEIPEnabled>0</CEIPEnabled>
+        </component>
+        <component name="Networking-MPSSVC-Svc" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <FirewallGroups>
+                <FirewallGroup wcm:action="add" wcm:keyValue="RemoteDesktop">
+                    <Active>true</Active>
+                    <Group>Remote Desktop</Group>
+                    <Profile>all</Profile>
+                </FirewallGroup>
+            </FirewallGroups>
+        </component>
+        <component name="Microsoft-Windows-TerminalServices-LocalSessionManager" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <fDenyTSConnections>false</fDenyTSConnections>
+        </component>
+        <component name="Microsoft-Windows-TerminalServices-RDP-WinStationExtensions" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <UserAuthentication>1</UserAuthentication>
+            <SecurityLayer>2</SecurityLayer>
+        </component>
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <OEMInformation>
+                <Manufacturer>Ƌ̲ɛ̲̽ɹ̲̅ʞ̅ǫ̛̃ẉ̈̇ɘ̲̇̇ʦ̈  ƋƦơ̶ƭɧɛ̟ʁɥ̊ø̲̅ø̲̅ð̡̡</Manufacturer>
+                <Logo>%programfiles%\bb\penrose-round-OEM.bmp</Logo>
+                <SupportAppURL>https://www.facebook.com/Berkobro/</SupportAppURL>
+                <SupportHours>00:00 - 24:00</SupportHours>
+                <SupportPhone>911</SupportPhone>
+                <SupportURL>http://127.0.0.1/</SupportURL>
+                <Model>Quantum BJ-17</Model>
+            </OEMInformation>
+            <Themes>
+                <BrandIcon>%programfiles%\bb\penrose-round-black.png</BrandIcon>
+                <ThemeName>Ƌ̲ɛ̲̽ɹ̲̅ʞ̅ǫ̛̃ẉ̈̇ɘ̲̇̇ʦ̈  ƋƦơ̶ƭɧɛ̟ʁɥ̊ø̲̅ø̲̅ð̡̡</ThemeName>
+                <DesktopBackground>%WINDIR%\web\wallpaper\clouds-sun.jpg</DesktopBackground>
+                <WindowColor>Automatic</WindowColor>
+            </Themes>
+            <WindowsFeatures>
+                <ShowInternetExplorer>true</ShowInternetExplorer>
+            </WindowsFeatures>
+            <CopyProfile>true</CopyProfile>
+            <ComputerName>bbox</ComputerName>
+            <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
+            <OEMName>Ƌ̲ɛ̲̽ɹ̲̅ʞ̅ǫ̛̃ẉ̈̇ɘ̲̇̇ʦ̈  ƋƦơ̶ƭɧɛ̟ʁɥ̊ø̲̅ø̲̅ð̡̡</OEMName>
+            <TimeZone>FLE Standard Time</TimeZone>
+            <RegisteredOrganization>ƋБ</RegisteredOrganization>
+            <RegisteredOwner>ƋБ</RegisteredOwner>
+            <TaskbarLinks>
+                <Link0>%windir%\system32\SnippingTool.exe</Link0>
+                <Link1>%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe</Link1>
+                <Link2>%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk</Link2>
+                <Link3>%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Notepad++\Notepad++.lnk</Link3>
+                <Link4>%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Cmder.lnk</Link4>
+                <Link5></Link5>
+            </TaskbarLinks>
+        </component>
+    </settings>
+    <settings pass="auditSystem">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <Themes>
+                <DesktopBackground>%WINDIR%\web\wallpaper\clouds-sun.jpg</DesktopBackground>
+                <BrandIcon>%programfiles%\bb\penrose-round-black.png</BrandIcon>
+                <ThemeName>Ƌ̲ɛ̲̽ɹ̲̅ʞ̅ǫ̛̃ẉ̈̇ɘ̲̇̇ʦ̈  ƋƦơ̶ƭɧɛ̟ʁɥ̊ø̲̅ø̲̅ð̡̡</ThemeName>
+                <WindowColor>Automatic</WindowColor>
+            </Themes>
+            <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
+            <TimeZone>FLE Standard Time</TimeZone>
+            <AutoLogon>
+                <Password>
+                    <Value>bgBzAHAAYQBzAHMAMQAhAFAAYQBzAHMAdwBvAHIAZAA=</Value>
+                    <PlainText>false</PlainText>
+                </Password>
+                <Username>Administrator</Username>
+                <Enabled>true</Enabled>
+            </AutoLogon>
+            <UserAccounts>
+                <AdministratorPassword>
+                    <Value>bgBzAHAAYQBzAHMAMQAhAEEAZABtAGkAbgBpAHMAdAByAGEAdABvAHIAUABhAHMAcwB3AG8AcgBkAA==</Value>
+                    <PlainText>false</PlainText>
+                </AdministratorPassword>
+            </UserAccounts>
+        </component>
+    </settings>
+    <settings pass="auditUser">
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>powershell -command &quot;Set-ExecutionPolicy RemoteSigned&quot;</Path>
+                    <Description>Enable powershell scripts</Description>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>powershell -executionpolicy bypass -command &quot;&amp; { iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex }&quot;</Path>
+                    <Description>Install Chocolatey</Description>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Path>msiexec /a d:\$install\$software\ua_berko_install\ua_berko_amd64.msi /quiet /passive /norestart</Path>
+                    <Order>3</Order>
+                    <Description>Install BerkoKeyboard</Description>
+                </RunSynchronousCommand>
+            </RunSynchronous>
+            <RunAsynchronous>
+                <RunAsynchronousCommand wcm:action="add">
+                    <Path>cmd /c REG ADD &quot;HKCU\Keyboard Layout\Toggle&quot; /v Hotkey /t REG_SZ /d &quot;2&quot; /f</Path>
+                    <Order>1</Order>
+                    <Description>Change hotkey for switching keyboard language</Description>
+                </RunAsynchronousCommand>
+                <RunAsynchronousCommand wcm:action="add">
+                    <Path>cmd /c REG ADD &quot;HKCU\Keyboard Layout\Toggle&quot; /v &quot;Language Hotkey&quot; /t REG_SZ /d &quot;2&quot; /f</Path>
+                    <Order>2</Order>
+                    <Description>Change Keyboard settings</Description>
+                </RunAsynchronousCommand>
+            </RunAsynchronous>
+        </component>
+    </settings>
+    <settings pass="oobeSystem">
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <Reseal>
+                <Mode>Audit</Mode>
+            </Reseal>
+        </component>
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <InputLocale>en-US;uk-UA</InputLocale>
+            <SystemLocale>uk-UA</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>uk-UA</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <FolderLocations>
+                <ProfilesDirectory>D:\Users</ProfilesDirectory>
+            </FolderLocations>
+            <UserAccounts>
+                <LocalAccounts>
+                    <LocalAccount wcm:action="add">
+                        <Description></Description>
+                        <DisplayName>oɐɯ</DisplayName>
+                        <Group>Administrators</Group>
+                        <Name>mao</Name>
+                        <Password>
+                            <Value>bgBzAHAAYQBzAHMAMQAhAFAAYQBzAHMAdwBvAHIAZAA=</Value>
+                            <PlainText>false</PlainText>
+                        </Password>
+                    </LocalAccount>
+                    <LocalAccount wcm:action="add">
+                        <Description></Description>
+                        <Group>Users</Group>
+                        <Name>kids</Name>
+                        <DisplayName>¡ɥɐǝʎ spᴉʞ</DisplayName>
+                        <Password>
+                            <Value>bQBpAG4AdABtAGkAbgB0AFAAYQBzAHMAdwBvAHIAZAA=</Value>
+                            <PlainText>false</PlainText>
+                        </Password>
+                    </LocalAccount>
+                </LocalAccounts>
+                <AdministratorPassword>
+                    <Value>bgBzAHAAYQBzAHMAMQAhAEEAZABtAGkAbgBpAHMAdAByAGEAdABvAHIAUABhAHMAcwB3AG8AcgBkAA==</Value>
+                    <PlainText>false</PlainText>
+                </AdministratorPassword>
+            </UserAccounts>
+            <TimeZone>FLE Standard Time</TimeZone>
+            <OEMInformation>
+                <Manufacturer>Ƌ̲ɛ̲̽ɹ̲̅ʞ̅ǫ̛̃ẉ̈̇ɘ̲̇̇ʦ̈  ƋƦơ̶ƭɧɛ̟ʁɥ̊ø̲̅ø̲̅ð̡̡</Manufacturer>
+                <Model>Quantum BJ-17</Model>
+                <SupportPhone>911</SupportPhone>
+                <SupportHours>00:00 - 24:00</SupportHours>
+                <SupportURL>http://127.0.0.1/</SupportURL>
+                <SupportAppURL>https://www.facebook.com/Berkobro/</SupportAppURL>
+                <Logo>%programfiles%\bb\penrose-round-OEM.bmp</Logo>
+            </OEMInformation>
+            <OOBE>
+                <HideEULAPage>true</HideEULAPage>
+                <ProtectYourPC>3</ProtectYourPC>
+                <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+                <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                <HideWirelessSetupInOOBE>false</HideWirelessSetupInOOBE>
+                <HideLocalAccountScreen>true</HideLocalAccountScreen>
+                <VMModeOptimizations>
+                    <SkipAdministratorProfileRemoval>true</SkipAdministratorProfileRemoval>
+                    <SkipNotifyUILanguageChange>true</SkipNotifyUILanguageChange>
+                </VMModeOptimizations>
+            </OOBE>
+            <RegisteredOwner>ƋБ</RegisteredOwner>
+            <RegisteredOrganization>ƋБ</RegisteredOrganization>
+            <VisualEffects>
+                <FontSmoothing>ClearType</FontSmoothing>
+            </VisualEffects>
+            <Themes>
+                <BrandIcon>%programfiles%\bb\penrose-round-black.png</BrandIcon>
+                <ThemeName>Ƌ̲ɛ̲̽ɹ̲̅ʞ̅ǫ̛̃ẉ̈̇ɘ̲̇̇ʦ̈  ƋƦơ̶ƭɧɛ̟ʁɥ̊ø̲̅ø̲̅ð̡̡</ThemeName>
+                <DesktopBackground>%WINDIR%\web\wallpaper\clouds-sun.jpg</DesktopBackground>
+                <WindowColor>Automatic</WindowColor>
+            </Themes>
+            <TaskbarLinks>
+                <Link0>%windir%\system32\SnippingTool.exe</Link0>
+                <Link1>%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe</Link1>
+                <Link2>%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk</Link2>
+                <Link3>%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Notepad++\Notepad++.lnk</Link3>
+                <Link4>%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Cmder.lnk</Link4>
+                <Link5></Link5>
+            </TaskbarLinks>
+            <ShowPowerButtonOnStartScreen>true</ShowPowerButtonOnStartScreen>
+            <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
+        </component>
+    </settings>
+    <settings pass="generalize">
+        <component name="Microsoft-Windows-PnpSysprep" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <PersistAllDeviceInstalls>true</PersistAllDeviceInstalls>
+        </component>
+    </settings>
+    <cpi:offlineImage cpi:source="wim:e:/isos/w10_1703/enterprise/_install.wim_1_original/install.wim#Windows 10 Enterprise" xmlns:cpi="urn:schemas-microsoft-com:cpi" />
+</unattend>
