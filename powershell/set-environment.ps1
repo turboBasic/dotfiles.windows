@@ -1,3 +1,5 @@
+# version 0.9.0
+
 #
 # Initializes Environment variables both globally and for current user session
 #
@@ -10,63 +12,6 @@
 #     powershell -noprofile -noninteractive -command "& { . C:\Dropbox\!my_environment_customization\windows\set_environment.ps1; initMachineEnvironment; [Environment]::Exit($LASTEXITCODE) }"
 #
 
-<#
-function script:set_env ($name, $text, $scope="User") { 
-    (getRegistryKey $scope).SetValue($name, $text, [Microsoft.Win32.RegistryValueKind]::ExpandString)
-    (getRegistryKey $scope).Flush()
-}
-
-function script:del_env ($name, $scope="User") { 
-    (getRegistryKey $scope).DeleteValue($name)
-}
-
-function get_env ($name, $scope="User") {
-    return (getRegistryKey $scope).GetValue(
-        $name, $null, 
-        [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames
-    )
-    # get-itemproperty 'hkcu:\Environment' |select path| %{$_.path -split ';'} | select -unique| sort
-}
-
-function script:getRegistryKey($scope="User") {
-    switch ($scope.ToLower()) {
-        user {  return [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::CurrentUser,  
-                    [Microsoft.Win32.RegistryView]::Default
-                ).OpenSubKey('Environment', $true)
-        }
-        machine { return [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::LocalMachine, 
-                    [Microsoft.Win32.RegistryView]::Default 
-                  ).OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment', $true)
-        }
-        default { throw 'getRegistryKey: Scope parameter should be either "Machine" or "User"' }
-    }
-}
-
-
-function Broadcast-EnvironmentChanges() {
-
-    if (-not ("Win32.NativeMethods" -as [Type])) {
-        # import sendmessagetimeout from win32
-        Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition @"
-            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-            public static extern IntPtr SendMessageTimeout(
-                IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,
-                uint fuFlags, uint uTimeout, out UIntPtr lpdwResult
-            );
-"@
-    }
-     
-    $HWND_BROADCAST = [IntPtr] 0xffff;
-    $WM_SETTINGCHANGE = 0x1a;
-    $result = [UIntPtr]::Zero
-
-    # notify all windows of environment block change
-    [Win32.Nativemethods]::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE, [UIntPtr]::Zero, "Environment", 2, 5000, [ref] $result);
-}
-
-#>
 
 if ( !(Get-Command Set-EnvironmentVariable -EA SilentlyContinue) ) {
   Try {
@@ -95,7 +40,7 @@ function Set-MachineEnvironment([switch]$initialise = $false) {
     
     sv _time (Get-Date -format u) -Scope "Script"
     
-    Add-Content -Path "$workingDir\set_environment.log" -Value @"
+    Add-Content -Path "$workingDir\set_environment.log" -EA SilentlyContinue -Value @"
 
 ::Time: $_time 
 ::PSScriptRoot: $PSScriptRoot
@@ -135,7 +80,7 @@ $pathSplit
 
     $_time = (Get-Date -format u)
     
-    Add-Content -Path "$workingDir\set_environment.log" -Value @"
+    Add-Content -Path "$workingDir\set_environment.log" -EA SilentlyContinue -Value @"
 ::Time: $_time 
 ::PathMachineAfter:        
 $pathSplit
@@ -220,6 +165,7 @@ function Set-UserEnvironment {
           ($_otherPath = @(
                     "%AppData%\Boxstarter",
                     "%OneDrive%\01_portable_apps"
+                 # "C:\Program Files\ImageMagick-7.0.5-Q16" 
                  #, "%Userprofile%\AppData\Local\Microsoft\WindowsApps"
           )) | % { $_ }
     );
@@ -233,9 +179,13 @@ function Set-UserEnvironment {
     PHP_INI_SCAN_DIR  = $settings.laragon + "\bin\php\current\ext";
   }
   
+
+
   $settings.Path | % { Write-Debug ($_) }
   $_time = Get-Date -format u
-  Add-Content $_log "::Set-UserEnvironment $Initialise `r`n::Time: $_time"
+  Add-Content $_log "`r`n`r`n::Set-UserEnvironment $Initialise `r`n::Time: $_time" -EA SilentlyContinue
+
+
 
   if ($initialise) {
     Write-Verbose "`r`n::Initialising User variables"
@@ -243,12 +193,12 @@ function Set-UserEnvironment {
     "tools", "Git", "Scoop"  | % {
         $_msg = "Old value $_ = {0}" -f (Get-EnvironmentVariable $_)
         Write-Verbose $_msg
-        Add-Content $_log $_msg
+        Add-Content $_log $_msg -EA SilentlyContinue
 
         Set-EnvironmentVariable -Name $_ -Text $settings[$_]          #[Environment]::SetEnvironmentVariable($_, $settings[$_], "User")
         $_msg = "$_ = $($settings[$_])"
         Write-Verbose $_msg
-        Add-Content $_log $_msg
+        Add-Content $_log $_msg -EA SilentlyContinue
         Send-EnvironmentChanges 
     }
     refreshenv
@@ -256,34 +206,34 @@ function Set-UserEnvironment {
     "Choco", "Cmder", "Onedrive", "Dropbox", "MSYS", "Cmder_root", "PSModulePath"  | % { 
         $_msg = "Old value $_ = {0}" -f (Get-EnvironmentVariable $_)
         Write-Verbose $_msg
-        Add-Content $_log $_msg
+        Add-Content $_log $_msg -EA SilentlyContinue
 
         Set-EnvironmentVariable -Name $_ -Text $settings[$_]         #[Environment]::SetEnvironmentVariable($_, $settings[$_], "User")
         $_msg = "$_ = $($settings[$_])"
         Write-Verbose $_msg
-        Add-Content $_log $_msg
+        Add-Content $_log $_msg -EA SilentlyContinue
     }
     Send-EnvironmentChanges
     refreshenv
   }
  
 
-  $_msg = "Old path = {0}" -f (Get-EnvironmentVariable Path)
+  $_msg = "Old path = `r`n{0}" -f ((Get-EnvironmentVariable Path) -replace ';', "`r`n")
   Write-Verbose $_msg
-  Add-Content $_log $_msg
+  Add-Content $_log $_msg -EA SilentlyContinue
 
   $Path = $settings.Path | select -Unique
   Set-EnvironmentVariable -Name Path -Text ($Path -join ';')
-  $_msg = "Path = {0}" -f ($Path -join "`r`n")
+  $_msg = "Path = `r`n{0}" -f ($Path -join "`r`n")
   Write-Verbose $_msg
-  Add-Content $_log $_msg
+  Add-Content $_log $_msg -EA SilentlyContinue
 
-  Add-Content $_log -Value @"
+  Add-Content $_log -EA SilentlyContinue -Value @"
 
 ::Time: $_time
-::PSScriptRoot: $PSScriptRoot
-::PSModulePath: $($settings.PSModulePath)
-::PathUserAfter: $($Path -join "`r`n                  ")
+::PSScriptRoot: `r`n$PSScriptRoot
+::PSModulePath: `r`n$($settings.PSModulePath -replace ';', "`r`n")
+::PathUserAfter: $($Path -join "`r`n                 ")
 "@
     
   Send-EnvironmentChanges  
