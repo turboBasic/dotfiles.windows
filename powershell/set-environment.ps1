@@ -10,6 +10,7 @@
 #     powershell -noprofile -noninteractive -command "& { . C:\Dropbox\!my_environment_customization\windows\set_environment.ps1; initMachineEnvironment; [Environment]::Exit($LASTEXITCODE) }"
 #
 
+<#
 function script:set_env ($name, $text, $scope="User") { 
     (getRegistryKey $scope).SetValue($name, $text, [Microsoft.Win32.RegistryValueKind]::ExpandString)
     (getRegistryKey $scope).Flush()
@@ -65,8 +66,19 @@ function Broadcast-EnvironmentChanges() {
     [Win32.Nativemethods]::SendMessageTimeout($HWND_BROADCAST, $WM_SETTINGCHANGE, [UIntPtr]::Zero, "Environment", 2, 5000, [ref] $result);
 }
 
+#>
 
-function initMachineEnvironment([switch]$initialise = $false) {
+if ( !(Get-Command Set-EnvironmentVariable -EA SilentlyContinue) ) {
+  Try {
+    Import-Module Environment
+  } Catch {
+    Write-Error "Environment module not found. Make sure its location is in PSModulePath"
+  }
+}
+
+
+
+function Set-MachineEnvironment([switch]$initialise = $false) {
 
     sv workingDir "." -Scope "Script"
     sv path ((get_env "Path" "Machine") -split ";") -Scope "Script"
@@ -138,7 +150,7 @@ $pathSplit
 
 
 
-function initUserEnvironment {
+function Set-UserEnvironment {
 
   [CmdletBinding(
     SupportsShouldProcess=$True,
@@ -155,6 +167,8 @@ function initUserEnvironment {
 
 
   # Initialisation
+  
+  $_log = "$PSScriptRoot\set-environment.log"
 
   $settings = ( $settings = ( $settings = @{
     tools        = "c:\tools" }) + @{
@@ -220,42 +234,61 @@ function initUserEnvironment {
   }
   
   $settings.Path | % { Write-Debug ($_) }
+  $_time = Get-Date -format u
+  Add-Content $_log "::Set-UserEnvironment $Initialise `r`n::Time: $_time"
 
   if ($initialise) {
-    "tools", "Git", "Scoop"  | % { 
-        [Environment]::SetEnvironmentVariable($_, $settings[$_], "User") 
-        Write-Verbose "$_ = $($settings[$_])"
-        Broadcast-EnvironmentChanges 
+    Write-Verbose "`r`n::Initialising User variables"
+
+    "tools", "Git", "Scoop"  | % {
+        $_msg = "Old value $_ = {0}" -f (Get-EnvironmentVariable $_)
+        Write-Verbose $_msg
+        Add-Content $_log $_msg
+
+        Set-EnvironmentVariable -Name $_ -Text $settings[$_]          #[Environment]::SetEnvironmentVariable($_, $settings[$_], "User")
+        $_msg = "$_ = $($settings[$_])"
+        Write-Verbose $_msg
+        Add-Content $_log $_msg
+        Send-EnvironmentChanges 
     }
     refreshenv
+
     "Choco", "Cmder", "Onedrive", "Dropbox", "MSYS", "Cmder_root", "PSModulePath"  | % { 
-        [Environment]::SetEnvironmentVariable($_, $settings[$_], "User")
-        Write-Verbose "$_ = $($settings[$_])" 
-        # Broadcast-EnvironmentChanges 
+        $_msg = "Old value $_ = {0}" -f (Get-EnvironmentVariable $_)
+        Write-Verbose $_msg
+        Add-Content $_log $_msg
+
+        Set-EnvironmentVariable -Name $_ -Text $settings[$_]         #[Environment]::SetEnvironmentVariable($_, $settings[$_], "User")
+        $_msg = "$_ = $($settings[$_])"
+        Write-Verbose $_msg
+        Add-Content $_log $_msg
     }
-    $banner = "`r`n::Initialise User variables"
+    Send-EnvironmentChanges
     refreshenv
   }
-  
-  # $Scoop = $env:SCOOP
-  ##if ($initialise -Or !$env:SCOOP -Or $Scoop -eq "$env:Userprofile\scoop") {
-  ##    $Scoop = $settings.scoop
-  ##    set_env SCOOP $Scoop User
-  ##} 
+ 
+
+  $_msg = "Old path = {0}" -f (Get-EnvironmentVariable Path)
+  Write-Verbose $_msg
+  Add-Content $_log $_msg
 
   $Path = $settings.Path | select -Unique
-  set_env Path ($Path -join ';') User 
-  Write-Verbose ("Path = {0}" -f ($Path -join "`r`n"))
+  Set-EnvironmentVariable -Name Path -Text ($Path -join ';')
+  $_msg = "Path = {0}" -f ($Path -join "`r`n")
+  Write-Verbose $_msg
+  Add-Content $_log $_msg
 
-  $_time = Get-Date -format u  
-  Add-Content -Path "$workingDir\set_environment.log" -Value @"
+  Add-Content $_log -Value @"
 
-::Time: $_time $banner
+::Time: $_time
 ::PSScriptRoot: $PSScriptRoot
-::PSModulePath: $PSModulePath
+::PSModulePath: $($settings.PSModulePath)
 ::PathUserAfter: $($Path -join "`r`n                  ")
 "@
     
-  Broadcast-EnvironmentChanges  
+  Send-EnvironmentChanges  
   return 0  
 }
+
+
+
