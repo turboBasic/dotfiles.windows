@@ -17,7 +17,7 @@ function Set-EnvironmentVariable ($name, $text, $scope='User', $Expand=$true) {
 }
 
 
-function Delete-EnvironmentVariable ($name, $scope='User') {
+function Remove-EnvironmentVariable ($name, $scope='User') {
   (_Get-RegistryKey $scope).DeleteValue($name)
 }
 
@@ -39,7 +39,7 @@ function script:_Get-RegistryKey($scope='User') {
 }
 
 
-function Broadcast-EnvironmentChanges() {
+function Send-EnvironmentChanges() {
 
   if (-not ("Win32.NativeMethods" -as [Type])) {
     # import sendmessagetimeout from win32

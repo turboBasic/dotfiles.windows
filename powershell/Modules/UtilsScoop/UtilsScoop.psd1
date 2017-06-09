@@ -1,12 +1,12 @@
 @{
   # Script module or binary module file associated with this manifest
-  RootModule = 'Environment.psm1'
+  RootModule = 'UtilsScoop.psm1'
 
   # Version number of this module.
   ModuleVersion = '1.0.1'
 
   # ID used to uniquely identify this module
-  GUID = '59aa5901-f7fa-4f03-b0db-b6156cb3807a'
+  GUID = '59aa5501-f7fa-4f03-b0db-b6166cb3807a'
 
   # Author of this module
   Author = 'Andriy Melnyk'
@@ -61,8 +61,8 @@
   NestedModules = @()
 
   # Functions to export from this module
-  FunctionsToExport = @(is_admin, abort, warn, error, success, basedir, appsdir, shimdir, 
-  ensure, fullpath, relpath, dl, unzip, shim)
+  FunctionsToExport = @('is_admin', 'abort', 'warn', 'error', 'success', 'basedir', 'appsdir', 'shimdir', 
+  'ensure', 'fullpath', 'relpath', 'dl', 'unzip', 'shim')
 
   # Cmdlets to export from this module
   CmdletsToExport = '*'
@@ -77,7 +77,7 @@
   ModuleList = @()
 
   # List of all files packaged with this module
-  FileList = @('Environment.psm1', 'Environment.psd1')
+  FileList = @('UtilsScoop.psm1', 'UtilsScoop.psd1')
 
   # Private data to pass to the module specified in ModuleToProcess
   PrivateData = ''
