@@ -1,5 +1,3 @@
-# version 0.9.0
-
 #
 # Initializes Environment variables both globally and for current user session
 #
@@ -112,26 +110,43 @@ function Set-UserEnvironment {
 
 
   # Initialisation
+  $__toolsDisk   = "c:"
+  $__tools       = "tools"
+  $__cmder       = "cmdermini"
+  $__chocolatey  = "chocolatey"
+  $__git         = "git"
+  $__dropbox     = "c:\Dropbox"
+  $__onedrive    = "c:\Onedrive"
+  $__laragonDisk = "c:"
+  $__laragon     = "laragon"
+  $__phpstrom    = "%JAVA_HOME%"
+  $__scoop       = "%Userprofile%\scoop"
+  $__ubuntu      = "%localappdata%\Lxss\rootfs"
+  $__PSmodule    = @( "$env:Userprofile\Documents\WindowsPowerShell\Modules", 
+                      "$env:Appdata\Boxstarter"
+  ) -join ';'
+  $__MSYS__      = $False
+  
+
   
   $_log = "$PSScriptRoot\set-environment.log"
 
   $settings = ( $settings = ( $settings = @{
-    tools        = "c:\tools" }) + @{
-    Choco        = $settings.tools + "\chocolatey";
-    Cmder        = $settings.tools + "\cmdermini";
-    Dropbox      = "c:\Dropbox";
-    Git          = $settings.tools + "\git";
-    Laragon      = "c:\laragon";
-    OneDrive     = "c:\OneDrive"; 
-    Scoop        = "%Userprofile%\scoop"; }) + @{
+    tools        = Join-Path $__toolsDisk $__tools }) + @{
+    Choco        = Join-Path $settings.tools $__chocolatey ;
+    Cmder        = Join-Path $settings.tools $__cmder;
+    Dropbox      = $__dropbox;
+    Git          = Join-Path $settings.tools $__git;
+    Laragon      = Join-Path $__laragonDisk $__laragon;
+    OneDrive     = $__onedrive; 
+    Scoop        = $__scoop; }) + @{
     Cmder_root   = $settings.Cmder; 
-    PHPSTORM_JDK = "%JAVA_HOME%";
-    Ubuntu       = "%localappdata%\Lxss\rootfs"; 
+    PHPSTORM_JDK = $__phpstorm;
+    Ubuntu       = $__ubuntu; 
     MSYS         = $settings.Git;
     PSModulePath = ((Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' | 
-                      select PSModulePath).PSModulePath + ";" +
-                      "$env:Userprofile\Documents\WindowsPowerShell\Modules;" + 
-                      "$env:Appdata\Boxstarter") | select -unique;
+                        select PSModulePath).PSModulePath + ";" + $__PSmodule) | 
+                        select -unique;
     Path         = @( 
           ($_utilPath  = @(
                     "%SCOOP%\shims", 
@@ -170,13 +185,13 @@ function Set-UserEnvironment {
           )) | % { $_ }
     );
     ChocolateyInstall = $settings.Choco;
-    ConEmuDir         = $settings.Cmder + "\vendor\conemu-maximus5";
+    ConEmuDir         = Join-Path $settings.Cmder "vendor\conemu-maximus5";
     Git_Install_Root  = $settings.Git;
-    NVM_HOME          = $settings.Scoop + "\apps\nvm\current";
-    NVM_SYMLINK       = $settings.Scoop + "\apps\nvm\current\nodejs";
+    NVM_HOME          = Join-Path $settings.Scoop "apps\nvm\current";
+    NVM_SYMLINK       = Join-Path $settings.Scoop "apps\nvm\current\nodejs";
     ONEDRIVE_HOME     = $settings.OneDrive;
     DROPBOX_HOME      = $settings.Dropbox;
-    PHP_INI_SCAN_DIR  = $settings.laragon + "\bin\php\current\ext";
+    PHP_INI_SCAN_DIR  = Join-Path $settings.laragon "bin\php\current\ext";
   }
   
 
