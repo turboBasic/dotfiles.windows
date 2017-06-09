@@ -1,0 +1,26 @@
+dotfiles.windows
+dotfiles.windows.powershell
+dotfiles.git
+dotfiles.$Devices
+dotfiles.cmder
+dotfiles.conemu
+dotfiles.editorconfig
+dotfiles.everything
+dotfiles.git
+dotfiles.launchy
+dotfiles.notepad++
+dotfiles.total_commander
+
+
+
+mkdir dotfiles.windows         && cd dotfiles.windows         && git init
+mkdir dotfiles.git             && cd dotfiles.git             && git init 
+mkdir dotfiles.$Devices        && cd dotfiles.$Device         && git init
+mkdir dotfiles.cmder           && cd dotfiles.cmder           && git init
+mkdir dotfiles.conemu          && cd dotfiles.conemu          && git init
+mkdir dotfiles.editorconfig    && cd dotfiles.editorconfig    && git init
+mkdir dotfiles.everything      && cd dotfiles.everything      && git init
+mkdir dotfiles.git             && cd dotfiles.git             && git init
+mkdir dotfiles.launchy         && cd dotfiles.launchy         && git init
+mkdir dotfiles.notepad++       && cd dotfiles.notepad++       && git init
+mkdir dotfiles.total_commander && cd dotfiles.total_commander && git init
