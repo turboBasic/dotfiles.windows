@@ -61,7 +61,7 @@
   NestedModules = @()
 
   # Functions to export from this module
-  FunctionsToExport = @('Get-EnvironmentVariable', 'Set-EnvironmentVariable', 'Remove-EnvironmentVariable', 'Send-EnvironmentChanges')
+  FunctionsToExport = '*'
 
   # Cmdlets to export from this module
   CmdletsToExport = '*'
