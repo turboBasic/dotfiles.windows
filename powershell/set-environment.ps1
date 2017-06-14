@@ -123,12 +123,38 @@ function Set-UserEnvironment {
   $__scoop       = "%Userprofile%\scoop"
   $__ubuntu      = "%localappdata%\Lxss\rootfs"
   $__PSmodule    = @( "$env:Userprofile\Documents\WindowsPowerShell\Modules", 
-                      "$env:Appdata\Boxstarter"
-  ) -join ';'
+                      "$env:Appdata\Boxstarter" ) -join ';'
   $__MSYS__      = $False
   
+  $machineEnvironment = @"
+    Choco             = %AllUsersProfile%
+    ChocolateyInstall = %Choco%
+    Tools             = c:\\tools
+    Git               = %Tools%\\Git
+    Git_Install_Root  = %Git%
+    Cmder             = %tools%\\%Cmder%          
+    Cmder_root        = %Cmder%
+    Cmder_Install_Dir = %Cmder%
+    SystemBin         = %SystemRoot%\\System32
+    PShome            = %SystemBin%\\WindowsPowerShell\\v1.0
+    JAVA_HOME         = %ProgramFiles%\\Java\\jdk1.8.0_121 
+    laragon           = c:\\laragon 
+    ConEmuDir         = %cmder%\vendor\conemu-maximus5   
+    Path              = %SystemBin%;%SystemRoot%;%SystemBin%\\Wbem;%PSHome%
+  "@
 
+  $userEnvironment = @'
+    PSprofile     = %HOMEDRIVE%%HOMEPATH%\\Documents\\WindowsPowershell
+    PSmodulePath  = %PSprofile%\\Modules
+    Dropbox       = c:\\Dropbox
+    Dropbox_home  = %Dropbox%
+    OneDrive      = c:\\Onedrive
+    Onedrive home = %OneDrive%
+  '@
   
+  $hash = ConvertFrom-StringData $machineEnvironment
+
+
   $_log = "$PSScriptRoot\set-environment.log"
 
   $settings = ( $settings = ( $settings = @{
