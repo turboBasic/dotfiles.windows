@@ -35,6 +35,10 @@
   USERDOMAIN_ROAMINGPROFILE='ASUS';
 }
 
+# User Additional
+@{
+  Projects='e:\0projects'
+}
 
 
 
