@@ -73,32 +73,40 @@ function expandNameInScope {
         [parameter( Mandatory,
                     Position=1 )]
         [EnvironmentScopeType] 
-        $From
+        $Scope,
+
+        [parameter( Mandatory=$False,
+                    Position=2 )]
+        [switch] 
+        $Expand        
   )
   #endregion
 
-  Write-Verbose "expandNameInScope: `$Name = $Name, `$From = $From"
-  switch ($From) {
+  #Write-Verbose "expandNameInScope: `$Name = $Name, `$Scope = $Scope, `$Expand = $Expand"
+  switch ($Scope) {
     Process {
 
       $res = Get-ChildItem -Path "env:\$Name" -EA SilentlyContinue | 
                 % { [psCustomObject]@{ 
                         Name  = $_.Name; 
                         Value = $_.Value; 
-                        Scope = $From 
+                        Scope = $Scope 
                     } 
                 }
       break
     }
     { $_ -in "Volatile", "User", "Machine" } {
 
-      $key = Get-RegistryKey $From $False
+      $key = Get-RegistryKey $Scope $False
       $res = $key.GetValueNames() | ? { $_ -like $Name } |
-                % { [psCustomObject]@{  
-                        Name  = $_;
-                        Value = $key.GetValue($_, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames);
-                        Scope = $From
-                    }
+                % { 
+                    $item = @{ Name = $_; Scope = $Scope } 
+                    if (!$Expand)
+                      { $item.Add( "Value", $key.GetValue($_, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames) ) }
+                    else
+                      { $item.Add( "Value", $key.GetValue($_, $null) ) }
+
+                    [psCustomObject]$item
                 }
       break
     }
@@ -130,23 +138,45 @@ function expandNameInScope {
   Name(s) of environment variable. You can save some typing ("-Names") if variable name is the 1st parameter of the call.  
   Accepts multiple values and standard Powershell wildcards (eg. *, ?, [a-z]).
 
-.PARAMETER From
+.PARAMETER Scope
   Specifies scope for environment variables to be taken from (Process, Volatile, User, Machine). Accepts multiple scope values and "*".
 
 .EXAMPLE
-  PS> Get-Environment -Name Temp -From User
+  PS> Get-Environment -Names Temp -Scope User
 
-  Scope  Name  Value
+  Scope  Names Value
   -----  ----  -----
   User   TEMP  %USERPROFILE%\AppData\Local\Temp
 
 .EXAMPLE
-  PS> Get-Environment Temp -From User, Machine
+  PS> Get-Environment Temp -Scope User, Machine
 
-  Scope   Name Value
-  -----   ---- -----
-  User    TEMP %USERPROFILE%\AppData\Local\Temp
-  Machine TEMP %SystemRoot%\TEMP
+  Scope   Names Value
+  -----   ----  -----
+  User    TEMP  %USERPROFILE%\AppData\Local\Temp
+  Machine TEMP  %SystemRoot%\TEMP
+
+.EXAMPLE
+  PS> Get-Environment "Temp" 
+
+  Scope   Names Value
+  -----   ----  -----
+  Process TEMP  c:\Users\kid\AppData\Local\Temp
+
+.EXAMPLE
+  PS> Get-Environment *data -Scope User, Volatile
+
+  Scope   Names Value
+  -----   ----  ----=
+  ......
+
+.EXAMPLE
+  PS> "ChocolateyInstall", "Scoop", "Git_Install_Root", "Cmder_Root" | Get-Environment -Scope Machine | Add-Content "~\.envvars.backup.txt"
+
+.EXAMPLE
+  PS> Get-Content "~\Desktop\vars.txt" | iex |
+      Select @{ label='name'; expression={$_.value} } |
+      Get-Environment -Scope Machine  
 #>
 
 function Get-Environment {
@@ -155,23 +185,27 @@ function Get-Environment {
   [OutputType( [System.Array] )]
   Param([parameter( Mandatory,
                     Position=0,
-                    ValueFromPipeline,
-                    ValueFromPipelineByPropertyName )]
+                    ValueFromPipeline )]
+        [ValidateNotNullOrEmpty()]  
         [string[]] $Names,
 
         [parameter( Mandatory=$False,
                     Position=1,
-                    ValueFromPipelineByPropertyName )]
-        [alias("Scope", "Context")]
+                    ValueFromPipeline )]
+        [alias("From", "Context")]
         [ValidateScript({ $_ -in "Process", "Volatile", "User", "Machine", "*" })]
-        [string[]] $From
+        [string[]] $Scope="Process",
+
+        [parameter( Mandatory=$False,
+                    Position=2 )]
+        [switch] $Expand
   )
   #endregion
 
   Begin {
-    Write-Verbose "Get-Environment: `$Names = $Names, `$From = $From"
-    if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($From)) {
-      $From = @([EnvironmentScopeType]"Process", [EnvironmentScopeType]"Volatile", [EnvironmentScopeType]"User", [EnvironmentScopeType]"Machine")
+    Write-Verbose "Get-Environment: `$Names = $Names, `$Scope = $Scope, `$Expand = $Expand"
+    if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Scope)) {
+      $Scope = @([EnvironmentScopeType]"Process", [EnvironmentScopeType]"Volatile", [EnvironmentScopeType]"User", [EnvironmentScopeType]"Machine")
     }
     $res = @()
   }
@@ -181,10 +215,10 @@ function Get-Environment {
       $isWild = [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Names)
       $type = @{ $False = "Simple"; $True = "Wildcard" }[$isWild]
 
-      Write-Verbose "Get-Environment: $type variable name request: $name, scope: $scope"
+      Write-Verbose "Get-Environment: $type variable name request: `$Name: $name, `$Scope: $Scope, `$Expand: $Expand"
 
-      ForEach ($scope in $From) {
-        $res += (expandNameInScope $name $scope)
+      ForEach ($_scope in $Scope) {
+        $res += (expandNameInScope $name $_scope $Expand)
       }
     }
   }
@@ -194,50 +228,6 @@ function Get-Environment {
   }
 
 }
-
-<# TODO - process the rest of below comments:
-
-.SYNTAX
-    Get-Environment -Name "Environment variable name" -Machine
-    Get-Environment "Environment variable name" -User
-    Get-Environment "Environment variable name"
-    Get-Environment Environment_Variable_Name_without_Spaces
-    Get-Environment LocalAppData -User -Volatile
-    Get-Environment HomeDrive -Volatile
-    Get-Environment * -User -Volatile
-    Get-Environment *64* -System
-
-.EXAMPLE
-    PS> Get-Environment -Name "Environment variable" -Machine
-
-.EXAMPLE
-    PS> Get-Environment LocalAppData -User -Volatile
-
-.EXAMPLE
-    PS> Get-Environment HomeDrive -Volatile
-
-.EXAMPLE
-    PS> Get-Environment "Environment variable" -User
-
-.EXAMPLE
-    PS> Get-Environment "Environment variable"
-
-.EXAMPLE
-    PS> Get-Environment Environment_Variable_Name_without_Spaces
-
-.EXAMPLE
-    PS> Get-Environment *data -User -Volatile
-
-.EXAMPLE
-    PS> "ChocolateyInstall", "Scoop", "Git_Install_Root", "Cmder_Root" | Get-Environment -Machine | Add-Content "~\.envvars.backup.txt"
-
-.EXAMPLE
-    PS> Get-Content "~\Desktop\vars.txt" | iex |
-            Select @{ label='name'; expression={$_.value} } |
-            Get-Environment -Machine
-
-#>
-
 
 
 function Send-EnvironmentChanges {
@@ -264,64 +254,94 @@ function Send-EnvironmentChanges {
 
 
 
-function Set-EnvironmentVariable ([string]$name, [string]$text, [EnvironmentScopeType]$scope='User', [boolean]$Expand=$True) {
-  if ($Expand) {
-    $_type = [Microsoft.Win32.RegistryValueKind]::ExpandString
-  } else {
-    $_type = [Microsoft.Win32.RegistryValueKind]::String
-  }
-  (_Get-RegistryKey $scope).SetValue($name, $text, $_type)
-  (_Get-RegistryKey $scope).Flush()
-}
-
-
-
 function Set-Environment {
 
   #region Set-Environment Parameters
-  [CmdletBinding( DefaultParameterSetName="User",
-                  PositionalBinding=$False
-  )]
+  [CmdletBinding( PositionalBinding=$False )]
   Param(
     [parameter( Mandatory,
-                Position=0,
-                ValueFromPipeline,
-                ValueFromPipelineByPropertyName,
-                HelpMessage="Name of environment variable. Accepts wildcards." )]
-    [string[]]
+                Position=0 )]
+    [string]
     $Name,
 
-    [parameter( ParameterSetName="Machine",
-                Mandatory,
-                HelpMessage="Get environment variable from Machine context" )]
-    [switch]
-    $Machine,
+    [parameter( Mandatory,
+                Position=1 )]
+    [string]
+    $Value,
 
-    [parameter( ParameterSetName="User",
-                Mandatory=$False,
-                HelpMessage="Get environment variable from current User context")]
+    [parameter( Mandatory=$False,
+                Position=2 )]
+    [string]
+    $Scope='Process',
+
+    [parameter( Mandatory=$False,
+                Position=3 )]
     [switch]
-    $User
+    $Expand
   )
   #endregion
 
 
-  Begin{}
-
-
-  Process{
-
-
+  Begin {
+    Write-Verbose "Set-Environment: `$Name = $Name, `$Value = $Value, `$Scope = $Scope, `$Expand = $Expand"
+    if ($Expand) 
+      { $_type = [Microsoft.Win32.RegistryValueKind]::ExpandString } 
+    else 
+      { $_type = [Microsoft.Win32.RegistryValueKind]::String }
   }
 
+  Process {
+    if ($Scope -eq "Process") {
+      if ($Expand) 
+        { $Value = [Environment]::ExpandEnvironmentVariables($Value) }
+      Set-Item -Path "env:$Name" -Value $Value
+      return  
+    } 
 
-  End{}
+    Try { 
+      $key = Get-RegistryKey $Scope $True
+      $key.SetValue($Name, $Value, $_type)
+    }
+    Catch { 
+      Write-Error "Cannot open $Scope / $Name for editing - please switch to elevated cmd!" 
+    }
+    Finally { 
+      if ($key) 
+        { $key.Flush() }
+    }    
+  }
+
+  End {}
 }
 
 
 
-function Remove-EnvironmentVariable ([string]$name, [EnvironmentScopeType]$scope='User') {
-  (Get-RegistryKey $scope).DeleteValue($name)
+<#
+.SYNOPSIS
+  This cmdlet deletes environment variable according to set of criteria
+
+.EXAMPLE
+  Remove-EnvironmentVariable -Name Var -Scope User
+#>
+
+function Remove-EnvironmentVariable {
+  #region Remove-Environment Parameters
+  [CmdletBinding( PositionalBinding=$False )]
+  Param(
+    [parameter( Mandatory,
+                Position=0 )]
+    [string] 
+    $Name,
+
+    [parameter( Position=1 )]
+    [EnvironmentScopeType] 
+    $Scope='Process'
+  )
+    
+  if ( $Scope -eq 'Process' ) 
+    { Remove-Item "env:/$Name" }
+  else 
+    { (Get-RegistryKey $Scope $True).DeleteValue($Name) }
 }
 
 
@@ -329,4 +349,5 @@ function Remove-EnvironmentVariable ([string]$name, [EnvironmentScopeType]$scope
 New-Alias -Name genv  Get-Environment
 New-Alias -Name ge    Get-Environment
 New-Alias -Name senv  Set-Environment
+New-Alias -Name se    Set-Environment
 New-Alias -Name rmenv Remove-EnvironmentVariable
