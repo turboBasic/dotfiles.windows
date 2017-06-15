@@ -1,7 +1,7 @@
 # eg. [EnvironmentScopeType]::User
 Add-Type -TypeDefinition @"
   public enum EnvironmentScopeType {
-    CurrentProcess, Process,
+    Process,
     Volatile,
     User,
     Machine
@@ -19,264 +19,185 @@ Add-Type -TypeDefinition @"
 "@
 
 
-function ge {
-[CmdletBinding( PositionalBinding=$False )]
-[OutputType( [System.Array] )]
-Param([parameter( Mandatory,
-                  Position=0,
-                  ValueFromPipeline,
-                  ValueFromPipelineByPropertyName,
-                  HelpMessage="Name of environment variable. Accepts multiple values and wildcards." )]
-      [string[]] $Name,
 
-      [parameter( Mandatory=$False,
-                  ValueFromPipelineByPropertyName,
-                  HelpMessage="Scope of environment variable. Accepts multiple values of [EnvironmentScopeType] type and ``*``." )]
-      [EnvironmentScopeType[]]
-      $From
-)
+function Get-RegistryKey {
 
-Begin {
-  Write-Verbose "`$Name=$Name, `$From=$From"
-  $res = @()
-}
+  #region Get-RegistryKey Parameters
+  Param(
+    [parameter( Mandatory, Position=0 )]
+    [EnvironmentScopeType] 
+    $From,
 
-Process {
-
-  $item = "" | select name, value, source 
-  $item.name = "env_var_1"
-  $item.value = "1024 cr" 
-  $item.source = [EnvironmentScopeType]::CurrentProcess
-
-  $res += $item
-}
-
-End {
-  $res
-}
-
-}
-
-
-
-function G_V_Process { return "%ProcessValue%" }
-function G_V_Volatile { return "%VolatileValue%" }
-function G_V_User { return "%UserValue%" }
-function G_V_Machine { return "%MachineValue%" }
-
-
-
-function G_V {
-  [CmdletBinding( DefaultParameterSetName="All",
-                PositionalBinding=$False )]
-  Param(  [parameter( Mandatory,
-                      Position=0 )]
-          [string] $Name,
-
-          [parameter( Mandatory )]
-          [EnvironmentContextType[]] $Context
+    [parameter( Position=1 )]
+    [Boolean] 
+    $Write=$False
   )
+  #endregion
 
-
-  Begin {
-
-  }
-
-  Process {
-    $res = @()
-    ForEach ($ctx in $Context) {
-      $item = "" | select name, value, source
-      $item.name = $Name
-      $item.source = $ctx
-      switch ($ctx) {
-        Process   { $item.value = G_V_Process $Name;  break }
-        Volatile  { $item.value = G_V_Volatile $Name; break }
-        User      { $item.value = G_V_User $Name; break }  
-        Machine   { $item.value = G_V_Machine $Name; break }
-      }
-      $res += $item
+  switch ($From) {
+    User {
+        $key =  [Microsoft.Win32.RegistryKey]::OpenBaseKey(
+                [Microsoft.Win32.RegistryHive]::CurrentUser,
+                [Microsoft.Win32.RegistryView]::Default
+        ).OpenSubKey('Environment', $Write)
+        break
+    }
+    Volatile {
+        $key =  [Microsoft.Win32.RegistryKey]::OpenBaseKey(
+                [Microsoft.Win32.RegistryHive]::CurrentUser,
+                [Microsoft.Win32.RegistryView]::Default
+        ).OpenSubKey('Volatile Environment', $Write)
+        break
+    }
+    Machine {
+        $key =  [Microsoft.Win32.RegistryKey]::OpenBaseKey(
+                [Microsoft.Win32.RegistryHive]::LocalMachine,
+                [Microsoft.Win32.RegistryView]::Default
+        ).OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment', $Write)
+        break
     }
   }
-
-  End {
-    return $res
-  }
-
+  return $key
 }
 
 
 
-function VariableOutput([string]$Name, [psCustomObject]$Value) {
-  Write-Output @{ $Name = $Value }
-}
+function expandNameInScope {
+  #region expandNameInScope Parameters
+  [CmdletBinding()]
+  Param([parameter( Mandatory,
+                    Position=0 )]
+        [string] 
+        $Name,
 
-function Get_E {
-  [CmdletBinding( DefaultParameterSetName="All",
-                  PositionalBinding=$False )]
-  [OutputType([System.Collections.Hashtable[]])]
-  Param(  [parameter( Mandatory,
-                      Position=0,
-                      ValueFromPipeline,
-                      ValueFromPipelineByPropertyName,
-                      HelpMessage="Name of environment variable. Accepts wildcards." )]
-          [string[]]
-          $Name,
-
-          [parameter( ParameterSetName="All" )]      
-          [parameter( ParameterSetName="Context", Mandatory )]
-          [parameter( ParameterSetName="Data" )]
-          [parameter( ParameterSetName="VariableNameData" )]
-          [parameter( ParameterSetName="ValueData" )]
-          [parameter( ParameterSetName="SourceData" )]
-          [EnvironmentScopeType[]]
-          $Context,
-          
-          [parameter( ParameterSetName="ProcessContext", Mandatory )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="Data" )]
-          [parameter( ParameterSetName="VariableNameData" )]
-          [parameter( ParameterSetName="ValueData" )]
-          [parameter( ParameterSetName="SourceData" )]
-          [switch]
-          $Process,
-          
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext", Mandatory )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="Data" )]
-          [parameter( ParameterSetName="VariableNameData" )]
-          [parameter( ParameterSetName="ValueData" )]
-          [parameter( ParameterSetName="SourceData" )]
-          [switch]
-          $Volatile,
-          
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext", Mandatory )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="Data" )]
-          [parameter( ParameterSetName="VariableNameData" )]
-          [parameter( ParameterSetName="ValueData" )]
-          [parameter( ParameterSetName="SourceData" )]
-          [switch]
-          $User,
-          
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext", Mandatory )]
-          [parameter( ParameterSetName="Data" )]
-          [parameter( ParameterSetName="VariableNameData" )]
-          [parameter( ParameterSetName="ValueData" )]
-          [parameter( ParameterSetName="SourceData" )]
-          [switch]
-          $Machine,
-
-          [parameter( ParameterSetName="All" )]            
-          [parameter( ParameterSetName="Context" )]
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="Data", Mandatory )]
-          [EnvironmentDataType[]]
-          $Data,
-          
-          [parameter( ParameterSetName="Context" )]
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="VariableNameData", Mandatory )]
-          [parameter( ParameterSetName="ValueData" )]
-          [parameter( ParameterSetName="SourceData" )]
-          [alias("VarName")]
-          [switch]
-          $VariableName,
-          
-          [parameter( ParameterSetName="Context" )]
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="VariableNameData")]
-          [parameter( ParameterSetName="ValueData", Mandatory  )]
-          [parameter( ParameterSetName="SourceData" )]
-          [switch]
-          $Value,
-          
-          [parameter( ParameterSetName="Context" )]
-          [parameter( ParameterSetName="ProcessContext" )]
-          [parameter( ParameterSetName="VolatileContext" )]
-          [parameter( ParameterSetName="UserContext" )]
-          [parameter( ParameterSetName="MachineContext" )]
-          [parameter( ParameterSetName="VariableNameData" )]
-          [parameter( ParameterSetName="ValueData"  )]
-          [parameter( ParameterSetName="SourceData", Mandatory )]
-          [switch]
-          $Source,
-          
-          [parameter()]
-          [switch]
-          $AllDeclarations,
-          
-          [parameter()]
-          [switch]
-          $Expand
+        [parameter( Mandatory,
+                    Position=1 )]
+        [EnvironmentScopeType] 
+        $From
   )
+  #endregion
 
-  Begin {
-    #$allParameters = (Get-Command Get_E).Parameters
-    $allParameters = "Name", "Context", "Process", "Volatile", "User", "Machine", "Data", "VariableName", "Value", 
-    "Source", "AllDeclarations", "Expand" | % { Get-Variable $_ -Scope Local -EA SilentlyContinue }
-  }
+  Write-Verbose "expandNameInScope: `$Name = $Name, `$From = $From"
+  switch ($From) {
+    Process {
 
-  Process {
-
-    ForEach ($n in $name) {
-      $isWild = [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($n)
-      switch ($isWild) {
-        $False {  Write-Verbose "Simple variable name=$n"
-                  $_var = G_V -Name $n -Context $Context
-                  VariableOutput -Name $n -Value $_var              #Write-Output @{ $n = G_V $n }
-                  Break
-        }
-        $True {   Write-Verbose "Wildcard item ${n}: replacing with array of $($n.Length) items"    
-                  $n_expand = "fakevar1", "fakevar2", "fakevar10"       # fake variables satisfying wildcard
-                  ForEach ($nn in $n_expand) {
-                    Write-Verbose "Simple variable name=$nn"
-                    $_var = G_V -Name $n -Context $Context
-                    VariableOutput -Name $nn -Value $_var          # Write-Output @{ $nn = G_V $nn }
-                  }
-                  Break
-        }
-      }
+      $res = Get-ChildItem -Path "env:\$Name" -EA SilentlyContinue | 
+                % { [psCustomObject]@{ 
+                        Name  = $_.Name; 
+                        Value = $_.Value; 
+                        Scope = $From 
+                    } 
+                }
+      break
     }
+    { $_ -in "Volatile", "User", "Machine" } {
 
+      $key = Get-RegistryKey $From $False
+      $res = $key.GetValueNames() | ? { $_ -like $Name } |
+                % { [psCustomObject]@{  
+                        Name  = $_;
+                        Value = $key.GetValue($_, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames);
+                        Scope = $From
+                    }
+                }
+      break
+    }
+    default { Throw "expandNameInScope: Strange error in switch statement" }
   }
-
-  End {
-
-  }
+  Write-Output $res
 }
 
 
-
-<# 
+<#  
 .SYNOPSIS
-    This cmdlet queries Windows Registry for Environment variables based on number of criteria.  The main difference comparing with [Environment]:: methods and $env:variable approach is that   
-      1) you specify -User or -Machine switches which allows to access system and user variables independently and 
-      2) you get %unexpanded% variables which keeps you aware of small details of how your resulting environment built
-      3) you can get -Volatile variables which are not returned by `SET` and `Get-ChildItem env:` commands (this works only for -User context and throws if you try to do it in -Machine context)
-      4) it fully supports Powershell's pipelines so you can push and pull the data in very exotic and delicate way.
+  This cmdlet queries Windows Registry for Environment variables based on number of criteria.  The main difference comparing with 
+  [Environment]:: methods and $env:variable approach is that
+  1) you can specify the scope (eg. User or Machine ) which allows you to access system and user variables independently and
+  2) you get %unexpanded% variables which keeps you aware of small details of how your resulting environment built
+  3) you can get variables from Volatile (a.k.a. Session) scope which are not returned by `SET` and `Get-ChildItem env:` commands
+  4) it fully supports Powershell's pipelines so you can push and pull the data in very exotic and delicate way.
 
 .DESCRIPTION
-    Get-Environment Windows Registry for System and User Environment variables based on number of criteria. 
+  Get-Environment: queries Windows registry for Process, Volatile (Session), User and System Environment variables based on number of criteria.
 
-.SYNTAX 
+.NOTES
+  Created on: 10.06.2017
+  Created by: Andriy Melnyk
+  Filename:   Environment.psm1
+  Credits:    Sorry for this but I have lost the initial source code which inspired me.  Will keep you posted, need to get through my bookmarks archive and web history...
+
+.PARAMETER Names
+  Name(s) of environment variable. You can save some typing ("-Names") if variable name is the 1st parameter of the call.  
+  Accepts multiple values and standard Powershell wildcards (eg. *, ?, [a-z]).
+
+.PARAMETER From
+  Specifies scope for environment variables to be taken from (Process, Volatile, User, Machine). Accepts multiple scope values and "*".
+
+.EXAMPLE
+  PS> Get-Environment -Name Temp -From User
+
+  Scope  Name  Value
+  -----  ----  -----
+  User   TEMP  %USERPROFILE%\AppData\Local\Temp
+
+.EXAMPLE
+  PS> Get-Environment Temp -From User, Machine
+
+  Scope   Name Value
+  -----   ---- -----
+  User    TEMP %USERPROFILE%\AppData\Local\Temp
+  Machine TEMP %SystemRoot%\TEMP
+#>
+
+function Get-Environment {
+  #region Parameters
+  [CmdletBinding( PositionalBinding=$False )]
+  [OutputType( [System.Array] )]
+  Param([parameter( Mandatory,
+                    Position=0,
+                    ValueFromPipeline,
+                    ValueFromPipelineByPropertyName )]
+        [string[]] $Names,
+
+        [parameter( Mandatory=$False,
+                    Position=1,
+                    ValueFromPipelineByPropertyName )]
+        [alias("Scope", "Context")]
+        [ValidateScript({ $_ -in "Process", "Volatile", "User", "Machine", "*" })]
+        [string[]] $From
+  )
+  #endregion
+
+  Begin {
+    Write-Verbose "Get-Environment: `$Names = $Names, `$From = $From"
+    if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($From)) {
+      $From = @([EnvironmentScopeType]"Process", [EnvironmentScopeType]"Volatile", [EnvironmentScopeType]"User", [EnvironmentScopeType]"Machine")
+    }
+    $res = @()
+  }
+
+  Process {
+    ForEach ($name in $Names) {
+      $isWild = [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Names)
+      $type = @{ $False = "Simple"; $True = "Wildcard" }[$isWild]
+
+      Write-Verbose "Get-Environment: $type variable name request: $name, scope: $scope"
+
+      ForEach ($scope in $From) {
+        $res += (expandNameInScope $name $scope)
+      }
+    }
+  }
+
+  End {
+    $res | Sort-Object -property Scope, Name, Value | Select-Object Scope, Name, Value -unique
+  }
+
+}
+
+<# TODO - process the rest of below comments:
+
+.SYNTAX
     Get-Environment -Name "Environment variable name" -Machine
     Get-Environment "Environment variable name" -User
     Get-Environment "Environment variable name"
@@ -285,12 +206,6 @@ function Get_E {
     Get-Environment HomeDrive -Volatile
     Get-Environment * -User -Volatile
     Get-Environment *64* -System
-
-.NOTES
-    Created on:     10.06.2017
-    Created by:     Andriy Melnyk
-    Filename:       Environment.psm1
-    Credits:        Sorry for this but I have lost the initial source code which inspired me.  Will keep you posted, need to get through my bookmarks archive and web history...
 
 .EXAMPLE
     PS> Get-Environment -Name "Environment variable" -Machine
@@ -311,137 +226,21 @@ function Get_E {
     PS> Get-Environment Environment_Variable_Name_without_Spaces
 
 .EXAMPLE
-    PS> Get-Environment *data -User -Volatile   
+    PS> Get-Environment *data -User -Volatile
 
 .EXAMPLE
     PS> "ChocolateyInstall", "Scoop", "Git_Install_Root", "Cmder_Root" | Get-Environment -Machine | Add-Content "~\.envvars.backup.txt"
 
 .EXAMPLE
-    PS> Get-Content "~\Desktop\vars.txt" | iex | 
+    PS> Get-Content "~\Desktop\vars.txt" | iex |
             Select @{ label='name'; expression={$_.value} } |
             Get-Environment -Machine
 
-.PARAMETER Name
-    Name of environment variable. You can save some typing ("-Name") if variable name is the 1st parameter of the call.  Name accepts traditional Powershell wildcards (*, ?, [a-z])
-
-.PARAMETER Machine
-    -Machine switch makes function return variable from Machine context. You are right that by default function queries -User context.
-
-.PARAMETER User
-    Default behavior of function: return variable from User context.  If you are fine with that you may save typing `-User` though keeping it explicit might help someone to understand your code.
-
-.PARAMETER Volatile
-    -Volatile switch allows to find obscure "volatile" variables existing in -User context, which can't be seen using `SET` and `Get-ChildItem` commands.  Those are LocalAppData, HomeDrive, HomePath ans so forth. The nature of these variables is so that they are created every logon session and keep their values only within logon sessions. Once again, they exist in -User context only, do not try to query them together with -Machine switch otherwise Get-Environment will throw.
 #>
-function Get-Environment {
-
-  [CmdletBinding( DefaultParameterSetName="User",
-                  PositionalBinding=$False 
-  )]
-  [OutputType([System.Collections.Hashtable[]])]
-  Param(  [parameter( Mandatory,
-                      Position=0,
-                      ValueFromPipeline,
-                      ValueFromPipelineByPropertyName,
-                      HelpMessage="Name of environment variable. Accepts wildcards." )]
-          [string[]]
-          $Name,
-
-          [parameter( ParameterSetName="Machine",
-                      Mandatory,
-                      HelpMessage="Get environment variable from Machine context" )]
-
-          [switch]
-          $Machine,
-
-          [parameter( ParameterSetName="User",
-                      Mandatory=$False,
-                      HelpMessage="Get environment variable from current User context" )]
-          [switch]
-          $User,
-
-          [parameter( ParameterSetName="User",
-                      Mandatory=$False,
-                      HelpMessage="Get values from Volatile Environment branch of User context" )]
-          [switch]
-          $Volatile
-  )
-
-
-  Begin {
-
-    if ($User -eq $Machine) {  
-      $User = !$User
-      Write-Verbose "-Machine is $Machine, so I change -User from $(!$User) to $User"
-      Write-Verbose "This is possible only when PScmdlet.ParameterSetName is User, so I check: ""$($PScmdlet.ParameterSetName)"""
-    }
-    Write-Verbose "Executing command Get-Environment -Name $Name -Machine:$Machine -User:$User -Volatile:$Volatile"
-    $RegistryKey = $null
-
-    switch ($Machine) {
-
-      $False { 
-                $Key = 'Environment'
-                if ($Volatile) {
-                  $Key = 'Volatile ' + $Key
-                }
-                $RegistryKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::CurrentUser,  
-                    [Microsoft.Win32.RegistryView]::Default
-                ).OpenSubKey($Key, $true)
-                $Key = 'HKCU\' + $Key
-      }
-
-      $True { 
-                $Key = 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
-                $RegistryKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                     [Microsoft.Win32.RegistryHive]::LocalMachine, 
-                     [Microsoft.Win32.RegistryView]::Default 
-                ).OpenSubKey($Key, $false)
-                $Key = 'HKLM\' + $Key
-      }
-
-    }
-    Write-Verbose "Registry path to query variables from: $Key"
-    if ($RegistryKey -eq $null) {
-      Write-Error "Cannot open registry Key $RegistryKey"
-      Throw 1
-    }
-  }
-
-  Process {
-    ForEach ($envName in $Name) {
-      $isWild = [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($envName)
-      if ($isWild) {
-        $envNames = $RegistryKey.GetValueNames() | Where { $_ -like $envName }
-        Write-Verbose "Wildcard found in ${envName} item: replacing with array of $($envNames.Length) items"
-        ForEach ($smallName in $envNames) {
-          $value = $RegistryKey.GetValue(
-            $smallName, $null,
-            [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames
-          )
-          Write-Verbose "Variable found: Name = $smallName ; Value = $value"
-          Write-Output @{ $smallName = $value }
-        }
-      } else {
-        $value = $RegistryKey.GetValue(
-            $envName, $null,
-            [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames
-        )
-        Write-Verbose "Variable found: Name = $envName ; Value = $value"
-        Write-Output @{ $envName = $value }
-      }
-    }
-  }
-
-  End {
-  }
-
-}
 
 
 
-function Send-EnvironmentChanges() {
+function Send-EnvironmentChanges {
 
   if (-not ("Win32.NativeMethods" -as [Type])) {
     # import sendmessagetimeout from win32
@@ -465,16 +264,7 @@ function Send-EnvironmentChanges() {
 
 
 
-function Get-EnvironmentVariable ($name, $scope='User') {
-  return (_Get-RegistryKey $scope).GetValue(
-    $name, $null,
-    [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames
-  )
-}
-
-
-
-function Set-EnvironmentVariable ($name, $text, $scope='User', $Expand=$true) {
+function Set-EnvironmentVariable ([string]$name, [string]$text, [EnvironmentScopeType]$scope='User', [boolean]$Expand=$True) {
   if ($Expand) {
     $_type = [Microsoft.Win32.RegistryValueKind]::ExpandString
   } else {
@@ -488,8 +278,9 @@ function Set-EnvironmentVariable ($name, $text, $scope='User', $Expand=$true) {
 
 function Set-Environment {
 
+  #region Set-Environment Parameters
   [CmdletBinding( DefaultParameterSetName="User",
-                  PositionalBinding=$False 
+                  PositionalBinding=$False
   )]
   Param(
     [parameter( Mandatory,
@@ -512,12 +303,12 @@ function Set-Environment {
     [switch]
     $User
   )
-
+  #endregion
 
 
   Begin{}
- 
-                                                          
+
+
   Process{
 
 
@@ -529,69 +320,13 @@ function Set-Environment {
 
 
 
-function Remove-EnvironmentVariable ($name, $scope='User') {
-  (_Get-RegistryKey $scope).DeleteValue($name)
+function Remove-EnvironmentVariable ([string]$name, [EnvironmentScopeType]$scope='User') {
+  (Get-RegistryKey $scope).DeleteValue($name)
 }
 
 
 
-function Get-RegistryKey {
-  [CmdletBinding()]
-  Param(
-    [parameter( ParameterSetName="Machine",
-                Mandatory,
-                HelpMessage="Get environment variable from Machine context" )]
-    [switch]
-    $Machine,
-    [parameter( ParameterSetName="User",
-                Mandatory=$False,
-                HelpMessage="Get environment variable from current User context")]
-    [switch]
-    $User
-  )
-
-  Begin {}
-
-  Process {
-    switch (!$Machine) {
-        $True {  return [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::CurrentUser,  
-                    [Microsoft.Win32.RegistryView]::Default
-                ).OpenSubKey('Environment', $true)
-        }
-        $False { return [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::LocalMachine, 
-                    [Microsoft.Win32.RegistryView]::Default 
-                  ).OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment', $true)
-        }
-        default { throw 'getRegistryKey: Scope parameter should be either "Machine" or "User"' }
-    }
-  }
-
-  End {
-  }
-}
-
-
-
-<#
-function script:_Get-RegistryKey($scope='User') {
-    switch ($scope.ToLower()) {
-        user {  return [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::CurrentUser,  
-                    [Microsoft.Win32.RegistryView]::Default
-                ).OpenSubKey('Environment', $true)
-        }
-        machine { return [Microsoft.Win32.RegistryKey]::OpenBaseKey( 
-                    [Microsoft.Win32.RegistryHive]::LocalMachine, 
-                    [Microsoft.Win32.RegistryView]::Default 
-                  ).OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment', $true)
-        }
-        default { throw 'getRegistryKey: Scope parameter should be either "Machine" or "User"' }
-    }
-} #>
-
-New-Alias -Name get-env Get-EnvironmentVariable
-#New-Alias -Name ge      Get-Environment
-New-Alias -Name set-env Set-EnvironmentVariable
-New-Alias -Name del-env Delete-EnvironmentVariable
+New-Alias -Name genv  Get-Environment
+New-Alias -Name ge    Get-Environment
+New-Alias -Name senv  Set-Environment
+New-Alias -Name rmenv Remove-EnvironmentVariable

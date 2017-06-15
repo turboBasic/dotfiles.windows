@@ -61,16 +61,16 @@
   NestedModules = @()
 
   # Functions to export from this module
-  FunctionsToExport = '*'
+  FunctionsToExport = @('Get-Environment', 'Set-Environment', 'Send-EnvironmentChanges', 'Remove-EnvironmentVariable')
 
   # Cmdlets to export from this module
-  CmdletsToExport = '*'
+  CmdletsToExport = ''
 
   # Variables to export from this module
   VariablesToExport = ''
 
   # Aliases to export from this module
-  AliasesToExport = '*'
+  AliasesToExport = @('genv', 'ge', 'senv', 'rmenv')
 
   # List of all modules packaged with this module
   ModuleList = @()
