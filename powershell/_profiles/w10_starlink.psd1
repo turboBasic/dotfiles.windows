@@ -1,31 +1,32 @@
 # System Base
 @{
-  SystemDrive='C:';                              # convert to lowercase
-  SystemRoot='%SystemDrive%\Windows';
-  ProgramData='%SystemDrive%\ProgramData';
-  ProgramFiles='%SystemDrive%\Program Files';
-  ProgramFiles(x86)='%ProgramFiles% (x86)';
-  CommonProgramFiles='%ProgramFiles%\Common Files';
-  CommonProgramFiles(x86)='%ProgramFiles(x86)\Common Files';
-  PUBLIC='%UserFolder%\Public';
-  ProgramW6432='%ProgramFiles%';
+  _SystemDrive='C:';                              # convert to lowercase
+  _SystemRoot='%_SystemDrive%\\Windows';
+  _ProgramData='%_SystemDrive%\\ProgramData';
+  _ProgramFiles='%_SystemDrive%\\Program Files';
+  _ProgramFiles(x86)='%_ProgramFiles% (x86)';
+  _CommonProgramFiles='%_ProgramFiles%\\Common Files';
+  _CommonProgramFiles(x86)='%_ProgramFiles(x86)%\\Common Files';
+  _PUBLIC='%_ProfilesDirectory%\\Public';
+  _ProgramW6432='%_ProgramFiles%';
 #------------------------------------------
-  ComSpec='%SystemBin%\cmd.exe';
+  _ComSpec='%_SystemBin%\cmd.exe';
 }
 
 # System additional 
 @{
-  Profiles='\Users';
-  ProfilesDirectory='%SystemDrive%\%Profiles%';
+  _Profiles='\Users';
+  _ProfilesDirectory='%_SystemDrive%\%_Profiles%';
   
 #--------------------------------------
-  PSHome='%SystemBin%\WindowsPowerShell\v1.0';
-  PSModulePath='%ProgramFiles%\WindowsPowerShell\Modules;%PSHome%\Modules';
-  Path='%SystemBin%;%SystemRoot%;%SystemBin%\Wbem;%PSHome%';
-  SystemBin='%SystemRoot%\System32';
-  TEMP='%SystemRoot%\TEMP';
+  _PSHome='%_SystemBin%\WindowsPowerShell\v1.0';
+  _PSModulePath='%_ProgramFiles%\WindowsPowerShell\Modules;%_PSHome%\Modules';
+  _Path='%_SystemBin%;%_SystemRoot%;%_SystemBin%\Wbem;%_PSHome%';
+  _SystemBin='%_SystemRoot%\System32';
+  _TEMP='%_SystemRoot%\TEMP';
 }
 
+<#
 # User Base
 @{
   UserName='...';
@@ -107,5 +108,5 @@
     USERPROFILE='C:\Users\mao';
 }
 
-
+#>
 
