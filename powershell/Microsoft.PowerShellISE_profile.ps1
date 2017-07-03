@@ -1,7 +1,34 @@
+function loadProfile {
+    $globalVars = 'GlobalVariables.ps1'
+    $savedVerbosePreference = $VerbosePreference
+    $VerbosePreference = 'Continue'
 
-#Module Browser Begin
-#Version: 1.0.0
-Add-Type -Path 'C:\Program Files (x86)\Microsoft Module Browser\ModuleBrowser.dll'
-$moduleBrowser = $psISE.CurrentPowerShellTab.VerticalAddOnTools.Add('Module Browser', [ModuleBrowser.Views.MainView], $true)
-$psISE.CurrentPowerShellTab.VisibleVerticalAddOnTools.SelectedAddOnTool = $moduleBrowser
-#Module Browser End
+    $s = @($PSScriptRoot, "$PSScriptRoot/_profiles", '.') | %{ Convert-Path "$_/$globalVars" -ErrorAction SilentlyContinue } | ? { Test-Path $_ } | Select -First 1
+    if($s) {
+        Write-Verbose 'Global Variables found -- setting them up...'
+        . $s
+        Set-GlobalVariables
+    } else {
+        Write-Error 'Global Variables are not set -- file GlobalVariables.ps1 not found'
+        if ($__profile -eq $null) {
+            $VerbosePreference = $savedVerbosePreference 
+            Break 
+        }
+    }
+
+    $addonDir = 'ISE_profile'
+    $sourceBaseDir = "$__projects/dotfiles.windows/powershell/$addonDir"
+    Write $sourceBaseDir
+    Copy-Item -Recurse -filter *.ps1 -Force $sourceBaseDir "$__profileDir/" 
+
+    $includes = @(
+      "$__profileDir/$addonDir/*.ps1"
+    )
+
+    $includes | %{ Convert-Path $_ } | %{ . $_ }
+    $VerbosePreference = $savedVerbosePreference
+}
+
+loadProfile
+
+

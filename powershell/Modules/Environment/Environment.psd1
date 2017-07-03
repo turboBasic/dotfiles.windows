@@ -3,7 +3,7 @@
   RootModule = 'Environment.psm1'
 
   # Version number of this module.
-  ModuleVersion = '1.0.1'
+  ModuleVersion = '1.0.5'
 
   # ID used to uniquely identify this module
   GUID = '59aa5901-f7fa-4f03-b0db-b6156cb3807a'
@@ -61,7 +61,7 @@
   NestedModules = @()
 
   # Functions to export from this module
-  FunctionsToExport = @('Get-Environment', 'Set-Environment', 'Send-EnvironmentChanges', 'Remove-EnvironmentVariable', 'Get-RegistryKey')
+  FunctionsToExport = '*'
 
   # Cmdlets to export from this module
   CmdletsToExport = ''
@@ -70,13 +70,15 @@
   VariablesToExport = ''
 
   # Aliases to export from this module
-  AliasesToExport = @('genv', 'ge', 'senv', 'se', 'rmenv')
+  AliasesToExport = '*'
 
   # List of all modules packaged with this module
   ModuleList = @()
 
   # List of all files packaged with this module
-  FileList = @('Environment.psm1', 'Environment.psd1')
+  FileList = @('Environment.psm1', 'Environment.psd1', 'include\Variables.ps1', 'include\RegistryFunctions.ps1', 
+  'include\Set-UserEnvironment', 'include\Set-MachineEnvironment', 'include\Set-Environment.ps1', 
+  'include\Get-Environment.ps1', 'include\expandNameInScope' )
 
   # Private data to pass to the module specified in ModuleToProcess
   PrivateData = ''

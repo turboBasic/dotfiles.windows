@@ -1,147 +1,207 @@
-### Version: 0.3.0
-#Requires -Modules Environment
-
-#region Setting messages
-$__messages = @{
-  welcome       = "Entering User profile script $profile ..."
-}
-#endregion
-
+﻿### Version: 0.3.0
+#~~~Requires -Modules Environment
 
 #region Public functions declaration
 
-Function cppr { Copy-Item $__profileSource -Destination $__profileDir -Force -Verbose }
+Function loadLocalisation([string]$language='en-US') {
 
+#region Localized messages
 
-Function cpModules {
-  $__modules = @{
-    "Commands"    = "$__projects/dotfiles.windows/Powershell/Modules/Commands"
-    "Environment" = "$__projects/dotfiles.windows/Powershell/Modules/Environment"
-    "UtilsScoop"   = "$__projects/dotfiles.windows/Powershell/Modules/UtilsScoop"
+$assets = DATA -supportedCommand ConvertFrom-Json {
+ConvertFrom-Json -InputObject @'
+  {
+    "languages":  [
+      "en-US",
+      "uk-UA"
+    ],
+    "messages": {
+        "uk-UA":  {
+            "moduleSuccess":       "УСПІХ: {0} завантажено",
+            "moduleLoading":       "Завантаження: {0}",
+            "localisation":        "Підключається локалізація {0} ...",
+            "moduleFailure":       "ПОМИЛКА: Неможливо знайти {0} ...",
+            "exit":                "До побачення!",
+            "errorLocalisation":   "Мову з кодом {0} не знайдено, буде використано мову {1}",
+            "welcome":             "Початок роботи скріпту профіля користувача ..."
+        },
+        "en-US":  {
+            "moduleSuccess":       "SUCCESS: {0} loaded",
+            "moduleLoading":       "Loading: {0}",
+            "localisation":        "Localisation {0} loading...",
+            "moduleFailure":       "FAILURE: Sorry, no {0} found...",
+            "exit":                "Good-bye!",
+            "errorLocalisation":   "Language {0} not found, using {1} instead",
+            "welcome":             "Entering User profile script $profile ..."
+        }
+    }
   }
-  $__destination = "$profileDir/Modules"
-
-  $__modules.Keys | %{
-    Write-Verbose "Copy $($__modules[$_]) to $__destination..."
-    Copy-Item $__modules[$_] $__destination -Recurse -Force
-  }
-
+'@
 }
 
+#endregion
 
-Function loadModules {
+  Set-Variable __defaultLanguage -Scope Global -Value $assets.languages[0]        # en-US 
+  Set-Variable __currentLanguage -Scope Global -Value $assets.languages[0]
+  New-Variable __messages        -Scope Global
 
-  #region Setting messages
+  $isDefault = $language -eq $Global:__defaultLanguage
+  $isValid   = $language -in $assets.languages
+  $Global:__messages = $assets.messages.$Global:__currentLanguage
 
-  # Messages
-  $__messages = @{
-    moduleLoading = "Loading: {0}"
-    moduleSuccess = "SUCCESS: {0} loaded"
-    moduleFailure = "FAILURE: Sorry, no {0} found..."
+  if (-Not $isValid) {
+    $Global:__messages.errorLocalisation -f $language, $Global:__currentLanguage | Write-Error
+  } else { 
+    $Global:__currentLanguage = $language 
   }
 
-  # Vendor & user modules
-  $__modules = @{
-    "Chocolatey module"="$env:ChocolateyInstall/helpers/chocolateyProfile.psm1"
-    "User module Commands"="$profileDir/Modules/Commands/Commands"
-    "User module Environment"="$profileDir/Modules/Environment/Environment"
-    "User module UtilsScoop"="$profileDir/Modules/UtilsScoop/UtilsScoop"
-  }
-  #endregion
-
-  $__modules.Keys | % {
-    if (Test-Path $__modules[$_])
-      { $m = $__modules[$_] }
-    else
-      { $m = Split-Path -Leaf $__modules[$_] }
-
-    Write-Verbose ($__messages.moduleLoading -f $_)
-    Import-Module -force $m
-
-    if( $? )
-      { Write-Verbose ($__messages.moduleSuccess -f $_) }
-    else
-      { Write-Verbose ($__messages.moduleFailure -f $_) }
-  }
-
-  $_pshazz = "Pshazz"
-  Write-Verbose ($__messages.moduleLoading -f $_pshazz)
-  Try   { $null = gcm pshazz -ea stop; pshazz init 'default';  Write-Verbose ($__messages.moduleSuccess -f $_pshazz) }
-  Catch { Write-Verbose ($__messages.moduleFailure -f $_pshazz) }
+  $Global:__messages.localisation -f $Global:__currentLanguage | Write-Verbose
 }
 
 
 Function loadEnvironmentVariables {
-  $environmentScript = "Set-Environment.ps1"
-  Write-Verbose "Sourcing $environmentScript..."
-
-  if (Test-Path "$profileDir/$environmentScript")
-    { . "$profileDir/$environmentScript" }
-  else
-    { Write-Verbose "Sorry, no $environmentScript script found..." }
+  Set-MachineEnvironment
+  Set-UserEnvironment
 }
 
 
+Function copyModules {
+  $From = Convert-Path "$__projects/dotfiles.windows/Powershell/Modules"
+  $To = Convert-Path "$__profileDir/Modules"
+  $ExcludeFolderMatch = '.git'
+  write-verbose $From
+  write-verbose $To
+
+  Copy-Tree -from $From -to $To -excludeFolderMatch $ExcludeFolderMatch
+}
+
+
+Function loadModules {
+  $modules = @{
+    'Vendor module Chocolatey' = "$ENV:ChocolateyInstall/helpers/chocolateyProfile.psm1"
+    'User module Commands'     = "$__profileDir/Modules/Commands"
+    'User module Environment'  = "$__profileDir/Modules/Environment"
+    'User module UtilsScoop'   = "$__profileDir/Modules/UtilsScoop"
+    'User module Test'         = "$__profileDir/Modules/Test"
+  }
+
+  $modules.Keys | % {
+    if(-Not( Test-Path ($m = $modules.$_) )) { 
+      $m = Split-Path -Leaf $m 
+    }
+
+    $__messages.moduleLoading -f $_ | Write-Verbose
+    Import-Module $m -Force
+    $( if ($?) 
+        { $__messages.moduleSuccess }
+      else                       
+        { $__messages.moduleFailure } ) -f $_ | Write-Verbose
+  }
+}
+
+
+$loadFunctions = {
+
+    Function Global:cppr { Copy-Item -LiteralPath $__profileSource -Destination $__profileDir -Force -Verbose }
+
+    Function Global:g2pr { Push-Location $__profileDir }
+
+    Function Global:New-7zpath([string]$Path) { 
+      $parentDir = Split-Path -Parent $Path
+      $files = $Path + '\*'
+      $archiveName = $parentDir + '\' + (Split-Path -Leaf $Path) + '-FullPaths.7z'
+      Invoke-Expression "7z a -spf2 -myx -mx $archiveName $files" 
+    }
+
+    Function Global:Get-InfoVariables {
+      Get-Variable | Format-Table -Property Name, Options -Autosize
+    }
+
+    'loading functions...' | Write-Verbose
+}
+
+$loadAliases = {
+  'Creating aliases...' | Write-Verbose
+  New-Alias 7zpath New-7zpath        -Force -Scope Global
+  New-Alias ginfo  Get-InfoVariables -Force -Scope Global
+}
+
 Function loadProfile {
 
-  Function createUserSymlink {
-    $_users = Resolve-Path "~\.."
-    if ( !(Test-Path( Join-Path $_users $__user )) ) {
-      Write-Verbose "Creating symlink directory $userAlias\ in $_users ..."
-      New-SymLink -Path $env:USERPROFILE -SymName $userAlias -Directory
+  #region local functions declarations
+
+    Function createUserSymlink {
+      $_users = Resolve-Path '~\..'
+      if ( !(Test-Path( Join-Path $_users $__userName )) ) {
+        Write-Verbose "Creating symlink directory $__userName\ in $_users ..."
+        New-SymLink -Path $ENV:USERPROFILE -SymName $__userName -Directory
+      }
     }
-  }
 
+    Function applyRegistryTweaks {
+      Write-Verbose 'Applying some registry tweaks...'
 
-  Function applyRegistryTweaks {
-    Write-Verbose "Applying some registry tweaks..."
+$Registrycommands = @'
+﻿Windows Registry Editor Version 5.00
 
-    # Hide some icons from Explorer
-    , "HideIconsFromThisPC.reg" | % {
-      if (Test-Path ".\$_")
-        { cmd /c regedit.exe /s $_ }
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag]
+"ThisPCPolicy"="Hide"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag]
+"ThisPCPolicy"="Hide"
+'@
+
+      # Hide some icons from Explorer
+      , 'HideIconsFromThisPC.reg'  |  
+          Where-Object{ Test-Path ".\$_" }  |  
+          Foreach-Object{ cmd /c regedit.exe /s $_ }
     }
-  }
 
+    Function loadThemes {
+      #    Write-Verbose "Sourcing Solarized color theme files..."
+      #    . (Join-Path -Path $profileDir -ChildPath $(switch($HOST.UI.RawUI.BackgroundColor.ToString()){'White'{'Set-SolarizedLightColorDefaults.ps1'}'Black'{'Set-SolarizedDarkColorDefaults.ps1'}default{return}}))
+    }
 
-  Function loadThemes {
-    Write-Verbose "Sourcing Solarized color theme files..."
-    . (Join-Path -Path $profileDir -ChildPath $(switch($HOST.UI.RawUI.BackgroundColor.ToString()){'White'{'Set-SolarizedLightColorDefaults.ps1'}'Black'{'Set-SolarizedDarkColorDefaults.ps1'}default{return}}))
-  }
+    # TODO Update-Help make once a day
+    Function updateHelpFiles {
+      $params = @{ 
+        Name = 'UpdateHelpJob'
+        Credential = "${ENV:ComputerName}\${ENV:UserName}"
+        ScriptBlock = {
+          $tagFile = Join-Path $profileDir '.updateHelpFiles'
+          Update-Help
+          if ($?) { Set-FileTime $tagFile }
+          else    { Set-FileTime "${tagFile}_fail"  }
+        };
+        Trigger = (New-JobTrigger -Daily -At '3 AM')
+      }
 
+      if (!(Get-ScheduledJob -Name UpdateHelpJob)) {
+        Register-ScheduledJob @params
+      }
+    }
 
-  # TODO Update-Help make once a day
-  Function Private:updateHelpFiles {
-    Write-Verbose "Updating help files..."
-    Start-Job -ScriptBlock { Update-Help }       # | out-null
-  }
-
-
-  #region Setting initial values
-  $__assets = @{
-    user          = "mao"
-    projectDir    = $env:projects
-    profileSource = "$env:projects/dotfiles.windows/powershell/Microsoft.PowerShell_profile.ps1"
-  }
-
-  $Global:__user =          $__assets.user
-  $Global:__projects =      $__assets.projectDir
-  $Global:__p =             $__assets.projectDir
-  $Global:__profileSource = $__assets.profileSource
-
-  $Global:__profileDir = $Global:profileDir = Split-Path -parent $profile
-
-  # "SilentlyContinue", "Inquiry", "Stop"
-  $Global:VerbosePreference = "Continue"
   #endregion
 
-
+  copyModules
   loadModules
   createUserSymlink
-  applyRegistryTweaks
   loadEnvironmentVariables
   loadThemes
+  applyRegistryTweaks
   updateHelpFiles
+  . $loadFunctions
+  . $loadAliases
+
+  #region initialize pshazz (if installed)
+    $pshazz = 'Pshazz'
+    $__messages.moduleLoading -f $pshazz | Write-Verbose
+    $(  Try   { $null = Get-Command pshazz -ErrorAction Stop
+                pshazz init 'default'
+                $__messages.moduleSuccess 
+              }
+        Catch { $__messages.moduleFailure } 
+    )  -f $pshazz | Write-Verbose
+  #endregion
 }
 
 #endregion
@@ -149,9 +209,25 @@ Function loadProfile {
 
 #region Execution
 
-Write-Host $PSVersionTable.PSVersion.ToString()
-Write-Host $__messages.welcome
+  loadLocalisation 'uk-UA'
+  Write-Host $PSVersionTable.PSVersion.ToString()
+  Write-Host $__messages.welcome
 
-loadProfile
+  #region Set Global Variables
+
+    $scriptPath = @($psScriptRoot, '.') | 
+          ForEach-Object { Convert-Path "$_/_profiles/GlobalVariables.ps1" } | 
+              Where-Object { Test-Path $_ } | Select -First 1
+
+    if($scriptPath) {
+      . $scriptPath
+      Set-GlobalVariables
+    } else {
+      Write-Error "Global Variables are not set -- file GlobalVariables.ps1 not found.  Most probably scripts, modules and other stuff won't work"
+    }
+
+  #endregion
+
+  loadProfile
 
 #endregion

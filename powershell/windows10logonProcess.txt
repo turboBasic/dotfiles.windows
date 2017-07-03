@@ -1,0 +1,84 @@
+#     <br> Windows 10 logon sequence
+           short version
+
+
+
+##    <br> Termins used and other defaults
+
+-  this document is based on mostly on Windows Powershell 3+ technology so run the commands in Powershell unless mentioned otherwise
+-  paths used in this document use forward slash as this needs escaping less frequently, is in line with Linux world and because I like it better
+-  $somename or $ENV:someOtherName or ${ENV:some name with spaces} are Powershell variables. ENV: prefix means that this is environment variable which is most probably was created by Windows during logon and most probably it will be automatically created every time a user starts PC and logs in.  This is similar to what %variable% did in Command Prompt a.k.a. cmd.exe, but with chain-saw and LSD, so be warned. NB: Unlike in Linux, Powershell variable names are case-ignorant.
+
+
+##    <br> Utilities
+
+- `gpedit.msc`      Local Group policy editor: this is where you set policies both for computer and all local users. Local analogue of AD Group policy with greatly reduced but still powerfull set of capabilities
+- `rsop.msc`        Resulted Set of Policies: Check final set of policies applied to your current session
+- `taskschd.msc`    Task Scheduler GUI
+- `mmc.exe`         Management console which can open *.msc applets
+
+Use mentioned above utilities or `$ENV:dropbox/---/mao_management_console.msc` which is pre-configured set of mmc snap-ins
+
+
+##    <br> Where are my logon scripts? (non-AD edition)
+
+Your PC may (or may not) run the scripts in the following locations"
+
+- Anything configured in Task Scheduler and triggered by the following events:
+
+    * At startup  - triggers when computer starts and before any users logs in
+    * On logon    - triggers when specific or any user logs in his/her account
+
+- `$profile` which usually points to `$ENV:USERPROFILE/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1`  - starts when user launches Powershell console
+- TODO mention Powershell ISE profile
+- TODO add other Powershell scripts: AllHostsAllUsers, AllHostsCurrentUser, CurrentHostAllUsers etc.
+
+- Scripts placed in "Startup folders" in the file system
+    * `${ENV:PUBLIC}/Microsoft/Windows/Start Menu/Programs/Startup`
+    * `${ENV:APPDATA}/Microsoft/Windows/Start Menu/Programs/Startup`
+
+- Scripts configured in Registry
+    * `HKLM:SOFTWARE/Microsoft/Windows/CurrentVersion/Run`
+    * `HKLM:SOFTWARE/Microsoft/Windows/CurrentVersion/RunOnce`
+    * `HKLM:SOFTWARE/WOW6432Node/Microsoft/Windows/CurrentVersion/Run`
+    * `HKLM:SOFTWARE/WOW6432Node/Microsoft/Windows/CurrentVersion/RunOnce`
+    * `HKCU:Software/Microsoft/Windows/CurrentVersion/Run`
+    * `HKCU:Software/Microsoft/Windows/CurrentVersion/RunOnce`
+Actually the following will be launched as well but we will ignore this fact otherwise we all die before accomplishing our task:
+    * `HKCR/*/shell`
+    * `HKCR/*/shellex/ContextMenuHandlers`
+    * `HKCR/AllFilesystemObjects/shellex`
+    * `HKLM:SOFTWARE/Classes/*/ShellEx/ContextMenuHandlers`
+    * `HKLM:SOFTWARE/Classes/*/ShellEx/PropertySheetHandlers`
+    * `HKLM:SOFTWARE/Classes/Directory/Background/ShellEx/ContextMenuHandlers`
+    * `HKLM:SOFTWARE/Classes/Directory/ShellEx/PropertySheetHandlers`
+    * `HKLM:SOFTWARE/Classes/Directory/ShellEx/ContextMenuHandlers`
+    * `HKLM:SOFTWARE/Classes/Directory/ShellEx/CopyHookHandlers`
+    * `HKLM:SOFTWARE/Classes/Directory/ShellEx/DragDropHandlers`
+    * `HKLM:SOFTWARE/Classes/Folder/ShellEx/ContextMenuHandlers`
+    * `HKLM:SOFTWARE/Classes/Folder/ShellEx/ColumnHandlers`
+    * `HKLM:SOFTWARE/Classes/Folder/ShellEx/DragDropHandlers`
+    * `HKLM:SOFTWARE/Classes/Protocols/Filter`
+    * `HKLM:SOFTWARE/Classes/Protocols/Handler`
+    * `HKLM:SOFTWARE/Microsoft/Windows/CurrentVersion/Explorer/ShellIconOverlayIdentifiers`
+    * `HKLM:SOFTWARE/Wow6432Node/Classes/Protocols/Filter`
+    * `HKLM:SOFTWARE/Wow6432Node/Classes/Protocols/Handler`
+    * `HKLM:SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Explorer/ShellIconOverlayIdentifiers`
+
+    The funny part of the story is that there are some other mostly random placed where startup code can exist and that if you change something in these registry location you are basically screwed up.  If you are lucky - your PC will become hardly usable immediately but if you are not - your Windows will die slowly in painfull and disgusting agony so that you will slowly get used to degrading performance, broken menu items in File Explorer, weird error dialogs during start up and sp forth.  Because this process is slow and well-orchestrated by windows kernel with military-grade reliability you will experience fear, uncertainty, false hopes, doubt for prolonged period of time before one day you will format c: and start this Karma wheel once again.
+
+
+- Scripts configured in Local Group policy and usually located at 
+    * `$ENV:SystemRoot/System32/GroupPolicy/Machine/Scripts/Startup` &mdash; startup scripts launched when computer power on and before any user logs in
+    * `$ENV:SystemRoot/System32/GroupPolicy/User/Scripts/Logon`      &mdash; logon scripts launched when any user logs in
+  Actually unlike "Startup folder" these locations are just default ones and scripts which are going to be launched are configured in Local Group policy in the following locations correspondingly:
+    * Local Computer Policy / Computer Configuration / Windows Settings / Scripts (Startup/Shutdown) / Startup
+    * Local Computer Policy / User Configuration / Windows Settings / Scripts (Startup/Shutdown) / Startup   
+
+
+Startup scripts are run under the Local System account, and they have the full rights that are associated with being able to run under the Local System account.
+
+Logon scripts are run as User, not Administrator, and their rights are limited accordingly.
+
+startup scripts that are run asynchronously will not be visible. Enabling the Run Startup Scripts Visible policy setting will have no effect when running startup scripts asynchronously.
+

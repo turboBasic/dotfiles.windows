@@ -3,7 +3,7 @@
   RootModule = 'Commands.psm1'
 
   # Version number of this module.
-  ModuleVersion = '1.0.1'
+  ModuleVersion = '1.1.0'
 
   # ID used to uniquely identify this module
   GUID = '4123ac51-202e-4b9b-8573-9e20e6d2062c'
@@ -76,7 +76,12 @@
   ModuleList = @()
 
   # List of all files packaged with this module
-  FileList = @('Commands.psm1', 'Commands.psd1')
+  FileList = @('Commands.psm1', 'Commands.psd1', 'include\Add-FileDetails.ps1', 'include\Add-SmartMargin.ps1', 
+'include\ConvertTo-Hashtable.ps1', 'include\Copy-Tree.ps1', 'include\Expand-HashtableSelfReference.ps1',
+'include\Get-ConsoleColor.ps1', 'include\Get-EnvironmentPath.ps1', 'include\Get-GistMao.ps1', 'include\Get-GuiHelp.ps1', 
+'include\Get-HelpWindow.ps1', 'include\Get-SpecialFolders.ps1', 'include\Get-StringHash.ps1', 'include\IsNull.ps1', 
+'include\Merge-Hashtables.ps1',  'include\New-Shortcut.ps1', 'include\New-SymLink.ps1', 'include\Set-FileTime.ps1', 
+'include\Write-VariableDump.ps1')
 
   # Private data to pass to the module specified in ModuleToProcess
   PrivateData = ''
