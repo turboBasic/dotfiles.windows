@@ -1,0 +1,104 @@
+﻿
+Key                         Value                                                                                      
+---                         -----                                                                                      
+..homeDrive                 C:                                                                                         
+..homePath                  \users\mao                                                                                 
+..psHome                    C:\WINDOWS\system32\windowsPowerShell\v1.0                                                 
+..psProfileDir              C:\users\mao\documents\windowsPowerShell                                                   
+..scoop                     C:\users\mao\scoop                                                                         
+..scoopGlobal               C:\programData\scoop                                                                       
+..systemBin                 C:\WINDOWS\system32                                                                        
+..tools                     C:\tools                                                                                   
+..userName                  mao                                                                                        
+..userRoot                  \users                                                                                     
+~~%systemROOT%\system32     systemBin                                                                                  
+~~C:                        systemROOT                                                                                 
+ALLUSERSPROFILE             C:\ProgramData                                                                             
+APPDATA                     C:\Users\mao\AppData\Roaming                                                               
+choco                       C:\programData\chocolatey                                                                  
+ChocolateyInstall           C:\programData\chocolatey                                                                  
+ChocolateyLastPathUpdate    Tue Apr 11 18:59:00 2017                                                                   
+chocolateyToolsLocation     C:\tools                                                                                   
+chocoPath                   C:\programData\chocolatey\bin                                                              
+cmder                       C:\tools\cmderMini                                                                         
+CMDER_INSTALL_DIR           c:\tools\cmder                                                                             
+cmder_Root                  c:\tools\cmder                                                                             
+cmderPath                   C:\tools\cmderMini;C:\tools\cmderMini\bin;C:\tools\cmderMini\vendor\conemu-maximus5;C:\tool
+                            s\cmderMini\vendor\conemu-maximus5\conemu                                                  
+CommonProgramFiles          C:\Program Files\Common Files                                                              
+CommonProgramFiles(x86)     C:\Program Files (x86)\Common Files                                                        
+CommonProgramW6432          C:\Program Files\Common Files                                                              
+COMPUTERNAME                BIGBLACK                                                                                   
+ComSpec                     C:\WINDOWS\system32\cmd.exe                                                                
+ConEmuDir                   c:\tools\cmder\vendor\conemu-maximus5                                                      
+Dropbox                     C:\dropbox                                                                                 
+DROPBOX_HOME                C:\dropbox                                                                                 
+git                         c:\tools\git-sdk-64                                                                        
+git_Install_Root            c:\tools\git-sdk-64                                                                        
+githubGist                  https://api.github.com/users/TurboBasic/gists                                              
+githubUser                  TurboBasic                                                                                 
+gitPath                     %PROGRAMFILES%\git\cmd;%PROGRAMFILES%\git;%PROGRAMFILES%\git\mingw64\bin;%PROGRAMFILES%\git
+                            \usr\bin                                                                                   
+HOMEDRIVE                   C:                                                                                         
+HOMEPATH                    \Users\mao                                                                                 
+JAVA_HOME                   c:\Program Files\Java\jdk1.8.0_121                                                         
+junkPath                    %PROGRAMFILES(X86)%\skype\phone;%PROGRAMFILES(X86)%\brackets\command;%PROGRAMFILES%\microso
+                            ft SQL Server\130\tools\binn;C:\ProgramData\oracle\java\javapath                           
+kdiff3                      %PROGRAMFILES%\kdiff3                                                                      
+Laragon                     d:\laragon                                                                                 
+LOCALAPPDATA                C:\Users\mao\AppData\Local                                                                 
+LOGONSERVER                 \\BIGBLACK                                                                                 
+MSYS                        c:\tools\git-sdk-64                                                                        
+nodePath                    C:\users\mao\scoop\apps\nvm\current\nodeJs                                                 
+notepad++                   C:\ProgramData\scoop\apps\notepadplusplus\current\notepad++.exe                            
+NUMBER_OF_PROCESSORS        2                                                                                          
+NVM_HOME                    C:\users\mao\scoop\apps\nvm\current                                                        
+NVM_SYMLINK                 C:\users\mao\scoop\apps\nvm\current\nodeJs                                                 
+OneDrive                    D:\OneDrive                                                                                
+ONEDRIVE_HOME               D:\OneDrive                                                                                
+OS                          Windows_NT                                                                                 
+Path                        C:\WINDOWS\System32\GroupPolicy\User\Scripts\Logon;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOW
+                            S\system32\wbem;C:\WINDOWS\system32\windowsPowerShell\v1.0;C:\programData\chocolatey\bin;C:
+                            \programData\scoop\shims;C:\tools\cmderMini;C:\tools\cmderMini\bin;C:\tools\cmderMini\vendo
+                            r\conemu-maximus5;C:\tools\cmderMini\vendor\conemu-maximus5\conemu;%PROGRAMFILES%\git\cmd;%
+                            PROGRAMFILES%\git;%PROGRAMFILES%\git\mingw64\bin;%PROGRAMFILES%\git\usr\bin;C:\users\mao\bi
+                            n;C:\users\mao\scoop\shims;C:\users\mao\scoop\apps\nvm\current\nodeJs;C:\Users\mao\AppData\
+                            Roaming\boxStarter;D:\OneDrive\01_portable_apps;%PROGRAMFILES(X86)%\skype\phone;%PROGRAMFIL
+                            ES(X86)%\brackets\command;%PROGRAMFILES%\microsoft SQL Server\130\tools\binn;C:\ProgramData
+                            \oracle\java\javapath                                                                      
+PATHEXT                     .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL                                 
+PHP_INI_SCAN_DIR            d:\laragon\bin\php\current\ext                                                             
+PHPSTORM_JDK                c:\Program Files\Java\jdk1.8.0_121                                                         
+PROCESSOR_ARCHITECTURE      AMD64                                                                                      
+PROCESSOR_IDENTIFIER        Intel64 Family 6 Model 60 Stepping 3, GenuineIntel                                         
+PROCESSOR_LEVEL             6                                                                                          
+PROCESSOR_REVISION          3c03                                                                                       
+ProgramData                 C:\ProgramData                                                                             
+ProgramFiles                C:\Program Files                                                                           
+ProgramFiles(x86)           C:\Program Files (x86)                                                                     
+ProgramW6432                C:\Program Files                                                                           
+projects                    E:\0projects                                                                               
+PSExecutionPolicyPreference Bypass                                                                                     
+psHome                      C:\WINDOWS\system32\windowsPowerShell\v1.0                                                 
+PSModulePath                C:\users\mao\documents\windowsPowerShell\modules;C:\Users\mao\AppData\Roaming\boxStarter;C:
+                            \Program Files\windowsPowerShell\modules;C:\WINDOWS\system32\windowsPowerShell\v1.0\modules
+psProfileDir                C:\users\mao\documents\windowsPowerShell                                                   
+PUBLIC                      C:\Users\Public                                                                            
+scoop                       C:\Users\mao\scoop                                                                         
+SCOOP_GLOBAL                C:\ProgramData\scoop                                                                       
+SEE_MASK_NOZONECHECKS       1                                                                                          
+systemBin                   C:\WINDOWS\system32                                                                        
+SystemDrive                 C:                                                                                         
+SystemRoot                  C:\WINDOWS                                                                                 
+TEMP                        C:\Users\mao\AppData\Local\temp                                                            
+TMP                         C:\Users\mao\AppData\Local\temp                                                            
+tools                       C:\tools                                                                                   
+UBUNTU                      C:\Users\mao\AppData\Local\lxss\rootfs                                                     
+USERDOMAIN                  BIGBLACK                                                                                   
+USERDOMAIN_ROAMINGPROFILE   BIGBLACK                                                                                   
+USERNAME                    mao                                                                                        
+USERPROFILE                 C:\Users\mao                                                                               
+windir                      C:\WINDOWS                                                                                 
+winPepsiDebug               1                                                                                          
+
+
