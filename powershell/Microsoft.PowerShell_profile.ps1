@@ -3,7 +3,7 @@
 
 #region Public functions declaration
 
-Function loadLocalisation([string]$language='en-US') {
+Function Set-Localisation([string]$language='en-US') {
 
 #region Localized messages
 
@@ -48,30 +48,30 @@ ConvertFrom-Json -InputObject @'
   $isValid   = $language -in $assets.languages
   $Global:__messages = $assets.messages.$Global:__currentLanguage
 
-  if (-Not $isValid) {
-    $Global:__messages.errorLocalisation -f $language, $Global:__currentLanguage | Write-Error
-  } else { 
+  if ($isValid) {
     $Global:__currentLanguage = $language 
+  } else { 
+    $Global:__messages.errorLocalisation -f $language, $Global:__currentLanguage | Write-Error
   }
 
   $Global:__messages.localisation -f $Global:__currentLanguage | Write-Verbose
 }
 
 
-Function loadEnvironmentVariables {
+Function Set-EnvironmentVariables {
   Set-MachineEnvironment
   Set-UserEnvironment
 }
 
 
-Function copyModules {
+Function Copy-AllModules {
   $From = Convert-Path "$__projects/dotfiles.windows/Powershell/Modules"
   $To = Convert-Path "$__profileDir/Modules"
   $ExcludeFolderMatch = '.git'
-  write-verbose $From
-  write-verbose $To
+  Write-Verbose $From
+  Write-Verbose $To
 
-  Copy-Tree -from $From -to $To -excludeFolderMatch $ExcludeFolderMatch
+  Copy-Tree -From $From -To $To -ExcludeFolderMatch $ExcludeFolderMatch
 }
 
 
@@ -84,17 +84,15 @@ Function loadModules {
     'User module Test'         = "$__profileDir/Modules/Test"
   }
 
-  $modules.Keys | % {
+  $modules.Keys | ForEach-Object {
     if(-Not( Test-Path ($m = $modules.$_) )) { 
       $m = Split-Path -Leaf $m 
     }
 
     $__messages.moduleLoading -f $_ | Write-Verbose
     Import-Module $m -Force
-    $( if ($?) 
-        { $__messages.moduleSuccess }
-      else                       
-        { $__messages.moduleFailure } ) -f $_ | Write-Verbose
+    $( if   ($?) { $__messages.moduleSuccess }
+       else      { $__messages.moduleFailure } ) -f $_ | Write-Verbose
   }
 }
 
@@ -104,6 +102,8 @@ $loadFunctions = {
     Function Global:cppr { Copy-Item -LiteralPath $__profileSource -Destination $__profileDir -Force -Verbose }
 
     Function Global:g2pr { Push-Location $__profileDir }
+
+    Function Global:Get-GithubGistApiUrlOfCurrentUser { $Global:__githubGist }
 
     Function Global:New-7zpath([string]$Path) { 
       $parentDir = Split-Path -Parent $Path
@@ -121,8 +121,9 @@ $loadFunctions = {
 
 $loadAliases = {
   'Creating aliases...' | Write-Verbose
-  New-Alias 7zpath New-7zpath        -Force -Scope Global
-  New-Alias ginfo  Get-InfoVariables -Force -Scope Global
+  New-Alias 7zpath New-7zpath                        -Force -Scope Global
+  New-Alias ginfo  Get-InfoVariables                 -Force -Scope Global
+  New-Alias gist   Get-GithubGistApiUrlOfCurrentUser -Force -Scope Global 
 }
 
 Function loadProfile {
@@ -156,22 +157,22 @@ $Registrycommands = @'
           Foreach-Object{ cmd /c regedit.exe /s $_ }
     }
 
-    Function loadThemes {
+    Function Set-Themes {
       #    Write-Verbose "Sourcing Solarized color theme files..."
       #    . (Join-Path -Path $profileDir -ChildPath $(switch($HOST.UI.RawUI.BackgroundColor.ToString()){'White'{'Set-SolarizedLightColorDefaults.ps1'}'Black'{'Set-SolarizedDarkColorDefaults.ps1'}default{return}}))
     }
 
     # TODO Update-Help make once a day
-    Function updateHelpFiles {
+    Function Update-HelpFiles {
       $params = @{ 
         Name = 'UpdateHelpJob'
         Credential = "${ENV:ComputerName}\${ENV:UserName}"
         ScriptBlock = {
           $tagFile = Join-Path $profileDir '.updateHelpFiles'
-          Update-Help
+          Update-Help -EA 0
           if ($?) { Set-FileTime $tagFile }
           else    { Set-FileTime "${tagFile}_fail"  }
-        };
+        }
         Trigger = (New-JobTrigger -Daily -At '3 AM')
       }
 
@@ -182,13 +183,13 @@ $Registrycommands = @'
 
   #endregion
 
-  copyModules
+  Copy-AllModules
   loadModules
   createUserSymlink
-  loadEnvironmentVariables
-  loadThemes
+  Set-EnvironmentVariables
+  Set-Themes
   applyRegistryTweaks
-  updateHelpFiles
+  Update-HelpFiles
   . $loadFunctions
   . $loadAliases
 
@@ -209,7 +210,7 @@ $Registrycommands = @'
 
 #region Execution
 
-  loadLocalisation 'uk-UA'
+  Set-Localisation 'uk-UA'
   Write-Host $PSVersionTable.PSVersion.ToString()
   Write-Host $__messages.welcome
 

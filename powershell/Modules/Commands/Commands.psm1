@@ -1,18 +1,8 @@
 #region initialization of module
 
-  $paths = @(
-    'include'
-  )
+  # We do not dot source the individual scripts because loadin of subscripts
+  # is executed automatically using `NestedModules` parameter in Commands.psd1
 
-  # dot source the individual scripts that make-up this module
-  Foreach ($path in $paths) {
-    "$psScriptRoot/$path/*.ps1" |
-        Resolve-Path |
-            ForEach-Object {
-                . $_.ProviderPath
-                Write-Verbose "$_.ProviderPath successfully included"
-            } 
-  } 
   Write-Host -ForegroundColor Green "Module $(Split-Path $PSScriptRoot -Leaf) was successfully loaded."
 
 #endregion
@@ -33,12 +23,6 @@
 
 
 #region Create aliases for functions
-  New-Alias -Name genv  Get-Environment
-  New-Alias -Name ge    Get-Environment
-  New-Alias -Name gist  Get-GithubGist
-  New-Alias -Name senv  Set-Environment
-  New-Alias -Name se    Set-Environment
-  New-Alias -Name rmenv Remove-EnvironmentVariable
   New-Alias touch Set-FileTime
   New-Alias ppath Get-EnvironmentPath
   New-Alias sst   Select-String

@@ -56,8 +56,7 @@
   # Format files (.ps1xml) to be loaded when importing this module
   FormatsToProcess = @()
 
-  # Modules to import as nested modules of the module specified in
-  # ModuleToProcess
+  # Modules to import as nested modules of the module specified in RootModule
   NestedModules = @()
 
   # Functions to export from this module
@@ -76,10 +75,46 @@
   ModuleList = @()
 
   # List of all files packaged with this module
-  FileList = @('Environment.psm1', 'Environment.psd1', 'include\Variables.ps1', 'include\RegistryFunctions.ps1', 
-  'include\Set-UserEnvironment', 'include\Set-MachineEnvironment', 'include\Set-Environment.ps1', 
-  'include\Get-Environment.ps1', 'include\expandNameInScope' )
+  # TODO rename RegistryFunctions
+  # TODO rename  ExpandNameInScope
+  # TODO rename  Variables
+  FileList = @( 'Environment.psd1', 
+                'Environment.psm1', 
+                'include/Get-Environment.ps1', 
+                'include/ExpandNameInScope.ps1'
+                'include/Export-Environment.ps1', 
+                'include/RegistryFunctions.ps1', 
+                'include/Set-Environment.ps1', 
+                'include/Set-MachineEnvironment.ps1', 
+                'include/Set-UserEnvironment.ps1', 
+                'include/Variables.ps1'
+  )
 
   # Private data to pass to the module specified in ModuleToProcess
-  PrivateData = ''
+  PrivateData = @{
+    PSData = @{
+
+            # Tags applied to this module. These help with module discovery in online galleries.
+            Tags = @(
+                "GitHub",
+                "Gist",
+                "REST",
+                "OAuth",
+                "Environment"
+            )
+
+            # A URL to the license for this module.
+            # LicenseUri = ""
+
+            # A URL to the main website for this project.
+            ProjectUri = "https://github.com/TurboBasic/dotfiles.windows/tree/master/powershell"
+
+            # A URL to an icon representing this module.
+            IconUri = "https://gist.githubusercontent.com/TurboBasic/9dfd228781a46c7b7076ec56bc40d5ab/raw/03942052ba28c4dc483efcd0ebf4bfc6809ed0d0/hexagram3D.png"
+
+            # ReleaseNotes of this module
+            ReleaseNotes = ""
+
+        }
+  }
 }

@@ -1,4 +1,4 @@
-Function Get-GistMao() {
+Function Get-GistMao($api) {
   #
   # 'https://api.github.com/users/USERNAME/gists'
   #

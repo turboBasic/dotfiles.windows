@@ -63,9 +63,9 @@ $vars = '__homeDrive','__userName','__systemBin','__projects','__profile',
   $Global:__githubGist2 =   $__assets.githubGist2
   
 #TODO __gist
-  $Global:__gist =          ''
-  $Global:__gist  = Get-Gist $__githubGist2
-  $Global:__gist += Get-Gist
+  $Global:__gist  = ''
+  $Global:__gist  = Get-GistMao  $__githubGist2
+  $Global:__gist += Get-GistMao
 
   $ENV:githubUser = $__githubUser 
   $ENV:githubGist = $__githubGist             
