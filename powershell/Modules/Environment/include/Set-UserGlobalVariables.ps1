@@ -2,9 +2,20 @@
 
 Function Set-UserGlobalVariables {
 
-$vars = '__homeDrive','__userName','__systemBin','__projects','__profile',    
-        '__profileDir','__profileSource','__githubUser','__githubGist', 
-        '__githubUser2','__githubGist2','__gist'       
+  $vars = @(
+    '__gist',
+    '__githubGist', 
+    '__githubGist2',
+    '__githubUser',
+    '__githubUser2',
+    '__homeDrive',
+    '__profile',    
+    '__profileDir',
+    '__profileSource',
+    '__projects',
+    '__systemBin',
+    '__userName'
+  )       
 
 
   #region dot sourcing Expand-HashTableSelfReference function
@@ -18,7 +29,7 @@ $vars = '__homeDrive','__userName','__systemBin','__projects','__profile',
   $__assets = @{
     userName          = 'mao'
     homeDrive         = 'C:'
-    projects          = 'E:\0projects'
+    projects          = $ENV:projects                    # 'E:\0projects'
     profileSourcePath = './dotfiles.windows/powershell/Microsoft.PowerShell_profile.ps1'
     githubUser        = 'TurboBasic'
     githubUser2       = 'maoizm'
@@ -29,7 +40,7 @@ $vars = '__homeDrive','__userName','__systemBin','__projects','__profile',
   }
   $__assets = $__assets | Expand-HashTableSelfReference 
  
-  $vars | ForEach-Object{ New-Variable -Name ($_) -Value '' -Scope Global -Force -Option None}  
+  $vars | ForEach { New-Variable -Name ($_) -Value '' -Scope Global -Force -Option None }  
   
   $Global:__homeDrive =     $__assets.homeDrive            # disk with users' home directories
   $Global:__userName =      if(Test-Path ENV:userName) { $ENV:userName } else { $__assets.userName }
@@ -58,18 +69,27 @@ $vars = '__homeDrive','__userName','__systemBin','__projects','__profile',
 }
 
 
-<#    Determine invocation method:  . | & | <script path >
-   https://poshoholic.com/2008/03/18/powershell-deep-dive-using-myinvocation-and-invoke-expression-to-support-dot-sourcing-and-direct-invocation-in-shared-powershell-scripts/
+<#    Determine invocation method of current script:
 
-      if ($MyInvocation.InvocationName -eq '&') {
-          "Called using operator"
-      } elseif ($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq '') {
-          "Dot sourced"
-      } elseif ((Resolve-Path -Path $MyInvocation.InvocationName).ProviderPath -eq $MyInvocation.MyCommand.Path) {
-          "Called using path $($MyInvocation.InvocationName)"
-      }
+          .  DRIVE:\path\Set-UserGlobalVariables.ps1
+  or    
+          &  DRIVE:\path\Set-UserGlobalVariables.ps1
+  or    
+             DRIVE:\path\Set-UserGlobalVariables.ps1
+
+see https://poshoholic.com/2008/03/18/powershell-deep-dive-using-myinvocation-and-invoke-expression-to-support-dot-sourcing-and-direct-invocation-in-shared-powershell-scripts/
+
+
+          if ($MyInvocation.InvocationName -eq '&') {
+              'Called using operator'
+          } elseif ($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq '') {
+              'Dot sourced'
+          } elseif ((Resolve-Path -Path $MyInvocation.InvocationName).ProviderPath -eq $MyInvocation.MyCommand.Path) {
+              "Called using path $($MyInvocation.InvocationName)"
+          }
 
 #>
+
 
 
 if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
@@ -78,7 +98,7 @@ if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
       Set-UserGlobalVariables $(
         $passThruArgs = $Args
         foreach ($argument in $passThruArgs) {
-          if ($argument -match '^-') { 
+          if ($argument.StartsWith('-') { 
               $argument 
           } else {
               "$argument"

@@ -3,132 +3,136 @@
 
 #region Public functions declaration
 
-Function Set-Localisation([string]$language='en-US') {
+  Function Set-Localisation([String]$language='en-US') {
 
-#region Localized messages
+    #region Localized messages
 
-$assets = DATA -supportedCommand ConvertFrom-Json {
-ConvertFrom-Json -InputObject @'
-  {
-    "languages":  [
-      "en-US",
-      "uk-UA"
-    ],
-    "messages": {
-        "uk-UA":  {
-            "moduleSuccess":       "УСПІХ: {0} завантажено",
-            "moduleLoading":       "Завантаження: {0}",
-            "localisation":        "Підключається локалізація {0} ...",
-            "moduleFailure":       "ПОМИЛКА: Неможливо знайти {0} ...",
-            "exit":                "До побачення!",
-            "errorLocalisation":   "Мову з кодом {0} не знайдено, буде використано мову {1}",
-            "welcome":             "Початок роботи скріпту профіля користувача ..."
-        },
-        "en-US":  {
-            "moduleSuccess":       "SUCCESS: {0} loaded",
-            "moduleLoading":       "Loading: {0}",
-            "localisation":        "Localisation {0} loading...",
-            "moduleFailure":       "FAILURE: Sorry, no {0} found...",
-            "exit":                "Good-bye!",
-            "errorLocalisation":   "Language {0} not found, using {1} instead",
-            "welcome":             "Entering User profile script $profile ..."
-        }
-    }
-  }
+      $assets = DATA -supportedCommand ConvertFrom-Json {
+        ConvertFrom-Json -InputObject @'
+          {
+            "languages":  [
+              "en-US",
+              "uk-UA"
+            ],
+            "messages": {
+                "uk-UA":  {
+                    "moduleSuccess":       "УСПІХ: {0} завантажено",
+                    "moduleLoading":       "Завантаження: {0}",
+                    "localisation":        "Підключається локалізація {0} ...",
+                    "moduleFailure":       "ПОМИЛКА: Неможливо знайти {0} ...",
+                    "exit":                "До побачення!",
+                    "errorLocalisation":   "Мову з кодом {0} не знайдено, буде використано мову {1}",
+                    "welcome":             "Початок роботи скріпту профіля користувача ..."
+                },
+                "en-US":  {
+                    "moduleSuccess":       "SUCCESS: {0} loaded",
+                    "moduleLoading":       "Loading: {0}",
+                    "localisation":        "Localisation {0} loading...",
+                    "moduleFailure":       "FAILURE: Sorry, no {0} found...",
+                    "exit":                "Good-bye!",
+                    "errorLocalisation":   "Language {0} not found, using {1} instead",
+                    "welcome":             "Entering User profile script $profile ..."
+                }
+            }
+          }
 '@
-}
+      }
 
-#endregion
+    #endregion
 
-  Set-Variable __defaultLanguage -Scope Global -Value $assets.languages[0]        # en-US 
-  Set-Variable __currentLanguage -Scope Global -Value $assets.languages[0]
-  New-Variable __messages        -Scope Global
+    Set-Variable __defaultLanguage -Scope Global -Value $assets.languages[0]        # en-US 
+    Set-Variable __currentLanguage -Scope Global -Value $assets.languages[0]
+    New-Variable __messages        -Scope Global
 
-  $isDefault = $language -eq $Global:__defaultLanguage
-  $isValid   = $language -in $assets.languages
-  $Global:__messages = $assets.messages.$Global:__currentLanguage
+    $isDefault = $language -eq $Global:__defaultLanguage
+    $isValid   = $language -in $assets.languages
+    $Global:__messages = $assets.messages.$Global:__currentLanguage
 
-  if ($isValid) {
-    $Global:__currentLanguage = $language 
-  } else { 
-    $Global:__messages.errorLocalisation -f $language, $Global:__currentLanguage | Write-Error
+    if ($isValid) {
+      $Global:__currentLanguage = $language 
+    } else { 
+      $Global:__messages.errorLocalisation -f $language, $Global:__currentLanguage | Write-Error
+    }
+
+    $Global:__messages.localisation -f $Global:__currentLanguage | Write-Verbose
+
+  }    # Function Set-Localisation
+
+
+  Function Set-EnvironmentVariables {
+    Set-MachineEnvironment                # TODO remove this --> Machine Startup Script
+    Set-UserEnvironment                   # TODO remove this --> User Logon Script
   }
 
-  $Global:__messages.localisation -f $Global:__currentLanguage | Write-Verbose
-}
 
+  Function Copy-AllModules {
+    $From = Convert-Path "$__projects/dotfiles.windows/Powershell/Modules"
+    $To = Convert-Path "$__profileDir/Modules"
+    $ExcludeFolderMatch = '.git'
+    Write-Verbose $From
+    Write-Verbose $To
 
-Function Set-EnvironmentVariables {
-  Set-MachineEnvironment
-  Set-UserEnvironment
-}
-
-
-Function Copy-AllModules {
-  $From = Convert-Path "$__projects/dotfiles.windows/Powershell/Modules"
-  $To = Convert-Path "$__profileDir/Modules"
-  $ExcludeFolderMatch = '.git'
-  Write-Verbose $From
-  Write-Verbose $To
-
-  Copy-Tree -From $From -To $To -ExcludeFolderMatch $ExcludeFolderMatch
-}
-
-
-Function Import-AllModules {
-  $modules = @{
-    'Vendor module Chocolatey' = "$ENV:ChocolateyInstall/helpers/chocolateyProfile.psm1"
-    'User module Commands'     = "$__profileDir/Modules/Commands"
-    'User module Environment'  = "$__profileDir/Modules/Environment"
-    'User module UtilsScoop'   = "$__profileDir/Modules/UtilsScoop"
-    'User module Test'         = "$__profileDir/Modules/Test"
+    Copy-Tree -From $From -To $To -ExcludeFolderMatch $ExcludeFolderMatch
   }
 
-  $modules.Keys | ForEach-Object {
-    if(-Not( Test-Path ($m = $modules.$_) )) { 
-      $m = Split-Path -Leaf $m 
+
+  Function Import-AllModules {
+    $modules = @{
+      'Vendor module Chocolatey' = "$ENV:ChocolateyInstall/helpers/chocolateyProfile.psm1"
+      'User module Commands'     = "$__profileDir/Modules/Commands"
+      'User module Environment'  = "$__profileDir/Modules/Environment"
+      'User module UtilsScoop'   = "$__profileDir/Modules/UtilsScoop"
+      'User module Test'         = "$__profileDir/Modules/Test"
     }
 
-    $__messages.moduleLoading -f $_ | Write-Verbose
-    Import-Module $m -Force
-    $( if   ($?) { $__messages.moduleSuccess }
-       else      { $__messages.moduleFailure } ) -f $_ | Write-Verbose
+    $modules.Keys | ForEach-Object {
+      if(-Not( Test-Path ($m = $modules.$_) )) { 
+        $m = Split-Path -Leaf $m 
+      }
+
+      $__messages.moduleLoading -f $_ | Write-Verbose
+      Import-Module $m -Force
+      $( if   ($?) { $__messages.moduleSuccess }
+         else      { $__messages.moduleFailure } ) -f $_ | Write-Verbose
+    }
+
+  }       # Function Import-AllModules
+
+
+  $newFunctions = {
+
+      Function Global:cppr { 
+          Copy-Item -LiteralPath $__profileSource -Destination $__profileDir -Force -Verbose 
+      }
+
+      Function Global:g2pr { 
+          Push-Location $__profileDir 
+      }
+
+      Function Global:Get-GithubGistApiUrlOfCurrentUser { $Global:__githubGist }
+
+      Function Global:New-7zpath([String]$Path) { 
+        $parentDir = Split-Path -Parent $Path
+        $files = $Path + '\*'
+        $archiveName = $parentDir + '\' + (Split-Path -Leaf $Path) + '-FullPaths.7z'
+        Invoke-Expression "7z a -spf2 -myx -mx $archiveName $files" 
+      }
+
+      Function Global:Get-InfoVariables {
+        Get-Variable | Format-Table -Property Name, Options -Autosize
+      }
+
+      'loading functions...' | Write-Verbose
+
+  }       # $newFunctions
+
+  $newAliases = {
+    'Creating aliases...' | Write-Verbose
+    New-Alias 7zpath New-7zpath                        -Force -Scope Global
+    New-Alias ginfo  Get-InfoVariables                 -Force -Scope Global
+    New-Alias gist   Get-GithubGistApiUrlOfCurrentUser -Force -Scope Global 
   }
-}
 
-
-$newFunctions = {
-
-    Function Global:cppr { 
-        Copy-Item -LiteralPath $__profileSource -Destination $__profileDir -Force -Verbose 
-    }
-
-    Function Global:g2pr { 
-        Push-Location $__profileDir 
-    }
-
-    Function Global:Get-GithubGistApiUrlOfCurrentUser { $Global:__githubGist }
-
-    Function Global:New-7zpath([string]$Path) { 
-      $parentDir = Split-Path -Parent $Path
-      $files = $Path + '\*'
-      $archiveName = $parentDir + '\' + (Split-Path -Leaf $Path) + '-FullPaths.7z'
-      Invoke-Expression "7z a -spf2 -myx -mx $archiveName $files" 
-    }
-
-    Function Global:Get-InfoVariables {
-      Get-Variable | Format-Table -Property Name, Options -Autosize
-    }
-
-    'loading functions...' | Write-Verbose
-}
-
-$newAliases = {
-  'Creating aliases...' | Write-Verbose
-  New-Alias 7zpath New-7zpath                        -Force -Scope Global
-  New-Alias ginfo  Get-InfoVariables                 -Force -Scope Global
-  New-Alias gist   Get-GithubGistApiUrlOfCurrentUser -Force -Scope Global 
-}
 
 Function Set-Profile {
 
@@ -156,7 +160,6 @@ Function Set-Profile {
       #    . (Join-Path -Path $profileDir -ChildPath $(switch($HOST.UI.RawUI.BackgroundColor.ToString()){'White'{'Set-SolarizedLightColorDefaults.ps1'}'Black'{'Set-SolarizedDarkColorDefaults.ps1'}default{return}}))
     }
 
-    # TODO Update-Help make once a day
     Function Update-HelpFiles {
       $params = @{ 
         Name = 'UpdateHelpJob'
@@ -181,7 +184,7 @@ Function Set-Profile {
   Import-AllModules
 
   New-UserSymlink
-  Set-EnvironmentVariables
+  # Set-EnvironmentVariables                # TODO Remove this completely
 
   Set-Themes
   Set-RegistryTweaks
@@ -189,7 +192,8 @@ Function Set-Profile {
   Update-HelpFiles
   . $newFunctions
   . $newAliases
-}
+
+}       # Function Set-Profile
 
 #endregion
 
@@ -202,18 +206,44 @@ Function Set-Profile {
 
   #region Set Global Variables
 
-    # TODO separate Machine and User variables:  Here should be User variables only!
-    # TODO Machine variables and environment should be already set up in Machine Startup script
+    # TODO separate Machine and User variables:  Here should be $Global: variables only!
+    # TODO Machine ENV: variables and environment should be already set up in Machine Startup script
+    # TODO User    ENV: variables and environment should be already set up in User Logon script
 
-    # $SetUserGlobalVariables = $psScriptRoot, '.' | ForEach { Join-Path $_ '_profiles/Set-UserGlobalVariables.ps1' } | Where { Test-Path $_ } | Select -First 1       
+<#
 
-    $Script:UserGlobalVariables = '/Modules/Environment/include/Set-UserGlobalVariables.ps1'
-    
-    $Script:UserGlobalVariables = Join-Path (Split-Path $profile -Parent) $UserGlobalVariables
-    if( Test-Path $UserGlobalVariables ) { 
-      & $UserGlobalVariables
-    } else {
-      Write-Warning 'Global Variables are not set -- Set-UserGlobalVariables.ps1 not found.  Most probably scripts, modules and other stuff won''t work'
+    Proposed Environment setting procedure execution order:
+
+    1) Machine Startup Scripts:
+
+          %systemRoot%\System32\GroupPolicy\Machine\Scripts\Startup\bbro-startup.ps1
+
+    2) User Logon Scripts:
+
+          %systemRoot%\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1
+
+    3) Powershell profile when running Powershell
+
+          - Set $Global: variables based on ENV: Machine, User and Volatile variables
+
+
+
+
+
+
+
+
+
+#>
+
+    '/Modules/Environment/include/Set-UserGlobalVariables.ps1' | 
+        ForEach { Join-Path (Split-Path $profile -Parent) $_ } |
+        Where { Test-Path $_ } |
+        ForEach { & $_ }
+  
+    if( -Not Test-Path FUNCTION:Set-UserGlobalVariables ) {
+      Write-Warning 'Global Variables are not set -- Set-UserGlobalVariables.ps1 not found.'
+      Write-Warning "Scripts, modules and other stuff may not work"
     }
 
   #endregion
