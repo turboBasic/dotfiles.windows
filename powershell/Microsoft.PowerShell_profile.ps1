@@ -75,7 +75,7 @@ Function Copy-AllModules {
 }
 
 
-Function loadModules {
+Function Import-AllModules {
   $modules = @{
     'Vendor module Chocolatey' = "$ENV:ChocolateyInstall/helpers/chocolateyProfile.psm1"
     'User module Commands'     = "$__profileDir/Modules/Commands"
@@ -97,11 +97,15 @@ Function loadModules {
 }
 
 
-$loadFunctions = {
+$newFunctions = {
 
-    Function Global:cppr { Copy-Item -LiteralPath $__profileSource -Destination $__profileDir -Force -Verbose }
+    Function Global:cppr { 
+        Copy-Item -LiteralPath $__profileSource -Destination $__profileDir -Force -Verbose 
+    }
 
-    Function Global:g2pr { Push-Location $__profileDir }
+    Function Global:g2pr { 
+        Push-Location $__profileDir 
+    }
 
     Function Global:Get-GithubGistApiUrlOfCurrentUser { $Global:__githubGist }
 
@@ -119,18 +123,18 @@ $loadFunctions = {
     'loading functions...' | Write-Verbose
 }
 
-$loadAliases = {
+$newAliases = {
   'Creating aliases...' | Write-Verbose
   New-Alias 7zpath New-7zpath                        -Force -Scope Global
   New-Alias ginfo  Get-InfoVariables                 -Force -Scope Global
   New-Alias gist   Get-GithubGistApiUrlOfCurrentUser -Force -Scope Global 
 }
 
-Function loadProfile {
+Function Set-Profile {
 
   #region local functions declarations
 
-    Function createUserSymlink {
+    Function New-UserSymlink {
       $_users = Resolve-Path '~\..'
       if ( !(Test-Path( Join-Path $_users $__userName )) ) {
         Write-Verbose "Creating symlink directory $__userName\ in $_users ..."
@@ -138,23 +142,13 @@ Function loadProfile {
       }
     }
 
-    Function applyRegistryTweaks {
+    Function Set-RegistryTweaks {
       Write-Verbose 'Applying some registry tweaks...'
 
-$Registrycommands = @'
-﻿Windows Registry Editor Version 5.00
+      $item = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0}\PropertyBag'
+      Set-ItemProperty ($item -f '{35286a68-3c57-41a1-bbb1-0eae73d76c95}') -Name ThisPCPolicy -Value Hide
+      Set-ItemProperty ($item -f '{a0c69a99-21c8-4671-8703-7934162fcf1d}') -Name ThisPCPolicy -Value Hide
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag]
-"ThisPCPolicy"="Hide"
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag]
-"ThisPCPolicy"="Hide"
-'@
-
-      # Hide some icons from Explorer
-      , 'HideIconsFromThisPC.reg'  |  
-          Where-Object{ Test-Path ".\$_" }  |  
-          Foreach-Object{ cmd /c regedit.exe /s $_ }
     }
 
     Function Set-Themes {
@@ -184,25 +178,17 @@ $Registrycommands = @'
   #endregion
 
   Copy-AllModules
-  loadModules
-  createUserSymlink
-  Set-EnvironmentVariables
-  Set-Themes
-  applyRegistryTweaks
-  Update-HelpFiles
-  . $loadFunctions
-  . $loadAliases
+  Import-AllModules
 
-  #region initialize pshazz (if installed)
-    $pshazz = 'Pshazz'
-    $__messages.moduleLoading -f $pshazz | Write-Verbose
-    $(  Try   { $null = Get-Command pshazz -ErrorAction Stop
-                pshazz init 'default'
-                $__messages.moduleSuccess 
-              }
-        Catch { $__messages.moduleFailure } 
-    )  -f $pshazz | Write-Verbose
-  #endregion
+  New-UserSymlink
+  Set-EnvironmentVariables
+
+  Set-Themes
+  Set-RegistryTweaks
+
+  Update-HelpFiles
+  . $newFunctions
+  . $newAliases
 }
 
 #endregion
@@ -216,19 +202,22 @@ $Registrycommands = @'
 
   #region Set Global Variables
 
-    $scriptPath = @($psScriptRoot, '.') | 
-          ForEach-Object { Convert-Path "$_/_profiles/GlobalVariables.ps1" } | 
-              Where-Object { Test-Path $_ } | Select -First 1
+    # TODO separate Machine and User variables:  Here should be User variables only!
+    # TODO Machine variables and environment should be already set up in Machine Startup script
 
-    if($scriptPath) {
-      . $scriptPath
-      Set-GlobalVariables
+    # $SetUserGlobalVariables = $psScriptRoot, '.' | ForEach { Join-Path $_ '_profiles/Set-UserGlobalVariables.ps1' } | Where { Test-Path $_ } | Select -First 1       
+
+    $Script:UserGlobalVariables = '/Modules/Environment/include/Set-UserGlobalVariables.ps1'
+    
+    $Script:UserGlobalVariables = Join-Path (Split-Path $profile -Parent) $UserGlobalVariables
+    if( Test-Path $UserGlobalVariables ) { 
+      & $UserGlobalVariables
     } else {
-      Write-Error "Global Variables are not set -- file GlobalVariables.ps1 not found.  Most probably scripts, modules and other stuff won't work"
+      Write-Warning 'Global Variables are not set -- Set-UserGlobalVariables.ps1 not found.  Most probably scripts, modules and other stuff won''t work'
     }
 
   #endregion
 
-  loadProfile
+  Set-Profile
 
 #endregion

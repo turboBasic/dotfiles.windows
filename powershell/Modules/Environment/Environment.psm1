@@ -1,20 +1,21 @@
-#region initialization of module
+#region initialization of module -- dot source the individual scripts that make-up this module
 
-  $paths = @(
-    'include'
-  )
+  <# 
+    $paths = @(
+      'include'
+    )
 
-  # dot source the individual scripts that make-up this module
-  Foreach ($path in $paths) {
-    "$psScriptRoot/$path/*.ps1" |
-        Resolve-Path |
-            ForEach-Object {
-                . $_.ProviderPath
-                Write-Verbose "$_.ProviderPath successfully included"
-            } 
-  } 
+    Foreach ($path in $paths) {
+      "$psScriptRoot/$path/*.ps1" |
+          Resolve-Path |
+              ForEach-Object {
+                  . $_.ProviderPath
+                  Write-Verbose "$_.ProviderPath successfully included"
+              } 
+    } 
+  #>
+
   Write-Host -ForegroundColor Green "Module $(Split-Path $PSScriptRoot -Leaf) was successfully loaded."
-
 
 #endregion
 

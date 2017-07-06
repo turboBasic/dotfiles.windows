@@ -57,7 +57,17 @@
   FormatsToProcess = @()
 
   # Modules to import as nested modules of the module specified in RootModule
-  NestedModules = @()
+  NestedModules = @(
+      'include/ExpandNameInScope.ps1'
+      'include/Export-Environment.ps1', 
+      'include/Get-Environment.ps1', 
+      'include/RegistryFunctions.ps1', 
+      'include/Set-Environment.ps1', 
+      'include/Set-MachineEnvironment.ps1', 
+      'include/Set-UserEnvironment.ps1',
+  #   'include/Set-UserGlobalVariables.ps1',    - this should not leak into User namespace
+      'include/Variables.ps1'
+  )
 
   # Functions to export from this module
   FunctionsToExport = '*'
@@ -75,18 +85,19 @@
   ModuleList = @()
 
   # List of all files packaged with this module
-  # TODO rename RegistryFunctions
+  # TODO rename  RegistryFunctions
   # TODO rename  ExpandNameInScope
   # TODO rename  Variables
   FileList = @( 'Environment.psd1', 
                 'Environment.psm1', 
-                'include/Get-Environment.ps1', 
                 'include/ExpandNameInScope.ps1'
                 'include/Export-Environment.ps1', 
+                'include/Get-Environment.ps1', 
                 'include/RegistryFunctions.ps1', 
                 'include/Set-Environment.ps1', 
                 'include/Set-MachineEnvironment.ps1', 
-                'include/Set-UserEnvironment.ps1', 
+                'include/Set-UserEnvironment.ps1',
+                'include/Set-UserGlobalVariables.ps1',
                 'include/Variables.ps1'
   )
 

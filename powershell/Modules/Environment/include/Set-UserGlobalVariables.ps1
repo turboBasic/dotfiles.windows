@@ -1,37 +1,18 @@
+# This is for USER only Global variables!
 
-Function Set-GlobalVariables {
+Function Set-UserGlobalVariables {
 
 $vars = '__homeDrive','__userName','__systemBin','__projects','__profile',    
         '__profileDir','__profileSource','__githubUser','__githubGist', 
         '__githubUser2','__githubGist2','__gist'       
 
-  #region Expand-HashTableSelfReference function
 
-      <# 
-          ¡¡¡ THIS FUNCTION IS LEFT HERE NOT BY MISTAKE, BUT INTENTIONALLY IN ORDER 
-          TO AVOID DEPENDECY ON OTHER MODULES DURING PROFILE LOADING !!!
-      #>
-        
-      Function Expand-HashTableSelfReference {
+  #region dot sourcing Expand-HashTableSelfReference function
+     
+      . ( './Modules/Commands/include/Expand-HashTableSelfReference.ps1' |
+                        ForEach { Join-Path (Split-Path $profile -Parent) $_ } )
 
-        [CMDLETBINDING()] PARAM( 
-            [PARAMETER( ValueFromPipeline = $true )] 
-                [HashTable]
-                    $hTable 
-        )
-
-        $res = @{}
-        $hTable.Keys | ForEach-Object { Set-Variable -Scope Local -Name $_ -Value $hTable[$_] }
-        $hTable.Keys | ForEach-Object { 
-            $tmp = $hTable[$_]
-            # This is less reliable as needs synchronisation waiting:
-               $value = $ExecutionContext.InvokeCommand.ExpandString($hTable[$_])
-            #$value = "@`"`n$tmp`n`"@" | iex
-            $res.Add( $_, $value ) 
-          }
-        $res
-      }
-  #endregion
+  #endregion.   Now we can call Expand-HashTableSelfReference ...
 
 
   $__assets = @{
@@ -76,3 +57,34 @@ $vars = '__homeDrive','__userName','__systemBin','__projects','__profile',
   $vars | ForEach-Object{ Set-Variable -Name ($_) -Scope Global -Force -Option ReadOnly,AllScope }  
 }
 
+
+<#    Determine invocation method:  . | & | <script path >
+   https://poshoholic.com/2008/03/18/powershell-deep-dive-using-myinvocation-and-invoke-expression-to-support-dot-sourcing-and-direct-invocation-in-shared-powershell-scripts/
+
+      if ($MyInvocation.InvocationName -eq '&') {
+          "Called using operator"
+      } elseif ($MyInvocation.InvocationName -eq '.' -or $MyInvocation.Line -eq '') {
+          "Dot sourced"
+      } elseif ((Resolve-Path -Path $MyInvocation.InvocationName).ProviderPath -eq $MyInvocation.MyCommand.Path) {
+          "Called using path $($MyInvocation.InvocationName)"
+      }
+
+#>
+
+
+if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
+
+    Invoke-Expression @"
+      Set-UserGlobalVariables $(
+        $passThruArgs = $Args
+        foreach ($argument in $passThruArgs) {
+          if ($argument -match '^-') { 
+              $argument 
+          } else {
+              "$argument"
+          }
+        }
+      )
+"@
+
+}
