@@ -7,7 +7,7 @@
     $logFile = "${Env:Tools}/logon.log"
     
     $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-    $Str += '{0,25} {1,60}' -f 'User Logon script', $PSCommandPath  
+    $Str += '{0,25} {1,-75}' -f 'User Logon script', $PSCommandPath  
     $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
     Send-NetMessage $Str
   #end region

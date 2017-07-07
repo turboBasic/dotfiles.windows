@@ -7,7 +7,7 @@
     $logFile = "${Env:Tools}/logon.log"
     
     $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-    $Str += '{0,25} {1,60}' -f 'Machine Startup script', $PSCommandPath
+    $Str += '{0,25} {1,-75}' -f 'Machine Startup script', $PSCommandPath
     $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
 
   #end region
