@@ -1,0 +1,68 @@
+﻿
+Key                         Value                                              
+---                         -----                                              
+..homeDrive                 C:                                                 
+..homePath                  \users\mao                                         
+..psHome                    C:\WINDOWS\system32\windowsPowerShell\v1.0         
+..scoop                     C:\users\mao\scoop                                 
+..scoopGlobal               C:\programData\scoop                               
+..systemBin                 C:\WINDOWS\system32                                
+..tools                     C:\tools                                           
+..userName                  mao                                                
+..userRoot                  \users                                             
+~~%systemROOT%\system32     systemBin                                          
+~~C:                        systemROOT                                         
+ALLUSERSPROFILE             C:\ProgramData                                     
+APPDATA                     C:\WINDOWS\system32\config\systemprofile\AppData\Roaming                                              
+choco                       C:\programData\chocolatey                          
+ChocolateyInstall           C:\programData\chocolatey                          
+chocolateyToolsLocation     C:\tools                                           
+chocoPath                   C:\programData\chocolatey\bin                      
+cmder                       C:\tools\cmderMini                                 
+CMDER_INSTALL_DIR           c:\tools\cmder                                     
+cmder_Root                  C:\tools\cmderMini                                 
+cmderPath                   C:\tools\cmderMini;C:\tools\cmderMini\bin;C:\tools\cmderMini\vendor\conemu-maximus5;C:\tools\cmderMini\vendor\conemu-maximus5\conemu                     
+CommonProgramFiles          C:\Program Files\Common Files                      
+CommonProgramFiles(x86)     C:\Program Files (x86)\Common Files                
+CommonProgramW6432          C:\Program Files\Common Files                      
+COMPUTERNAME                BIGBLACK                                           
+ComSpec                     C:\WINDOWS\system32\cmd.exe                        
+git                         C:\Program Files\git                               
+git_Install_Root            C:\Program Files\git                               
+gitPath                     C:\Program Files\git\cmd;C:\Program Files\git;C:\Program Files\git\mingw64\bin;C:\Program Files\git\usr\bin                                              
+JAVA_HOME                   c:\Program Files\Java\jdk1.8.0_121                 
+junkPath                    C:\Program Files (x86)\skype\phone;C:\Program Files (x86)\brackets\command;C:\Program Files\microsoft SQL Server\130\tools\binn;C:\ProgramData\oracle\java\javapath                                         
+kdiff3                      C:\Program Files\kdiff3                            
+LOCALAPPDATA                C:\WINDOWS\system32\config\systemprofile\AppData\Local                                                
+notepad++                   C:\ProgramData\scoop\apps\notepadplusplus\current\notepad++.exe                                       
+NUMBER_OF_PROCESSORS        2                                                  
+OS                          Windows_NT                                         
+Path                        C:\WINDOWS\System32\GroupPolicy\Machine\Scripts\Startup;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\system32\wbem;C:\WINDOWS\system32\windowsPowerShell\v1.0;C:\programData\chocolatey\bin;C:\programData\scoop\shims;C:\tools\cmderMini;C:\tools\cmderMini\bin;C:\tools\cmderMini\vendor\conemu-maximus5;C:\tools\cmderMini\vendor\conemu-maximus5\conemu;%PROGRAMFILES%\git\cmd;%PROGRAMFILES%\git;%PROGRAMFILES%\git\mingw64\bin;%PROGRAMFILES%\git\usr\bin;C:\Program Files\git\cmd;C:\Program Files\git;C:\Program Files\git\mingw64\bin;C:\Program Files\git\usr\bin;C:\WINDOWS\system32\config\systemprofile\AppData\Local\Microsoft\WindowsApps                                  
+PATHEXT                     .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL                                            
+PROCESSOR_ARCHITECTURE      AMD64                                              
+PROCESSOR_IDENTIFIER        Intel64 Family 6 Model 60 Stepping 3, GenuineIntel 
+PROCESSOR_LEVEL             6                                                  
+PROCESSOR_REVISION          3c03                                               
+ProgramData                 C:\ProgramData                                     
+ProgramFiles                C:\Program Files                                   
+ProgramFiles(x86)           C:\Program Files (x86)                             
+ProgramW6432                C:\Program Files                                   
+PSExecutionPolicyPreference Bypass                                             
+psHome                      C:\WINDOWS\system32\windowsPowerShell\v1.0         
+PSModulePath                WindowsPowerShell\Modules;C:\Program Files\windowsPowerShell\modules;C:\WINDOWS\system32\windowsPowerShell\v1.0\modules                                  
+PUBLIC                      C:\Users\Public                                    
+scoop                       C:\users\mao\scoop                                 
+SCOOP_GLOBAL                C:\ProgramData\scoop                               
+SEE_MASK_NOZONECHECKS       1                                                  
+systemBin                   C:\WINDOWS\system32                                
+SystemDrive                 C:                                                 
+SystemRoot                  C:\WINDOWS                                         
+TEMP                        C:\WINDOWS\temp                                    
+TMP                         C:\WINDOWS\temp                                    
+tools                       C:\tools                                           
+USERDOMAIN                  WORKGROUP                                          
+USERNAME                    BIGBLACK$                                          
+USERPROFILE                 C:\WINDOWS\system32\config\systemprofile           
+windir                      C:\WINDOWS                                         
+
+

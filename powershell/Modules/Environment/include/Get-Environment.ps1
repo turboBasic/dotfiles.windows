@@ -73,7 +73,10 @@ Function Get-Environment {
 
         [PARAMETER( Position=1, ValueFromPipelineByPropertyName )]
         [ALIAS( 'From', 'Context' )]
-        [VALIDATESCRIPT( { ($_ -in [enum]::GetNames( [EnvironmentScope] )) -or ($_ -eq '*') } )]
+        [VALIDATESCRIPT({
+          . (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
+          ($_ -in [enum]::GetNames( [EnvironmentScope] )) -or ($_ -eq '*') 
+        })]
         [String[]]
         $Scope='Process',
 
@@ -84,28 +87,29 @@ Function Get-Environment {
   #endregion
 
   BEGIN {
+    . (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
     Write-Verbose "Get-Environment: `$Names=$Names, `$Scope=$Scope, `$Expand=$Expand"
     if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Scope)) {
-      $Scope=[enum]::GetNames([EnvironmentScope])
+      $Scope = [enum]::GetNames([EnvironmentScope])
     }
-    $res=@()
+    $res = @()
   }
 
   PROCESS {
     foreach ($name in $Names) {
-      $isWild=[System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Names)
-      $type=@{ $False='Simple'; $True='Wildcard' }[$isWild]
+      $isWild = [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Names)
+      $type = @{ $False='Simple'; $True='Wildcard' }[$isWild]
 
       Write-Verbose "Get-Environment: $type variable name request: `$Name: $name, `$Scope: $Scope, `$Expand: $Expand"
 
       foreach ($_scope in $Scope) {
-        $res += (expandNameInScope $name $_scope $Expand)
+        $res += (Get-ExpandedName $name $_scope $Expand)
       }
     }
   }
 
   END {
-    $res | Sort-Object -property Scope, Name, Value | Select-Object Scope, Name, Value -unique
+    $res | Sort-Object -Property Scope, Name, Value | Select-Object Scope, Name, Value -Unique
   }
 
 }

@@ -226,14 +226,6 @@ Function Set-Profile {
 
           - Set $Global: variables based on ENV: Machine, User and Volatile variables
 
-
-
-
-
-
-
-
-
 #>
 
     '/Modules/Environment/include/Set-UserGlobalVariables.ps1' | 
@@ -241,7 +233,7 @@ Function Set-Profile {
         Where { Test-Path $_ } |
         ForEach { & $_ }
   
-    if( -Not Test-Path FUNCTION:Set-UserGlobalVariables ) {
+    if( -Not (Test-Path FUNCTION:Set-UserGlobalVariables) ) {
       Write-Warning 'Global Variables are not set -- Set-UserGlobalVariables.ps1 not found.'
       Write-Warning "Scripts, modules and other stuff may not work"
     }

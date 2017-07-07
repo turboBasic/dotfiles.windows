@@ -1,17 +1,14 @@
 #region initialization of module -- dot source the individual scripts that make-up this module
 
   <# 
-    $paths = @(
-      'include'
-    )
+    $paths = @('include')
 
     Foreach ($path in $paths) {
-      "$psScriptRoot/$path/*.ps1" |
-          Resolve-Path |
-              ForEach-Object {
-                  . $_.ProviderPath
-                  Write-Verbose "$_.ProviderPath successfully included"
-              } 
+      "$psScriptRoot/$path/*.ps1" | Resolve-Path |
+      ForEach {
+          . $_.ProviderPath
+          Write-Verbose "$_.ProviderPath successfully included"
+      } 
     } 
   #>
 

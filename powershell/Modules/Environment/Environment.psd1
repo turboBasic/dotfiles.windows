@@ -32,22 +32,19 @@
   # Minimum version of the .NET Framework required by this module
   DotNetFrameworkVersion = ''
 
-  # Minimum version of the common language runtime (CLR) required by this
-  # module
+  # Minimum version of the common language runtime (CLR) required by this module
   CLRVersion = ''
 
   # Processor architecture (None, X86, Amd64, IA64) required by this module
   ProcessorArchitecture = ''
 
-  # Modules that must be imported into the global environment prior to
-  # importing this module
+  # Modules that must be imported into the global environment prior to importing this module
   RequiredModules = @()
 
   # Assemblies that must be loaded prior to importing this module
   RequiredAssemblies = @()
 
-  # Script files (.ps1) that are run in the caller's environment prior to
-  # importing this module
+  # Script files (.ps1) that are run in the caller's environment prior to importing this module
   ScriptsToProcess = @()
 
   # Type files (.ps1xml) to be loaded when importing this module
@@ -58,15 +55,17 @@
 
   # Modules to import as nested modules of the module specified in RootModule
   NestedModules = @(
-      'include/ExpandNameInScope.ps1'
+      'include/Add-EnvironmentScopeType.ps1',
       'include/Export-Environment.ps1', 
-      'include/Get-Environment.ps1', 
-      'include/RegistryFunctions.ps1', 
-      'include/Set-Environment.ps1', 
-      'include/Set-MachineEnvironment.ps1', 
-      'include/Set-UserEnvironment.ps1',
-  #   'include/Set-UserGlobalVariables.ps1',    - this should not leak into User namespace
-      'include/Variables.ps1'
+      'include/Get-Environment.ps1',
+      'include/Get-EnvironmentKey.ps1',
+      'include/Get-ExpandedName.ps1',
+      'include/Import-Environment.ps1',
+      'include/Remove-EnvironmentVariable.ps1',
+      'include/Remove-UnprotectedVariables.ps1', 
+      'include/Send-EnvironmentChanges.ps1',
+      'include/Set-Environment.ps1' 
+  #   'include/Set-UserGlobalVariables.ps1    - this should not leak into User namespace
   )
 
   # Functions to export from this module
@@ -85,20 +84,22 @@
   ModuleList = @()
 
   # List of all files packaged with this module
-  # TODO rename  RegistryFunctions
-  # TODO rename  ExpandNameInScope
-  # TODO rename  Variables
-  FileList = @( 'Environment.psd1', 
-                'Environment.psm1', 
-                'include/ExpandNameInScope.ps1'
-                'include/Export-Environment.ps1', 
-                'include/Get-Environment.ps1', 
-                'include/RegistryFunctions.ps1', 
-                'include/Set-Environment.ps1', 
-                'include/Set-MachineEnvironment.ps1', 
-                'include/Set-UserEnvironment.ps1',
-                'include/Set-UserGlobalVariables.ps1',
-                'include/Variables.ps1'
+  FileList = @( 
+        'Environment.psd1', 
+        'Environment.psm1',
+        'GPO scripts/bbro-mao-logon.ps1',
+        'GPO scripts/bbro-startup.ps1',
+        'include/Add-EnvironmentScopeType.ps1', 
+        'include/Export-Environment.ps1', 
+        'include/Get-Environment.ps1', 
+        'include/Get-EnvironmentKey.ps1',
+        'include/Get-ExpandedName.ps1'
+        'include/Import-Environment.ps1', 
+        'include/Remove-EnvironmentVariable.ps1',
+        'include/Remove-UnprotectedVariables.ps1', 
+        'include/Send-EnvironmentChanges.ps1',
+        'include/Set-Environment.ps1', 
+        'include/Set-UserGlobalVariables.ps1'
   )
 
   # Private data to pass to the module specified in ModuleToProcess

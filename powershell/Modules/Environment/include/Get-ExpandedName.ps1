@@ -1,4 +1,4 @@
-Function expandNameInScope {
+Function Get-ExpandedName {
   <#
       .SYNOPSIS 
         Expands %VARIABLE% occurences in specifies Scope
@@ -8,7 +8,7 @@ Function expandNameInScope {
         Scope specifies the scope from which the utility is going to take Variable's content.
 
   #>
-  #region expandNameInScope Parameters
+  #region Get-ExpandedName Parameters
       [CMDLETBINDING()] 
       PARAM( 
           [PARAMETER( Mandatory, Position=0 )]
@@ -25,7 +25,7 @@ Function expandNameInScope {
       )
   #endregion
 
-  #Write-Verbose "expandNameInScope: `$Name = $Name, `$Scope = $Scope, `$Expand = $Expand"
+  #Write-Verbose "Get-ExpandedName: `$Name = $Name, `$Scope = $Scope, `$Expand = $Expand"
   switch ($Scope) {
     Process {
       $res = Get-ChildItem -Path ENV:\$Name -EA SilentlyContinue | 
@@ -53,7 +53,7 @@ Function expandNameInScope {
                 }
       break
     }
-    default { Throw 'expandNameInScope: Strange error in switch statement' }
+    default { Throw 'Get-ExpandedName: Strange error in switch statement' }
   }
 
   $res

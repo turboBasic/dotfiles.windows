@@ -27,15 +27,12 @@ Function Set-UserGlobalVariables {
 
 
   $__assets = @{
-    userName          = 'mao'
-    homeDrive         = 'C:'
-    projects          = $ENV:projects                    # 'E:\0projects'
+    userName          = $ENV:userName
+    homeDrive         = $ENV:homeDrive
+    projects          = $ENV:projects   
     profileSourcePath = './dotfiles.windows/powershell/Microsoft.PowerShell_profile.ps1'
-    githubUser        = 'TurboBasic'
-    githubUser2       = 'maoizm'
-    githubApi         = 'https://api.github.com'
-    githubGist        = '$($__assets.githubApi)/users/$($__assets.githubUser)/gists'
-    githubGist2       = '$($__assets.githubApi)/users/$($__assets.githubUser2)/gists'
+    githubGist        = '${ENV:githubAPI}/users/${ENV:githubUser}/gists'
+    githubGist2       = '${ENV:githubAPI}/users/${ENV:githubUser2})/gists'
     testToken         = '$userName'
   }
   $__assets = $__assets | Expand-HashTableSelfReference 
@@ -45,13 +42,13 @@ Function Set-UserGlobalVariables {
   $Global:__homeDrive =     $__assets.homeDrive            # disk with users' home directories
   $Global:__userName =      if(Test-Path ENV:userName) { $ENV:userName } else { $__assets.userName }
   $Global:__systemBin =     Join-Path $ENV:systemROOT 'system32'
-  $Global:__projects =      $ENV:projects, $__assets.projects | Where-Object { $_ } | Where-Object { Test-Path $_ } | Select -First 1 | Convert-Path
+  $Global:__projects =      $ENV:projects
   $Global:__profile =       $profile
   $Global:__profileDir =    Split-Path -parent $profile
   $Global:__profileSource = Join-Path $__projects $__assets.profileSourcePath | Convert-Path
-  $Global:__githubUser =    $__assets.githubUser
+  $Global:__githubUser =    $ENV:githubUser
   $Global:__githubGist =    $__assets.githubGist
-  $Global:__githubUser2 =   $__assets.githubUser2
+  $Global:__githubUser2 =   $ENV:githubUser2
   $Global:__githubGist2 =   $__assets.githubGist2
   
 #TODO __gist
@@ -59,7 +56,6 @@ Function Set-UserGlobalVariables {
   $Global:__gist  = Get-GistMao  $__githubGist2
   $Global:__gist += Get-GistMao
 
-  $ENV:githubUser = $__githubUser 
   $ENV:githubGist = $__githubGist             
 
   # "SilentlyContinue", "Inquiry", "Stop"
@@ -98,7 +94,7 @@ if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
       Set-UserGlobalVariables $(
         $passThruArgs = $Args
         foreach ($argument in $passThruArgs) {
-          if ($argument.StartsWith('-') { 
+          if ($argument.StartsWith('-')) { 
               $argument 
           } else {
               "$argument"
