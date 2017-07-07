@@ -3,14 +3,24 @@
   #TODO d: or e:
   $subModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
 
+  #region write info to log file
+    $logFile = "${Env:Tools}/logon.log"
+    
+    $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
+    $Str += '{0,25} {1,60}' -f 'User Logon script', $PSCommandPath  
+    $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+    Send-NetMessage $Str
+  #end region
+
   $__user_variables = @{ 
 
     '..userName' =           'mao'
     '..homePath' =           '%..userRoot%\%..userName%'
-    scoop =                  '%..homeDrive%%..homePath%\scoop'
+    '..scoop' =              '%..homeDrive%%..homePath%\scoop'
+       scoop  =              '%..homeDrive%%..homePath%\scoop'
 
     '..psProfileDir' =       '%..homeDrive%%..homePath%\documents\windowsPowerShell'
-    psProfileDir =           '%..homeDrive%%..homePath%\documents\windowsPowerShell'
+       psProfileDir  =       '%..homeDrive%%..homePath%\documents\windowsPowerShell'
 
     nvm_Home =               '%..scoop%\apps\nvm\current'
     nvm_Symlink =            '%..scoop%\apps\nvm\current\nodeJs'
@@ -18,8 +28,8 @@
 
     githubUser =             'TurboBasic'
     githubUser2 =            'maoizm'
-    githubGist =             '${ENV:githubAPI}/users/${ENV:githubUser}/gists'
-    githubGist2 =            '${ENV:githubAPI}/users/${ENV:githubUser2})/gists'  
+    githubGist =             '%githubAPI%/users/%githubUser%/gists'
+    githubGist2 =            '%githubAPI%/users/%githubUser2%/gists'  
 
     dropbox =                '%systemDRIVE%\dropbox'
     dropbox_Home =           '%systemDRIVE%\dropbox'
@@ -28,15 +38,14 @@
     winPepsiDebug =          1
          
     psModulePath =           '%..psProfileDir%\modules',
-                             '%APPDATA%\boxStarter'             -join ';'
-
+                             '%APPDATA%\boxStarter' -join ';'
 
     PATH =                   '%..homeDrive%%..homePath%\bin',  
                              '%..scoop%\shims',
                              '%nodePath%',      
                              '%APPDATA%\boxStarter',
                              '%oneDrive%\01_portable_apps',
-                             '%junkPath%'                       -join ';'                    
+                             '%junkPath%'  -join ';'                    
                              
     TEMP =                   '%LOCALAPPDATA%\temp'
     TMP =                    '%LOCALAPPDATA%\temp'

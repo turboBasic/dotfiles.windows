@@ -228,12 +228,13 @@ Function Set-Profile {
 
 #>
 
+    $err = $False
     '/Modules/Environment/include/Set-UserGlobalVariables.ps1' | 
         ForEach { Join-Path (Split-Path $profile -Parent) $_ } |
-        Where { Test-Path $_ } |
-        ForEach { & $_ }
+        Where { ($err = Test-Path $_) | Out-Null ; $_ } |
+        ForEach { & $_ ; $err = $err -and $? }
   
-    if( -Not (Test-Path FUNCTION:Set-UserGlobalVariables) ) {
+    if( $err ) {
       Write-Warning 'Global Variables are not set -- Set-UserGlobalVariables.ps1 not found.'
       Write-Warning "Scripts, modules and other stuff may not work"
     }

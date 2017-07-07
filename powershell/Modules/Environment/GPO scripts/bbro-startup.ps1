@@ -3,6 +3,15 @@
   #TODO d: or e:
   $subModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
 
+  #region write info to log file
+    $logFile = "${Env:Tools}/logon.log"
+    
+    $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
+    $Str += '{0,25} {1,60}' -f 'Machine Startup script', $PSCommandPath
+    $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+
+  #end region
+
   $__sys_variables = @{
     '..homeDrive' =             'C:'
                                 
@@ -13,7 +22,7 @@
     '..psHome'=                 '%systemROOT%\system32\windowsPowerShell\v1.0'
     psHome=                     '%systemROOT%\system32\windowsPowerShell\v1.0'
     psModulePath=               '%PROGRAMFILES%\windowsPowerShell\modules',
-                                '%..psHome%\modules'                    -join ';'
+                                '%..psHome%\modules' -join ';'
 
     choco =                     'C:\programData\chocolatey'
     chocolateyInstall =         'C:\programData\chocolatey'

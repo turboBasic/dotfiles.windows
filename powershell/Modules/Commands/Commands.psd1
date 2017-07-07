@@ -74,6 +74,7 @@
       'include/New-SymLink.ps1',
       'include/Remove-IndentationMark.ps1',
       'include/Remove-LeadingSpace.ps1',
+      'include/Send-NetMessage.ps1',
       'include/Set-FileTime.ps1', 
       'include/Write-VariableDump.ps1'
   )

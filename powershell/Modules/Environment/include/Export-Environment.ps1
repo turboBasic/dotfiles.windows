@@ -4,7 +4,7 @@ Function Export-Environment {
       [PARAMETER( Position=0 )]
       [VALIDATESCRIPT({ $_.IndexOfAny( [System.IO.Path]::GetInvalidFileNameChars() ) -eq -1 })]
       [String]
-      $Path = 'export_{0}.csv' -f (Get-Date -uFormat "%Y%M%d_%H%m%S")
+      $Path = 'export_{0}.csv' -f (Get-Date -uFormat "%Y%m%d_%H:%M:%S")
 
       # TODO -NoClobber
       # TODO -Append

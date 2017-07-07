@@ -2,7 +2,7 @@ Function Get-GistMao {
   PARAM(
     [PARAMETER( Position=0 )]
     [String]
-    $api = $ENV:githubGist         # 'https://api.github.com/users/USERNAME/gists'
+    $api = ${ENV:githubGist}        # 'https://api.github.com/users/USERNAME/gists'
   )
 
   Invoke-WebRequest $api | 

@@ -31,8 +31,8 @@ Function Set-UserGlobalVariables {
     homeDrive         = $ENV:homeDrive
     projects          = $ENV:projects   
     profileSourcePath = './dotfiles.windows/powershell/Microsoft.PowerShell_profile.ps1'
-    githubGist        = '${ENV:githubAPI}/users/${ENV:githubUser}/gists'
-    githubGist2       = '${ENV:githubAPI}/users/${ENV:githubUser2})/gists'
+    githubGist        = $ENV:githubGist
+    githubGist2       = $ENV:githubGist2
     testToken         = '$userName'
   }
   $__assets = $__assets | Expand-HashTableSelfReference 
@@ -45,23 +45,20 @@ Function Set-UserGlobalVariables {
   $Global:__projects =      $ENV:projects
   $Global:__profile =       $profile
   $Global:__profileDir =    Split-Path -parent $profile
-  $Global:__profileSource = Join-Path $__projects $__assets.profileSourcePath | Convert-Path
+  $Global:__profileSource = Join-Path -Path $Global:__projects $__assets.profileSourcePath | Convert-Path
   $Global:__githubUser =    $ENV:githubUser
-  $Global:__githubGist =    $__assets.githubGist
+  $Global:__githubGist =    $ENV:githubGist
   $Global:__githubUser2 =   $ENV:githubUser2
-  $Global:__githubGist2 =   $__assets.githubGist2
+  $Global:__githubGist2 =   $ENV:githubGist2
   
-#TODO __gist
   $Global:__gist  = ''
   $Global:__gist  = Get-GistMao  $__githubGist2
-  $Global:__gist += Get-GistMao
-
-  $ENV:githubGist = $__githubGist             
+  $Global:__gist += Get-GistMao          
 
   # "SilentlyContinue", "Inquiry", "Stop"
   $Global:VerbosePreference = "Continue"
 
-  $vars | ForEach-Object{ Set-Variable -Name ($_) -Scope Global -Force -Option ReadOnly,AllScope }  
+  $vars | ForEach { Set-Variable -Name ($_) -Scope Global -Force -Option ReadOnly,AllScope }  
 }
 
 
