@@ -1,16 +1,23 @@
 # Machine startup script %systemRoot%\System32\GroupPolicy\Machine\Scripts\Startup\bbro-startup.ps1 
 
+  #region write info to log file
+
+    Function Write-Log {  PARAM($logFile,$Description)
+        $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
+        $Str += '{0,-22} {1,-18} {2,-75}' -f $Description, (Split-Path $PSCommandPath -Leaf), $PSCommandPath
+        $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+    }
+
+
+    Write-Log @{ 
+        logFile =     "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"
+        Description = 'Machine startup script'
+    }
+
+  #endregion
+
   #TODO d: or e:
   $subModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
-
-  #region write info to log file
-    $logFile = "${Env:Tools}/logon.log"
-    
-    $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-    $Str += '{0,25} {1,-75}' -f 'Machine Startup script', $PSCommandPath
-    $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
-
-  #end region
 
   $__sys_variables = @{
     '..homeDrive' =             'C:'

@@ -3,7 +3,7 @@
   RootModule = './Commands.psm1'
 
   # Version number of this module.
-  ModuleVersion = '1.1.0'
+  ModuleVersion = '1.1.1'
 
   # ID used to uniquely identify this module
   GUID = '4123ac51-202e-4b9b-8573-9e20e6d2062c'
@@ -76,6 +76,7 @@
       'include/Remove-LeadingSpace.ps1',
       'include/Send-NetMessage.ps1',
       'include/Set-FileTime.ps1', 
+      'include/Write-Log.ps1',
       'include/Write-VariableDump.ps1'
   )
 
@@ -114,6 +115,7 @@
                 'include/New-Shortcut.ps1', 
                 'include/New-SymLink.ps1', 
                 'include/Set-FileTime.ps1', 
+                'include/Write-Log.ps1',
                 'include/Write-VariableDump.ps1'
   )
 

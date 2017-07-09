@@ -51,14 +51,14 @@ SEE_MASK_NOZONECHECKS          1
 systemBin                      C:\WINDOWS\system32                             
 SystemDrive                    C:                                              
 SystemRoot                     C:\WINDOWS                                      
-TEMP                           C:\WINDOWS\temp                                 
-TMP                            C:\WINDOWS\temp                                 
+TEMP                           C:\WINDOWS\TEMP                                 
+TMP                            C:\WINDOWS\TEMP                                 
 tools                          C:\tools                                        
 USERDOMAIN                     WORKGROUP                                       
 USERNAME                       BBRO$                                           
 USERPROFILE                    C:\WINDOWS\system32\config\systemprofile        
 VS140COMNTOOLS                 C:\Program Files (x86)\Microsoft Visual Studi...
-WINDIR                         C:\WINDOWS                                      
+windir                         C:\WINDOWS                                      
 
 
 

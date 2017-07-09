@@ -59,12 +59,6 @@
   }    # Function Set-Localisation
 
 
-  Function Set-EnvironmentVariables {
-    Set-MachineEnvironment                # TODO remove this --> Machine Startup Script
-    Set-UserEnvironment                   # TODO remove this --> User Logon Script
-  }
-
-
   Function Copy-AllModules {
     $From = Convert-Path "$__projects/dotfiles.windows/Powershell/Modules"
     $To = Convert-Path "$__profileDir/Modules"
@@ -126,7 +120,7 @@
 
   }       # $newFunctions
 
-  $newAliases = {
+  $newAliases = {                           # TODO remove this -> move to USER
     'Creating aliases...' | Write-Verbose
     New-Alias 7zpath New-7zpath                        -Force -Scope Global
     New-Alias ginfo  Get-InfoVariables                 -Force -Scope Global
@@ -138,7 +132,7 @@ Function Set-Profile {
 
   #region local functions declarations
 
-    Function New-UserSymlink {
+    Function New-UserSymlink {              # TODO remove this -> move to USER
       $_users = Resolve-Path '~\..'
       if ( !(Test-Path( Join-Path $_users $__userName )) ) {
         Write-Verbose "Creating symlink directory $__userName\ in $_users ..."
@@ -146,7 +140,7 @@ Function Set-Profile {
       }
     }
 
-    Function Set-RegistryTweaks {
+    Function Set-RegistryTweaks {           # TODO remove this -> move to USER
       Write-Verbose 'Applying some registry tweaks...'
 
       $item = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0}\PropertyBag'
@@ -155,20 +149,18 @@ Function Set-Profile {
 
     }
 
-    Function Set-Themes {
+    Function Set-Themes {                   # TODO remove this -> move to USER
       #    Write-Verbose "Sourcing Solarized color theme files..."
       #    . (Join-Path -Path $profileDir -ChildPath $(switch($HOST.UI.RawUI.BackgroundColor.ToString()){'White'{'Set-SolarizedLightColorDefaults.ps1'}'Black'{'Set-SolarizedDarkColorDefaults.ps1'}default{return}}))
     }
 
-    Function Update-HelpFiles {
+    Function Update-HelpFiles {             # TODO remove this -> move to USER
       $params = @{ 
         Name = 'UpdateHelpJob'
         Credential = "${ENV:ComputerName}\${ENV:UserName}"
         ScriptBlock = {
-          $tagFile = Join-Path $profileDir '.updateHelpFiles'
-          Update-Help -EA 0
-          if ($?) { Set-FileTime $tagFile }
-          else    { Set-FileTime "${tagFile}_fail"  }
+          Save-Help -Destination e:\Downloads\PowershellHelp -UIculture en-US
+          Update-Help -SourcePath e:\Downloads\PowershellHelp -Recurse -Force -EA 0 
         }
         Trigger = (New-JobTrigger -Daily -At '3 AM')
       }

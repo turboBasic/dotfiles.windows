@@ -81,7 +81,7 @@ USERDOMAIN_ROAMINGPROFILE      BBRO
 USERNAME                       mao                                                                                                                            
 USERPROFILE                    C:\Users\mao                                                                                                                   
 VS140COMNTOOLS                 C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\                                                             
-WINDIR                         C:\WINDOWS                                                                                                                     
+windir                         C:\WINDOWS                                                                                                                     
 winPepsiDebug                  1                                                                                                                              
 
 

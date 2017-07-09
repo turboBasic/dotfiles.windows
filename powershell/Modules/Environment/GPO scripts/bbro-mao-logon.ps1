@@ -1,26 +1,36 @@
 # User Logon script %systemRoot%\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1 
 
+  #region write info to log file
+
+    Function Write-Log {  PARAM($logFile,$Description)
+        $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
+        $Str += '{0,-22} {1,-18} {2,-75}' -f $Description, (Split-Path $PSCommandPath -Leaf), $PSCommandPath
+        $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+    }
+
+
+    Write-Log @{ 
+        logFile =     "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"
+        Description = 'User logon script'
+    }
+
+    Send-NetMessage $Str
+
+  #endregion
+
+
   #TODO d: or e:
   $subModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
 
-  #region write info to log file
-    $logFile = "${Env:Tools}/logon.log"
-    
-    $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-    $Str += '{0,25} {1,-75}' -f 'User Logon script', $PSCommandPath  
-    $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
-    Send-NetMessage $Str
-  #end region
-
   $__user_variables = @{ 
 
-    '..userName' =           'mao'
-    '..homePath' =           '%..userRoot%\%..userName%'
-    '..scoop' =              '%..homeDrive%%..homePath%\scoop'
-       scoop  =              '%..homeDrive%%..homePath%\scoop'
-
-    '..psProfileDir' =       '%..homeDrive%%..homePath%\documents\windowsPowerShell'
-       psProfileDir  =       '%..homeDrive%%..homePath%\documents\windowsPowerShell'
+ '..userName' =              'mao'
+ '..homePath' =              '%..userRoot%\%..userName%'
+ '..scoop' =                 '%..homeDrive%%..homePath%\scoop'
+    scoop  =                 '%..homeDrive%%..homePath%\scoop'
+                             
+ '..psProfileDir' =          '%..homeDrive%%..homePath%\documents\windowsPowerShell'
+    psProfileDir  =          '%..homeDrive%%..homePath%\documents\windowsPowerShell'
 
     nvm_Home =               '%..scoop%\apps\nvm\current'
     nvm_Symlink =            '%..scoop%\apps\nvm\current\nodeJs'
