@@ -30,6 +30,8 @@
   New-Alias gh    Get-HelpWindow
   New-Alias ghc   Get-Help
   New-Alias ga    Get-Alias
+  New-Alias gle   Set-LogEntry
+  New-Alias Get-KnownFolders Get-SpecialFolders
 #endregion
 
 

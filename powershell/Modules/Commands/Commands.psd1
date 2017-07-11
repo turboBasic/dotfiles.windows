@@ -65,7 +65,7 @@
       'include/Get-EnvironmentPath.ps1', 
       'include/Get-GistMao.ps1', 
       'include/Get-GuiHelp.ps1', 
-      'include/Get-HelpWindow.ps1', 
+      'include/Get-HelpWindow.ps1',
       'include/Get-SpecialFolders.ps1', 
       'include/Get-StringHash.ps1', 
       'include/IsNull.ps1', 
@@ -76,6 +76,8 @@
       'include/Remove-LeadingSpace.ps1',
       'include/Send-NetMessage.ps1',
       'include/Set-FileTime.ps1', 
+      'include/Set-LogEntry.ps1', 
+      'include/Update-HelpFiles.ps1', 
       'include/Write-Log.ps1',
       'include/Write-VariableDump.ps1'
   )
@@ -107,7 +109,7 @@
                 'include/Get-EnvironmentPath.ps1', 
                 'include/Get-GistMao.ps1', 
                 'include/Get-GuiHelp.ps1', 
-                'include/Get-HelpWindow.ps1', 
+                'include/Get-HelpWindow.ps1',
                 'include/Get-SpecialFolders.ps1', 
                 'include/Get-StringHash.ps1', 
                 'include/IsNull.ps1', 
@@ -115,6 +117,8 @@
                 'include/New-Shortcut.ps1', 
                 'include/New-SymLink.ps1', 
                 'include/Set-FileTime.ps1', 
+                'include/Set-LogEntry.ps1', 
+                'include/Update-HelpFiles.ps1',
                 'include/Write-Log.ps1',
                 'include/Write-VariableDump.ps1'
   )

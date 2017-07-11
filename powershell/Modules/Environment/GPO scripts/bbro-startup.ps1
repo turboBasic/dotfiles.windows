@@ -1,23 +1,28 @@
 # Machine startup script %systemRoot%\System32\GroupPolicy\Machine\Scripts\Startup\bbro-startup.ps1 
 
-  #region write info to log file
+  #region     initialization
 
-    Function Write-Log {  PARAM($logFile,$Description)
-        $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-        $Str += '{0,-22} {1,-18} {2,-75}' -f $Description, (Split-Path $PSCommandPath -Leaf), $PSCommandPath
-        $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
-    }
+      # Default Log filename for Write-Log
+      $PSDefaultParameterValues = @{
+        'Write-Log:FilePath' = 
+              "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"     
+      }
 
+      #TODO d: or e:
+      $subModulePath =     'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
+      $commandModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Commands/include'
 
-    Write-Log @{ 
-        logFile =     "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"
-        Description = 'Machine startup script'
-    }
+      . "$subModulePath/Import-Environment.ps1"
+      . "$commandModulePath/Set-LogEntry.ps1"
+      . "$commandModulePath/Write-Log.ps1"
 
   #endregion
 
-  #TODO d: or e:
-  $subModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
+  "`n[{0,-14} {1}]" -f 'header machine', (Set-LogEntry) | Out-String | Write-Log
+
+  'Machine startup script {0,-22}, full path: {1}' -f 
+        (Split-Path $PSCommandPath -Leaf), $PSCommandPath | 
+        Write-Log
 
   $__sys_variables = @{
     '..homeDrive' =             'C:'
@@ -31,9 +36,9 @@
     psModulePath=               '%PROGRAMFILES%\windowsPowerShell\modules',
                                 '%..psHome%\modules' -join ';'
 
-    choco =                     'C:\programData\chocolatey'
-    chocolateyInstall =         'C:\programData\chocolatey'
-    chocoPath =                 'C:\programData\chocolatey\bin'
+    choco =                     '%ALLUSERSPROFILE%\chocolatey'
+    chocolateyInstall =         '%ALLUSERSPROFILE%\chocolatey'
+    chocoPath =                 '%ALLUSERSPROFILE%\chocolatey\bin'
                                 
     '..tools' =                 '%systemDRIVE%\tools'
     tools =                     '%systemDRIVE%\tools'
@@ -47,28 +52,28 @@
     chocolateyToolsLocation =   '%..tools%'
 
     githubApi =                 'https://api.github.com'
-    git =                       '%PROGRAMFILES%\git'
-    git_Install_Root =          '%PROGRAMFILES%\git'
+    git =                       '%COMMONPROGRAMFILES%\..\git'
+    git_Install_Root =          '%COMMONPROGRAMFILES%\..\git'
 
-    gitPath =                   '%PROGRAMFILES%\git\cmd',
-                                '%PROGRAMFILES%\git',
-                                '%PROGRAMFILES%\git\mingw64\bin',
-                                '%PROGRAMFILES%\git\usr\bin' -join ';'
+    gitPath =                   '%COMMONPROGRAMFILES%\..\git\cmd',
+                                '%COMMONPROGRAMFILES%\..\git',
+                                '%COMMONPROGRAMFILES%\..\git\mingw64\bin',
+                                '%COMMONPROGRAMFILES%\..\git\usr\bin' -join ';'
 
-    kdiff3 =                    '%PROGRAMFILES%\kdiff3'
-    'notepad++' =               '%PROGRAMFILES(X86)%\Notepad++\notepad++.exe'
+    kdiff3 =                    '%COMMONPROGRAMFILES%\..\kdiff3'
+    'notepad++' =               '%COMMONPROGRAMFILES%\..\Notepad++\notepad++.exe'
     '..userRoot' =              '\users' 
 
-    '..scoopGlobal'=            'C:\programData\scoop'
-    scoop_Global=               '%PROGRAMDATA%\scoop'
+    '..scoopGlobal'=            '%ALLUSERSPROFILE%\scoop'
+    scoop_Global=               '%ALLUSERSPROFILE%\scoop'
 
     TEMP=                       '%systemROOT%\temp'
     TMP=                        '%systemROOT%\temp'
 
-    junkPath =                  '%PROGRAMFILES(X86)%\skype\phone',
-                                '%PROGRAMFILES(X86)%\brackets\command',
-                                '%PROGRAMFILES%\microsoft SQL Server\130\tools\binn',
-                                '%PROGRAMDATA%\oracle\java\javapath' -join ';'
+    junkPath =                  '%COMMONPROGRAMFILES(X86)%\..\skype\phone',
+                                '%COMMONPROGRAMFILES(X86)%\..\brackets\command',
+                                '%COMMONPROGRAMFILES%\..\microsoft SQL Server\130\tools\binn',
+                                '%ALLUSERSPROFILE%\oracle\java\javapath' -join ';'
 
     PATH =                      '%..systemBin%',
                                 '%systemROOT%',
@@ -80,16 +85,13 @@
                                 '%gitPath%' -join ';'
   }
 
-
-  Write-Verbose "Executing Machine Startup script $psCommandPath"
-  . "$subModulePath/Import-Environment.ps1"
-
   Import-Environment -Environment $__sys_variables -Scope Machine
 
+  "`n[{0,-14} {1}]" -f 'body machine', (Set-LogEntry) | Out-String | Write-Log
   Get-ChildItem ENV: | 
-      Out-String | 
-      Out-File "$subModulePath/Set-MachineEnvironment-Initial-env.txt" -Encoding UTF8
-
+      Out-String -Width 2048 -Stream | 
+      ForEach { $_.TrimEnd() } | 
+      Write-Log
 
   #region extra information
 

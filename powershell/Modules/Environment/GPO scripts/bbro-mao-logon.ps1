@@ -1,26 +1,29 @@
 # User Logon script %systemRoot%\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1 
 
-  #region write info to log file
+  #region     initialization
 
-    Function Write-Log {  PARAM($logFile,$Description)
-        $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-        $Str += '{0,-22} {1,-18} {2,-75}' -f $Description, (Split-Path $PSCommandPath -Leaf), $PSCommandPath
-        $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
-    }
+      # Default Log filename for Write-Log
+      $PSDefaultParameterValues = @{
+        'Write-Log:FilePath' = 
+              "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"     
+      }
 
+      #TODO d: or e:
+      $subModulePath =     'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
+      $commandModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Commands/include'
 
-    Write-Log @{ 
-        logFile =     "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"
-        Description = 'User logon script'
-    }
-
-    Send-NetMessage $Str
+      . "$subModulePath/Import-Environment.ps1"
+      . "$commandModulePath/Set-LogEntry.ps1"
+      . "$commandModulePath/Write-Log.ps1"
 
   #endregion
 
+  "`n[{0,-14} {1}]" -f 'header user', (Set-LogEntry) | Out-String | Write-Log
 
-  #TODO d: or e:
-  $subModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Environment/include'
+  'User logon script {0,-22}, full path: {1}' -f 
+        (Split-Path $PSCommandPath -Leaf), $PSCommandPath | 
+        Write-Log
+  Send-NetMessage "User logon script $PSCommandPath"
 
   $__user_variables = @{ 
 
@@ -62,16 +65,13 @@
     ubuntu =                 '%LOCALAPPDATA%\lxss\rootfs'
   }
 
-
-  Write-Verbose "Executing User Logon script $psCommandPath"
-  . "$subModulePath/Import-Environment.ps1"
-
   Import-Environment -Environment $__user_variables -Scope User
 
+  "`n[{0,-14} {1}]" -f 'body user', (Set-LogEntry) | Out-String | Write-Log
   Get-ChildItem ENV: | 
-      Out-String | 
-      Out-File "$subModulePath/Set-UserEnvironment-Initial-env.txt" -Encoding UTF8
-
+      Out-String -Width 2048 -Stream | 
+      ForEach { $_.TrimEnd() } |
+      Write-Log
 
   #region extra information
 

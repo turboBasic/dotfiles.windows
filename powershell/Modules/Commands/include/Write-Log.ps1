@@ -1,16 +1,26 @@
 Function Write-Log { 
-    [CMDLETBINDING()]
-    PARAM( 
-        [PARAMETER( Mandatory, Position=0 )]
-        [String]
-        $logFile,
-        
-        [PARAMETER( Mandatory, Position=1 )]
-        [String]
-        $Message
-    )
+  [CMDLETBINDING()]
+  PARAM( 
+      [PARAMETER( Mandatory, Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName )]
+      [ALLOWEMPTYSTRING()]
+      [ALLOWNULL()]
+      [String[]]
+      $Message,
 
-    $Str  = Get-Date -uFormat "%Y.%m.%d %H:%M:%S - "
-    $Str += $Message, (Split-Path $PSCommandPath -Leaf), $PSCommandPath
-    $Str | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+      [PARAMETER( Mandatory, Position=1, ValueFromPipelineByPropertyName )]
+      [ALIAS('FilePath')]
+      [String]
+      $logFile
+  )
+
+  BEGIN{}
+
+  PROCESS{
+      foreach($m in $Message) {
+          $m | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+      }
+  }
+
+  END{}
 }
+
