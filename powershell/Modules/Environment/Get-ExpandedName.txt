@@ -1,0 +1,26 @@
+C:\> (Get-ExpandedName Path Machine -exp).        C:\> (Get-ExpandedName Path User -exp).               C:\> (Get-ExpandedName Path Process -exp).
+     value -split ';'                                  value -split ';'                                      value -split ';'
+
+C:\WINDOWS\system32                                                                                     C:\WINDOWS\system32
+C:\WINDOWS                                                                                              C:\WINDOWS
+C:\WINDOWS\system32\wbem                                                                                C:\WINDOWS\system32\wbem
+C:\WINDOWS\system32\windowsPowerShell\v1.0                                                              C:\WINDOWS\system32\windowsPowerShell\v1.0
+C:\ProgramData\chocolatey\bin                                                                           C:\ProgramData\chocolatey\bin
+C:\ProgramData\scoop\shims                                                                              C:\ProgramData\scoop\shims
+C:\tools\cmderMini                                                                                      C:\tools\cmderMini
+C:\tools\cmderMini\bin                                                                                  C:\tools\cmderMini\bin
+C:\tools\cmderMini\vendor\conemu-maximus5                                                               C:\tools\cmderMini\vendor\conemu-maximus5
+C:\tools\cmderMini\vendor\conemu-maximus5\conemu                                                        C:\tools\cmderMini\vendor\conemu-maximus5\conemu
+C:\program files\git\cmd                                                                                C:\program files\git\cmd
+C:\program files\git                                                                                    C:\program files\git
+C:\program files\git\mingw64\bin                                                                        C:\program files\git\mingw64\bin
+C:\program files\git\usr\bin                                                                            C:\program files\git\usr\bin
+                                                  C:\users\mao\bin                                      C:\users\mao\bin
+                                                  C:\users\mao\scoop\shims                              C:\users\mao\scoop\shims
+                                                  C:\users\mao\scoop\apps\nvm\current\nodeJs            C:\users\mao\scoop\apps\nvm\current\nodeJs
+                                                  C:\Users\mao\AppData\Roaming\boxStarter               C:\Users\mao\AppData\Roaming\boxStarter
+                                                  C:\oneDrive\01_portable_apps                          C:\oneDrive\01_portable_apps
+                                                  C:\Program Files (x86)\skype\phone                    C:\Program Files (x86)\skype\phone
+                                                  C:\Program Files (x86)\brackets\command               C:\Program Files (x86)\brackets\command
+                                                  C:\Program Files\microsoft SQL Server\130\tools\binn  C:\Program Files\microsoft SQL Server\130\tools\binn
+                                                  C:\ProgramData\oracle\java\javapath                   C:\ProgramData\oracle\java\javapath

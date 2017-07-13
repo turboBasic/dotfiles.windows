@@ -3,17 +3,17 @@ Function Import-Environment {
   #region Parameters
     [CMDLETBINDING( SupportsShouldProcess, ConfirmImpact='Medium' )]
     PARAM(
-            [PARAMETER( Mandatory, Position=0, ValueFromPipeline )]
-            [Hashtable]
-            $Environment,
+        [PARAMETER( Mandatory, Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName )]
+        [Hashtable]
+        $Environment,
 
-            [PARAMETER( Mandatory, Position=1 )]
-            [String]
-            $Scope,
+        [PARAMETER( Mandatory, Position=1 )]
+        [EnvironmentScope]
+        $Scope,
 
-            [PARAMETER( HelpMessage='Reset environment' )]
-            [Switch]
-            $Initialise 
+        [PARAMETER()]  # Reset environment
+        [Switch]
+        $Initialise 
     )
   #endregion
 

@@ -14,6 +14,7 @@
       $commandModulePath = 'e:/0projects/dotfiles.windows/powershell/Modules/Commands/include'
 
       . "$subModulePath/Import-Environment.ps1"
+      . "$subModulePath/Get-Environment.ps1"
       . "$commandModulePath/Set-LogEntry.ps1"
       . "$commandModulePath/Write-Log.ps1"
 
@@ -77,11 +78,22 @@
 
   Import-Environment -Environment $__user_variables -Scope User
 
-
+  $a = Get-Environment -Name Path -Scope Machine -expand | Select -expandproperty Value| %{ $_ -split ';'}   #| Sort
+  $b = Get-Environment -Name Path -Scope User -expand | Select -expandproperty Value| %{ $_ -split ';'}      #| Sort
 
 
   "`n[{0,-14} {1}]" -f 'body user', (Set-LogEntry) | Out-String | Write-Log
-  Get-ChildItem ENV: | 
-      Out-String -Width 2048 -Stream | 
-      ForEach { $_.TrimEnd() } |
-      Write-Log
+  Get-Environment * -Scope User |
+          select Name, Value |
+          ForEach { if($_.Name -NotIn @('Path', 'gitPath', 'cmderPath', 'junkPath')){
+                      [psCustomObject][ordered]@{ Name=$_.Name; Value=$_.Value; Expanded=(Get-ExpandedName $_.Name -Scope User -Expand).Value }
+                    } else {
+                      $paths = $_.Value -split ';'
+                      $pathsExpanded = (Get-ExpandedName $_.Name -Scope User -Expand).Value -split ';'
+                      [psCustomObject][ordered]@{ Name=$_.Name; Value=$paths[0]; Expanded=$pathsExpanded[0] }
+                      1..$paths.GetUpperBound(0) |
+                          ForEach { 
+                              [psCustomObject][ordered]@{ Name=' '; Value=$paths[$_]; Expanded=$pathsExpanded[$_] }
+                          }
+                    }
+          }

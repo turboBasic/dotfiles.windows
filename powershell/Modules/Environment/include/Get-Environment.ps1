@@ -1,72 +1,82 @@
 Function Get-Environment {
-  <#  
-  .SYNOPSIS
-    This cmdlet queries Windows Registry for Environment variables based on number of criteria.  The main difference comparing with 
-    [Environment]:: methods and $env:variable approach is that
-    1) you can specify the scope (eg. User or Machine ) which allows you to access system and user variables independently and
-    2) you get %unexpanded% variables which keeps you aware of small details of how your resulting environment built
-    3) you can get variables from Volatile (a.k.a. Session) scope which are not returned by `SET` and `Get-ChildItem env:` commands
-    4) it fully supports Powershell's pipelines so you can push and pull the data in very exotic and delicate way.
+<#
 
-  .DESCRIPTION
-    Get-Environment: queries Windows registry for Process, Volatile (Session), User and System Environment variables based on number of criteria.
+.SYNOPSIS
+  This cmdlet queries Windows Registry for Environment variables based on number of criteria.  The main difference comparing with 
+  [Environment]:: methods and $env:variable approach is that
+  1) you can specify the scope (eg. User or Machine ) which allows you to access system and user variables independently and
+  2) you get %unexpanded% variables which keeps you aware of small details of how your resulting environment built
+  3) you can get variables from Volatile (a.k.a. Session) scope which are not returned by `SET` and `Get-ChildItem env:` commands
+  4) it fully supports Powershell's pipelines so you can push and pull the data in very exotic and delicate way.
 
-  .NOTES
-    Created on: 10.06.2017
-    Created by: Andriy Melnyk
-    Filename:   Environment.psm1
-    Credits:    Sorry for this but I have lost the initial source code which inspired me.  Will keep you posted, need to get through my bookmarks archive and web history...
+.DESCRIPTION
+  Get-Environment: queries Windows registry for Process, Volatile (Session), User and System Environment variables based on number of criteria.
 
-  .PARAMETER Names
-    Name(s) of environment variable. You can save some typing ("-Names") if variable name is the 1st parameter of the call.  
-    Accepts multiple values and standard Powershell wildcards (eg. *, ?, [a-z]).
+.PARAMETER Names
+  Name(s) of environment variable. You can save some typing ("-Names") if variable name is the 1st parameter of the call.  
+  Accepts multiple values and standard Powershell wildcards (eg. *, ?, [a-z]).
 
-  .PARAMETER Scope
-    Specifies scope for environment variables to be taken from (Process, Volatile, User, Machine). Accepts multiple scope values and "*".
+.PARAMETER Scope
+  Specifies scope for environment variables to be taken from (Process, Volatile, User, Machine). Accepts list of multiple scope values and wildcard "*".
 
-  .EXAMPLE
-    PS> Get-Environment -Names Temp -Scope User
+.INPUTS
+    Takes variable names from [string[]] object from the pipeline.  Also capable of taking an array of scopes from pipeline properties.
 
-    Scope      Names      Value
-    -----      ----       -----
-    User       TEMP       %USERPROFILE%\AppData\Local\Temp
+.OUTPUTS
+    Outputs to the pipeline [System.Array] object containing [psCustomObject] type items
 
-  .EXAMPLE
-    PS> Get-Environment Temp -Scope User, Machine
+.EXAMPLE
+PS> Get-Environment -Names Temp -Scope User
 
-    Scope      Names      Value
-    -----      ----       -----
-    User       TEMP       %USERPROFILE%\AppData\Local\Temp
-    Machine    TEMP       %SystemRoot%\TEMP
+Scope      Names      Value
+-----      ----       -----
+User       TEMP       %USERPROFILE%\AppData\Local\Temp
 
-  .EXAMPLE
-    PS> Get-Environment "Temp" 
+.EXAMPLE
+PS> Get-Environment Temp -Scope User, Machine
 
-    Scope      Names      Value
-    -----      ----       -----
-    Process    TEMP       c:\Users\kid\AppData\Local\Temp
+Scope      Names      Value
+-----      ----       -----
+User       TEMP       %USERPROFILE%\AppData\Local\Temp
+Machine    TEMP       %SystemRoot%\TEMP
 
-  .EXAMPLE
-    PS> Get-Environment *data -Scope User, Volatile
+.EXAMPLE
+PS> Get-Environment "Temp" 
 
-    Scope      Names      Value
-    -----      ----       ----=
-    ......                
+Scope      Names      Value
+-----      ----       -----
+Process    TEMP       c:\Users\kid\AppData\Local\Temp
 
-  .EXAMPLE
-    PS> "ChocolateyInstall", "Scoop", "Git_Install_Root", "Cmder_Root" | Get-Environment -Scope Machine | Add-Content "~\.envvars.backup.txt"
+.EXAMPLE
+PS> Get-Environment *data -Scope User, Volatile
 
-  .EXAMPLE
-    PS> Get-Content "~\Desktop\vars.txt" | iex |
-        Select @{ label = 'name'; expression = {$_.value} } |
-        Get-Environment -Scope Machine  
-  #>
+Scope      Names      Value
+-----      ----       ----=
+......                
+
+.EXAMPLE
+PS> "ChocolateyInstall", "Scoop", "Git_Install_Root", "Cmder_Root" | Get-Environment -Scope Machine | Add-Content "~\.envvars.backup.txt"
+
+.EXAMPLE
+PS> Get-Content "~\Desktop\vars.txt" | iex |
+    Select @{ label = 'name'; expression = {$_.value} } |
+    Get-Environment -Scope Machine  
+
+.NOTES
+  Created on: 10.06.2017
+  Author:     Andriy Melnyk  https://github.com/TurboBasic/
+  Filename:   Get-Environment.ps1
+  Credits:    Sorry for this but I have lost the initial source code which inspired me.  Will keep you posted, need to get through my bookmarks archive and web history...
+#>
+
+
+
 
   #region FunctionParameters
     [CMDLETBINDING( PositionalBinding=$False )]
     [OUTPUTTYPE( [System.Array] )]
     PARAM(
-        [PARAMETER( Mandatory, Position= 0, ValueFromPipeline,  ValueFromPipelineByPropertyName )]
+        [PARAMETER( Mandatory, Position=0, ValueFromPipeline,  ValueFromPipelineByPropertyName )]
         [VALIDATENOTNULLOREMPTY()]  
         [String[]] 
         $Names,
@@ -86,11 +96,13 @@ Function Get-Environment {
     )
   #endregion
 
+
+
   BEGIN {
-    . (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
+#    . (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
     Write-Verbose "Get-Environment: `$Names=$Names, `$Scope=$Scope, `$Expand=$Expand"
     if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Scope)) {
-      $Scope = [enum]::GetNames([EnvironmentScope])
+      $Scope = [enum]::GetNames([EnvironmentScope]) | Where { $_ -like $Scope }
     }
     $res = @()
   }
@@ -103,13 +115,13 @@ Function Get-Environment {
       Write-Verbose "Get-Environment: $type variable name request: `$Name: $name, `$Scope: $Scope, `$Expand: $Expand"
 
       foreach ($_scope in $Scope) {
-        $res += (Get-ExpandedName $name $_scope $Expand)
+        $res += (Get-ExpandedName -Name $name -Scope $_scope $Expand)
       }
     }
   }
 
   END {
-    $res | Sort-Object -Property Scope, Name, Value | Select-Object Scope, Name, Value -Unique
+    $res | Sort -Property Scope, Name, Value # | Select Scope, Name, Value -Unique
   }
 
 }

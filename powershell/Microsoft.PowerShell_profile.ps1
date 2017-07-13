@@ -101,8 +101,12 @@
 
 
   if( -Not(Get-Command Initialize-Localization -EA 0) ) {
-    Import-module Environment
+    Import-module Environment -Force
   }
+  . (Join-Path $PsScriptRoot '/modules/Environment/include/Add-EnvironmentScopeType.ps1')
+
+
+
   Initialize-Localization (ConvertTo-Hashtable $assets)
   Set-Localisation 'uk-UA'
 

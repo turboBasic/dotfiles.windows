@@ -59,6 +59,7 @@
       'include/Export-Environment.ps1', 
       'include/Get-Environment.ps1',
       'include/Get-EnvironmentKey.ps1',
+      'include/Get-EnvironmentTable.ps1',
       'include/Get-ExpandedName.ps1',
       'include/Import-Environment.ps1',
       'include/Remove-EnvironmentVariable.ps1',
@@ -93,6 +94,7 @@
         'include/Export-Environment.ps1', 
         'include/Get-Environment.ps1', 
         'include/Get-EnvironmentKey.ps1',
+        'include/Get-EnvironmentTable.ps1',
         'include/Get-ExpandedName.ps1'
         'include/Import-Environment.ps1', 
         'include/Remove-EnvironmentVariable.ps1',

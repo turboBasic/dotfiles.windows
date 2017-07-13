@@ -17,6 +17,7 @@
 
 
       . "$subModulePath/Import-Environment.ps1"
+      . "$subModulePath/Get-Environment.ps1"
       . "$commandModulePath/Set-LogEntry.ps1"
       . "$commandModulePath/Write-Log.ps1"
 
@@ -43,7 +44,7 @@
                                 
     '..psHome'=                 '%systemROOT%\system32\windowsPowerShell\v1.0'
     psHome=                     '%systemROOT%\system32\windowsPowerShell\v1.0'
-    psModulePath=               '%PROGRAMFILES%\windowsPowerShell\modules',
+    psModulePath=               'C:\program files\windowsPowerShell\modules',
                                 '%..psHome%\modules' -join ';'
 
     choco =                     '%ALLUSERSPROFILE%\chocolatey'
@@ -62,17 +63,17 @@
     chocolateyToolsLocation =   '%..tools%'
 
     githubApi =                 'https://api.github.com'
-    git =                       '%..programFiles%\git'
-    git_Install_Root =          '%..programFiles%\git'
+    git =                       'C:\program files\git'
+    git_Install_Root =          'C:\program files\git'
 
-    '..programFiles' =          '%..homeDrive%\Program Files'
-    gitPath =                   '%..programFiles%\git\cmd',
-                                '%..programFiles%\git',
-                                '%..programFiles%\git\mingw64\bin',
-                                '%..programFiles%\git\usr\bin' -join ';'
+    '..programFiles' =          '%..homeDrive%\program files'
+    gitPath =                   'C:\program files\git\cmd',
+                                'C:\program files\git',
+                                'C:\program files\git\mingw64\bin',
+                                'C:\program files\git\usr\bin' -join ';'
 
-    kdiff3 =                    '%..programFiles%\kdiff3'
-    'notepad++' =               '%..programFiles%\Notepad++\notepad++.exe'
+    kdiff3 =                    'C:\program files\kdiff3'
+    'notepad++' =               'C:\program files\Notepad++\notepad++.exe'
     '..userRoot' =              '\users' 
 
     '..scoopGlobal'=            '%ALLUSERSPROFILE%\scoop'
@@ -81,10 +82,10 @@
     TEMP=                       '%systemROOT%\temp'
     TMP=                        '%systemROOT%\temp'
 
-    '..programFilesX86' =       '%..homeDrive%\Program Files (x86)'
-    junkPath =                  '%..programFilesX86%\skype\phone',
-                                '%..programFilesX86%\brackets\command',
-                                '%..programFiles%\microsoft SQL Server\130\tools\binn',
+    '..programFilesX86' =       '%..homeDrive%\program files (x86)'
+    junkPath =                  'C:\program files (x86)\skype\phone',
+                                'C:\program files (x86)\brackets\command',
+                                'C:\program files\microsoft SQL Server\130\tools\binn',
                                 '%ALLUSERSPROFILE%\oracle\java\javapath' -join ';'
 
     PATH =                      '%..systemBin%',
@@ -104,7 +105,17 @@
 
 
   "`n[{0,-14} {1}]" -f 'body machine', (Set-LogEntry) | Out-String | Write-Log
-  Get-ChildItem ENV: | 
-      Out-String -Width 2048 -Stream | 
-      ForEach { $_.TrimEnd() } | 
-      Write-Log
+  Get-Environment * -Scope Machine |
+          select Name, Value |
+          ForEach { if($_.Name -NotIn @('Path', 'gitPath', 'cmderPath', 'junkPath')){
+                      [psCustomObject][ordered]@{ Name=$_.Name; Value=$_.Value; Expanded=(Get-ExpandedName $_.Name -Scope Machine -Expand).Value }
+                    } else {
+                      $paths = $_.Value -split ';'
+                      $pathsExpanded = (Get-ExpandedName $_.Name -Scope Machine -Expand).Value -split ';'
+                      [psCustomObject][ordered]@{ Name=$_.Name; Value=$paths[0]; Expanded=$pathsExpanded[0] }
+                      1..$paths.GetUpperBound(0) |
+                          ForEach { 
+                              [psCustomObject][ordered]@{ Name=' '; Value=$paths[$_]; Expanded=$pathsExpanded[$_] }
+                          }
+                    }
+          }

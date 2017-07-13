@@ -3,7 +3,7 @@
   # We do not dot source the individual scripts because loadin of subscripts
   # is executed automatically using `NestedModules` parameter in Commands.psd1
 
-  Write-Host -ForegroundColor Green "Module $(Split-Path $PSScriptRoot -Leaf) was successfully loaded."
+  # Write-Host -ForegroundColor Green "Module $(Split-Path $PSScriptRoot -Leaf) was successfully loaded."
 
 #endregion
 
@@ -31,6 +31,7 @@
   New-Alias ghc   Get-Help
   New-Alias ga    Get-Alias
   New-Alias gle   Set-LogEntry
+  New-Alias gts   Get-TimeStamp
   New-Alias Get-KnownFolders Get-SpecialFolders
 #endregion
 

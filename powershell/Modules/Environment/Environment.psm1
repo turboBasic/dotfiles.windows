@@ -24,11 +24,11 @@
 
 
 #region Create aliases for functions
-  New-Alias -Name genv  Get-Environment                     -EA SilentlyContinue
-  New-Alias -Name ge    Get-Environment                     -EA SilentlyContinue
-  New-Alias -Name senv  Set-Environment                     -EA SilentlyContinue
-  New-Alias -Name se    Set-Environment                     -EA SilentlyContinue
-  New-Alias -Name rmenv Remove-EnvironmentVariable          -EA SilentlyContinue
+  New-Alias -Name genv  Get-Environment            -EA SilentlyContinue
+  New-Alias -Name ge    Get-Environment            -EA SilentlyContinue
+  New-Alias -Name senv  Set-Environment            -EA SilentlyContinue
+  New-Alias -Name se    Set-Environment            -EA SilentlyContinue
+  New-Alias -Name rmenv Remove-EnvironmentVariable -EA SilentlyContinue
 #endregion
 
 
@@ -37,6 +37,9 @@
 
 
 #region add custom Data types
+
+  . Join-Path $PSScriptRoot 'include/Add-EnvironmentScopeType.ps1'
+
 #endregion add custom Data Types
 
 
@@ -93,7 +96,7 @@ Function Set-Localisation([String]$language='en-US') {
 
   Set-Variable __defaultLanguage -Scope Global -Value $Script:__localizationAssets.languages[0]        # en-US
   Set-Variable __currentLanguage -Scope Global -Value $Script:__localizationAssets.languages[0]
-  New-Variable __messages        -Scope Global
+  New-Variable __messages        -Scope Global -Force
 
   $isDefault = $language -eq $Global:__defaultLanguage
   $isValid   = $language -in $Script:__localizationAssets.languages
