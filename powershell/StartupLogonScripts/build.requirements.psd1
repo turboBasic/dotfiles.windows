@@ -6,11 +6,13 @@
     }
 
     # Grab some modules without depending on PowerShellGet
-    'psake' = @{ DependencyType = 'PSGalleryNuget' }
-    'PSDeploy' = @{ DependencyType = 'PSGalleryNuget' }
-    'BuildHelpers' = @{ DependencyType = 'PSGalleryNuget' }
+    'psake' = @{ DependencyType = 'PSGalleryModule' }
+    'PSDeploy' = @{ DependencyType = 'PSGalleryModule' }
+    'BuildHelpers' = @{ DependencyType = 'PSGalleryModule' }
     'Pester' = @{
-        DependencyType = 'PSGalleryNuget'
+        DependencyType = 'PSGalleryModule'
         Version = '3.4.6'
+        #DependencyType = 'FileDownload'
+        #Source = 'https://github.com/pester/Pester/archive/4.0.3-rc.zip'
     }
 }
