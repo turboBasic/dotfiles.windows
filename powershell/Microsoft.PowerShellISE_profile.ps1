@@ -1,34 +1,33 @@
 function loadProfile {
-    $globalVars = 'GlobalVariables.ps1'
+    $globalVars = 'Set-UserGlobalVariables.ps1'
     $savedVerbosePreference = $VerbosePreference
     $VerbosePreference = 'Continue'
 
-    $s = @($PSScriptRoot, "$PSScriptRoot/_profiles", '.') | %{ Convert-Path "$_/$globalVars" -ErrorAction SilentlyContinue } | ? { Test-Path $_ } | Select -First 1
+    . "$PSScriptRoot/Modules/Commands/include/Get-GistMao.ps1"
+    . "$PSScriptRoot/Modules/Commands/include/ConvertTo-Hashtable.ps1"
+
+    $s = @( (Join-Path (Split-Path $profile -parent) '/Modules/Environment/include/'),
+            (Join-Path $PSScriptRoot '/Modules/Environment/include/') ) | 
+          ForEach { Convert-Path "$_/$globalVars" -ErrorAction SilentlyContinue } | 
+          Where { Test-Path $_ } | 
+          Select -First 1
+
     if($s) {
         Write-Verbose 'Global Variables found -- setting them up...'
         . $s
-        Set-GlobalVariables
+        Set-UserGlobalVariables
     } else {
-        Write-Error 'Global Variables are not set -- file GlobalVariables.ps1 not found'
+        Write-Error "Global Variables are not set -- file $globalVars not found"
         if ($__profile -eq $null) {
             $VerbosePreference = $savedVerbosePreference 
             Break 
         }
     }
 
-    $addonDir = 'ISE_profile'
-    $sourceBaseDir = "$__projects/dotfiles.windows/powershell/$addonDir"
-    Write $sourceBaseDir
-    Copy-Item -Recurse -filter *.ps1 -Force $sourceBaseDir "$__profileDir/" 
+    "$__profileDir/ISE_profile/*.ps1" | 
+            ForEach { . (Convert-Path $_) } 
 
-    $includes = @(
-      "$__profileDir/$addonDir/*.ps1"
-    )
-
-    $includes | %{ Convert-Path $_ } | %{ . $_ }
     $VerbosePreference = $savedVerbosePreference
 }
 
 loadProfile
-
-
