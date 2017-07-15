@@ -73,24 +73,8 @@
               "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"     
       }
 
-      $projectsDir = ${ENV:projects}, 'C:\0projects', 'D:\0projects', 'E:\0projects' |
-              Where { $_ } | Where { Test-Path $_ } | Select -first 1
 
-      #TODO d: or e:
-      $envModulePath     = "$projectsDir/dotfiles.windows/powershell/Modules/Environment/include"
-      $commandModulePath = "$projectsDir/dotfiles.windows/powershell/Modules/Commands/include"
-
-      . "$envModulePath/Add-EnvironmentScopeType.ps1"
-      . "$envModulePath/Import-Environment.ps1"
-      . "$envModulePath/Get-Environment.ps1"
-      . "$envModulePath/Get-EnvironmentKey.ps1"
-      . "$envModulePath/Get-ExpandedName.ps1"
-      . "$envModulePath/Set-Environment.ps1"
-      . "$envModulePath/Send-EnvironmentChanges.ps1"
-      . "$commandModulePath/Set-LogEntry.ps1"
-      . "$commandModulePath/Write-Log.ps1"
-      . "$commandModulePath/IsNull.ps1"
-
+      Get-ChildItem "$psScriptRoot/include/*.ps1" | ForEach { . $_ }
 
       if( IsNull (Get-ItemProperty -Path 'HKLM:\Software\Cargonautika').NextBoot ) {
           Write-Verbose 'No requests to initialize. exiting...'
