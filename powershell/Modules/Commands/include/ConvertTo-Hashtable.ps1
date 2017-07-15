@@ -8,6 +8,7 @@ Function ConvertTo-Hashtable {
           array arguments for bulk processing 
 
   #>
+
   [CMDLETBINDING()] 
   PARAM( 
       [PARAMETER( Position=0, Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName )]

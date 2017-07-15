@@ -87,7 +87,7 @@ Created: 2017.03.10 10:54:31.713
 
     { $_ -in @('Volatile', 'User', 'Machine') } {
 
-      $key = Get-EnvironmentKey -Scope $Scope -Write:$False
+      $key = Get-EnvironmentKey -From $Scope -Write:$False
       $res = $key.GetValueNames() | 
                 Where { $_ -like $Name } |
                 ForEach { 
