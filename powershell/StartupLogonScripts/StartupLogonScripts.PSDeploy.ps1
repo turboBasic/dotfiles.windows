@@ -3,11 +3,10 @@ $modEnvironment = "$modulesRoot/Environment/include"
 $modCommands =    "$modulesRoot/Commands/include"
 $destRoot =       "${ENV:systemROOT}/system32/GroupPolicy"
 
-Deploy StartupLogonScripts {   
-                                                      # Deployment name. This needs to be unique. Call it whatever you want
-    By Filesystem User {                                  # Deployment type. See Get-PSDeploymentType
-        FromSource "$PSScriptRoot/_src/bbro-mao-logon.ps1"                   # One or more sources to deploy. Absolute, or relative to deployment.yml paren
-        To         "$destRoot/User/Scripts/Logon"                       # One or more destinations to deploy the sources to
+Deploy StartupLogonScripts {                                # Deployment name. This needs to be unique. Call it whatever you want
+    By Filesystem User {                                    # Deployment type. See Get-PSDeploymentType
+        FromSource "$PSScriptRoot/_src/bbro-mao-logon.ps1"  # One or more sources to deploy. Absolute, or relative to deployment.yml paren
+        To         "$destRoot/User/Scripts/Logon"           # One or more destinations to deploy the sources to
         DependingOn CommonModules
     }
 

@@ -21,7 +21,7 @@ Function ConvertTo-Hashtable {
      
   PROCESS {
     foreach ($_object in $Object) {
-        $output = @{ } 
+        $output = [ordered]@{ } 
         $_object | Get-Member -MemberType *Property | % { 
             $output.($_.name) = $_object.($_.name) 
         }

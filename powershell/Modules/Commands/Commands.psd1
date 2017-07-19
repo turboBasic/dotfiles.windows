@@ -3,19 +3,19 @@
   RootModule = './Commands.psm1'
 
   # Version number of this module.
-  ModuleVersion = '1.1.1'
+  ModuleVersion = '1.1.2'
 
   # ID used to uniquely identify this module
   GUID = '4123ac51-202e-4b9b-8573-9e20e6d2062c'
 
   # Author of this module
-  Author = 'Andriy Melnyk @TurboBasic'
+  Author = 'Andriy Melnyk @turboBasic'
 
   # Company or vendor of this module
   CompanyName = 'private'
 
   # Copyright statement for this module
-  Copyright = '2017 Andriy Melnyk @TurboBasic'
+  Copyright = '2017 Andriy Melnyk @turboBasic https://github.com/turboBasic'
 
   # Description of the functionality provided by this module
   Description = 'Generic system management utilies.'
@@ -61,6 +61,7 @@
       'include/ConvertTo-Hashtable.ps1', 
       'include/Copy-Tree.ps1', 
       'include/Expand-HashtableSelfReference.ps1',
+      'include/Format-String.ps1',
       'include/Get-ConsoleColor.ps1', 
       'include/Get-EnvironmentPath.ps1', 
       'include/Get-GistMao.ps1', 
@@ -106,6 +107,7 @@
                 'include/ConvertTo-Hashtable.ps1', 
                 'include/Copy-Tree.ps1', 
                 'include/Expand-HashtableSelfReference.ps1',
+                'include/Format-String.ps1',
                 'include/Get-ConsoleColor.ps1', 
                 'include/Get-EnvironmentPath.ps1', 
                 'include/Get-GistMao.ps1', 
@@ -141,7 +143,7 @@
             # LicenseUri = ""
 
             # A URL to the main website for this project.
-            ProjectUri = "https://github.com/TurboBasic/dotfiles.windows/tree/master/powershell"
+            ProjectUri = "https://github.com/turboBasic/dotfiles.windows/tree/master/powershell"
 
             # A URL to an icon representing this module.
             IconUri = "https://gist.githubusercontent.com/TurboBasic/9dfd228781a46c7b7076ec56bc40d5ab/raw/03942052ba28c4dc483efcd0ebf4bfc6809ed0d0/hexagram3D.png"

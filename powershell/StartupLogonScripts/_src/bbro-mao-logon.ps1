@@ -7,8 +7,8 @@
 
         appDATA =                ${ENV:appDATA} -replace 'Users','users'
 
-     '..userNAME' =              'mao'
-     '..homePATH' =              '%..usersROOT%\%..userNAME%'
+     '..userFullNAME' =          Split-Path ([Environment]::GetFolderPath('UserProfile')) -Leaf
+     '..homePATH' =              '%..usersROOT%\%..userFullNAME%'
      '..scoop' =                 '%..homeDRIVE%%..homePATH%\scoop'
         scoop  =                 '%..homeDRIVE%%..homePATH%\scoop'
                                  

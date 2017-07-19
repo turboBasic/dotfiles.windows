@@ -33,7 +33,7 @@ $ExistingProgressPreference = "$ProgressPreference"
 $ProgressPreference = 'SilentlyContinue'
 
 
-try {
+Try {
 
     # Bootstrap nuget if we don't have it
     if(-not ($NugetPath = (Get-Command 'nuget.exe' -ErrorAction SilentlyContinue).Path)) {
@@ -58,6 +58,6 @@ try {
     Move-Item -Path $NugetPath -Destination "$(Join-Path $Path PSDepend)\nuget.exe" -Force
 
 }
-finally {
+Finally {
     $ProgressPreference = $ExistingProgressPreference
 }
