@@ -15,19 +15,23 @@ Function New-Shortcut() {
       # $description='', $workDir='.'
 
     PARAM(
-        [PARAMETER( Mandatory, Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName )]
+        [PARAMETER( Mandatory, 
+                    Position=0, 
+                    ValueFromPipeline, 
+                    ValueFromPipelineByPropertyName )]
         [VALIDATENOTNULLOREMPTY()]
-        [string[]]
+        [String[]]
         $Name,
 
-        [PARAMETER( Mandatory, Position=1, ValueFromPipeline, ValueFromPipelineByPropertyName )]
-        [VALIDATESCRIPT(
-            { If (Test-Path $_) 
-                { $True } 
-              Else 
-                { Throw "'$_' doesn't exist!" } 
-            })]
-        [string]
+        [PARAMETER( Mandatory, 
+                    Position=1, 
+                    ValueFromPipeline, 
+                    ValueFromPipelineByPropertyName )]
+        [VALIDATESCRIPT({ If (Test-Path $_) 
+                            { $True } 
+                          Else 
+                            { Throw "'$_' doesn't exist!" } })]
+        [String]
         $Target,
 
         [PARAMETER( ValueFromPipelineByPropertyName )]

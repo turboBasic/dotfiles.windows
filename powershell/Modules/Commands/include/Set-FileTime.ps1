@@ -2,28 +2,25 @@ Function Set-FileTime {
 
   PARAM(
     [String[]] $paths,
-    [Bool] $only_modification = $false,
-    [Bool] $only_access = $false
+    [Bool]     $only_modification = $false,
+    [Bool]     $only_access = $false
   )
 
   BEGIN {
 
-    Function updateFileSystemInfo([System.IO.FileSystemInfo]$fsInfo) {
-      $datetime = get-date
-      if ( $only_access )
-      {
+    Function updateFileSystemInfo( [System.IO.FileSystemInfo]$fsInfo ) {
+      $datetime = Get-Date
+      if ( $only_access ) {
          $fsInfo.LastAccessTime = $datetime
       }
-      elseif ( $only_modification )
-      {
+      elseif ( $only_modification ) {
          $fsInfo.LastWriteTime = $datetime
       }
-      else
-      {
+      else {
          $fsInfo.CreationTime = $datetime
          $fsInfo.LastWriteTime = $datetime
          $fsInfo.LastAccessTime = $datetime
-       }
+      }
     }
    
     Function touchExistingFile($arg) {
@@ -44,7 +41,7 @@ Function Set-FileTime {
       }
     }
    
-    Function touchNewFile([string]$path) {
+    Function touchNewFile([String]$path) {
       #$null > $path
       Set-Content -Path $path -value $null;
     }

@@ -79,34 +79,36 @@ Created: 2017.07.12 11:55:31.113
 
 
   [CMDLETBINDING( PositionalBinding=$False )]
-  [OUTPUTTYPE([String])]
+  [OUTPUTTYPE( [String]) ]
   PARAM(
       [PARAMETER( ParameterSetName='Full Specification' )]
-      [ALLOWEMPTYSTRING()] [ALLOWEMPTYCOLLECTION()] [ALLOWNULL()]
+      [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
       [String]
       $dateDelimiter = '.',
 
       [PARAMETER( ParameterSetName='Full Specification' )]
-      [ALLOWEMPTYSTRING()] [ALLOWEMPTYCOLLECTION()] [ALLOWNULL()]
+      [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
       [String]
       $timeDelimiter = ':',
 
       [PARAMETER( ParameterSetName='Full Specification' )]
-      [ALLOWEMPTYSTRING()] [ALLOWEMPTYCOLLECTION()] [ALLOWNULL()]
+      [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
       [String]
       $Delimiter = ' ',
 
       [PARAMETER( ParameterSetName='Full Specification' )]
       [PARAMETER( ParameterSetName='No Delimiters' )]
-      [ALIAS('WholeSeconds')]
+      [ALIAS( 'WholeSeconds' )]
       [Switch]
       $NoFractionOfSecond,
 
-      [PARAMETER( Mandatory, ParameterSetName='No Delimiters' )]
+      [PARAMETER( Mandatory, 
+                  ParameterSetName='No Delimiters' )]
       [Switch]
       $NoDelimiters,
 
-      [PARAMETER( Mandatory, ParameterSetName='Short' )]
+      [PARAMETER( Mandatory, 
+                  ParameterSetName='Short' )]
       [Switch]
       $Short
   )
@@ -115,21 +117,25 @@ Created: 2017.07.12 11:55:31.113
 
 
 
-  if($PsCmdlet.ParameterSetName -in 'No Delimiters', 'Short') {
+  if( $PsCmdlet.ParameterSetName -in 'No Delimiters', 'Short' ) {
     $dateDelimiter = $timeDelimiter = $Delimiter = ''
   }
 
-  if($PsCmdlet.ParameterSetName -eq 'Short') {
+  if( $PsCmdlet.ParameterSetName -eq 'Short' ) {
     $NoFractionOfSecond = $True
   }
 
-  if($NoFractionOfSecond) {
+  if( $NoFractionOfSecond ) {
     $fractions = ''
   } else {
     $fractions = '.fff'
   }
 
-  "{0:yyyy${dateDelimiter}MM${dateDelimiter}dd${Delimiter}HH${timeDelimiter}mm${timeDelimiter}ss${fractions}}" -f (Get-Date)
-
+  ( "{0:yyyy${dateDelimiter}", 
+    "MM${dateDelimiter}", 
+    "dd${Delimiter}",
+    "HH${timeDelimiter}", 
+    "mm${timeDelimiter}", 
+    "ss${fractions}}" -join '') -f (Get-Date)
 
 }

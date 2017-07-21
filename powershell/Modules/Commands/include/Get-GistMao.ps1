@@ -1,24 +1,28 @@
 Function Get-GistMao {
+
   PARAM(
-    [PARAMETER( Position=0 )]
-    [ALLOWNULL()] [allowEMPTYSTRING()]
-    [String]
-    $api 
+      [PARAMETER( Position=0 )]
+      [AllowNull()] [allowEmptyString()]
+      [String]
+      $api 
   )
 
   if(!$api) {
-    $api = $ENV:githubGist, "https://api.github.com/users/${ENV:USERNAME}/gists" | Select -First 1
+    $api = 
+        $ENV:githubGist, 
+        "https://api.github.com/users/${ENV:USERNAME}/gists" | 
+        Select -First 1
   }
 
   Invoke-WebRequest $api | 
-    Select -ExpandProperty Content | 
+    Select-Object -ExpandProperty Content | 
     ConvertFrom-Json | 
-    ForEach { 
+    ForEach-Object { 
       $_currentRecord = $_
       $_.files | 
       ConvertTo-Hashtable | 
-      Select -ExpandProperty Values | 
-      ForEach { 
+      Select-Object -ExpandProperty Values | 
+      ForEach-Object { 
           [psCustomObject]@{ 
               filename =    $_.filename
               url =         $_.raw_url

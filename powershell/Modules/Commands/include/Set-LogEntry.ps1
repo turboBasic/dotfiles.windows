@@ -4,7 +4,7 @@ Function Set-LogEntry {
   [OUTPUTTYPE( [String[]] )]
   PARAM( 
       [PARAMETER( Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName )]
-      [ALLOWEMPTYSTRING()] [ALLOWEMPTYCOLLECTION()] [ALLOWNULL()]
+      [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
       [ALIAS('Text', 'Data', 'Value')]
       [String[]]
       $Message = @('')

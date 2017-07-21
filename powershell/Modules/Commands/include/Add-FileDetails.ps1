@@ -1,7 +1,7 @@
 Function Add-FileDetails {
 
   PARAM(
-    [PARAMETER( ValueFromPipeline=$true )]
+    [PARAMETER( ValueFromPipeline )]
     $fileobject,
 
     $hash = @{ 
@@ -18,11 +18,13 @@ Function Add-FileDetails {
 
 
   BEGIN {
-    $shell = New-Object -COMObject Shell.Application
+    $shell = New-Object -ComObject Shell.Application
   }
 
+  
   PROCESS {
-    if ($_.PSIsContainer -eq $false) {
+  
+    if( !$_.psIsContainer ) {
       $folder = Split-Path $fileobject.FullName
       $file = Split-Path $fileobject.FullName -Leaf
       $shellfolder = $shell.Namespace($folder)
@@ -30,17 +32,20 @@ Function Add-FileDetails {
       Write-Progress 'Adding Properties' $fileobject.FullName
       
       $hash.Keys |
-      ForEach-Object {
-        $property = $_
-        $value = $shellfolder.GetDetailsOf($shellfile, $hash.$property)
-        if ($value -as [Double]) { 
-          $value = [Double]$value 
-        }
-        $fileobject | Add-Member NoteProperty "Extended_$property" $value -force
-      }
+          ForEach-Object {
+            $property = $_
+            $value = $shellfolder.GetDetailsOf( $shellfile, $hash.$property )
+            if( $value -as [Double] ) { 
+              $value = [Double]$value 
+            }
+            $fileobject | 
+                Add-Member NoteProperty "Extended_$property" $value -Force
+          }
     }
     $fileobject
+    
   }
 
   END {}
+  
 }

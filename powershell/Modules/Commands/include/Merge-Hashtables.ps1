@@ -1,4 +1,4 @@
-<#  .SYNOPSIS
+﻿<#  .SYNOPSIS
       Merges any number of hashtables into one
 
     .DESCRIPTION
@@ -35,4 +35,5 @@ Function Merge-Hashtables {
         ForEach { $_.GetEnumerator() } | 
         ForEach { $Result[$_.Key] = $_.Value } 
     $Result
+    Write-Verbose (ConvertTo-Json $Result -compress)
 }

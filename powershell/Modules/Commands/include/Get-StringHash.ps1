@@ -18,12 +18,12 @@ Function Get-StringHash {
         [CMDLETBINDING()] 
         PARAM( 
             [PARAMETER( Position=0, Mandatory, ValueFromPipeline )]
-            [ALLOWEMPTYSTRING()]
+            [AllowEmptyString()]
             [String[]] 
             $String,
           
-            [PARAMETER( POSITION=1 )]
-            [VALIDATEPATTERN( '^MD5|(SHA(1|256|384|512)?)$' )]  
+            [PARAMETER( Position=1 )]
+            [ValidatePattern( '^MD5|(SHA(1|256|384|512)?)$' )]  
             [String] 
             $HashName = 'MD5'
         )
@@ -37,16 +37,25 @@ Function Get-StringHash {
   }
 
   PROCESS {
+  
     $String | ConvertTo-Json -Compress | Write-Verbose 
     $_      | ConvertTo-Json -Compress | Write-Verbose
-    forEach($s in $String) {
-      [System.Security.Cryptography.HashAlgorithm]::
-        Create( $HashName ).ComputeHash( [System.Text.Encoding]::UTF8.GetBytes($s) ) | 
-        % {   [Void]$StringBuilder.Append($_.ToString('x2'))  } 
+    
+    forEach( $s in $String ) {
+      [System.Security.Cryptography.HashAlgorithm]::Create( 
+          $HashName 
+      ).ComputeHash( 
+          [System.Text.Encoding]::UTF8.GetBytes($s) 
+      ) | 
+      ForEach-Object{   
+        [Void]$StringBuilder.Append( $_.ToString('x2') )  
+      }
+          
       Write-Output $StringBuilder.ToString()
-    [Void]$StringBuilder.Clear()
+      
+      [Void]$StringBuilder.Clear()
     } 
   }
 
-  END { }
+  END{}
 }

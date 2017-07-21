@@ -1,32 +1,73 @@
 Function Get-GuiHelp {
 
-  PARAM(  [PARAMETER( Position=0 )]
+  PARAM(  
+          [PARAMETER( Position=0 )]
           [String] $Request,
 
           [PARAMETER()]
-          [Switch] $List  )
+          [Switch] $List,
 
-  $GuiHelpPath = ($ENV:DROPBOX_HOME -replace "\\", "/") + '/Public/Powershell/powershell2.chm' 
+          [PARAMETER()]
+          [Switch] $Force            
+  )
+
+  
+  
+  $GuiHelpPath = Join-Path $ENV:DROPBOX_HOME '/Public/Powershell/powershell2.chm'
 
   if ($List) {
     Get-Content "$GuiHelpPath.TopicsList.txt"
+    return
   }
 
-  $Postfix = 
-    switch ($Request) {
-      { $_.Trim().Length -eq 0 } { '/test.htm'; break }
-      { $_ -match '^about_' }    { "/About/${Request}.help.htm"; break  }
+        
+  if ($Force) {
+    Get-Content "$GuiHelpPath.TopicsList.txt" |
+        Where { $_ -match ".*$Request.*" } |
+        ForEach-Object { 
+          $_
+          HH.EXE "mk:@MSITStore:${GuiHelpPath}::$_"
+        }
+    return
+  }
+  
+  
+  
+  $Postfix = switch ($Request) {
+    
+      { IsNull $_.Trim() } { 
 
-      { $_ -cmatch '^a[A-Z][a-zA-Z_]{1,}' } { '/About/about_' + $Request.TrimStart('a').toLower() + '.help.htm'; break  }
-      { $_ -match  '^[a-z]{1,}-[a-z]{1,}' } { "/Cmdlets/${Request}.htm"; break  }
+          '/test.htm'
+          break 
+      }
 
-      { $_.Contains(' ') }       { '/VBScript/' + $Request -replace(' ','') + '.htm'; break  }
-      Default                    { "/VBScript/${Request}.htm" }
+      { $_ -match '^about_' } { 
+      
+          "/About/$_.help.htm"
+          break  
+      }
+
+      { $_ -cmatch '^a[A-Z]\w+' } {
+      
+          "/About/about_$(
+          
+              $_.TrimStart('a').toLower()  
+          
+          ).help.htm"
+          break  
+      }
+      
+      { $_ -match '^\w+-\w+' } { 
+      
+          "/Cmdlets/$_.htm"
+          break  
+      }
+      
+      DEFAULT { "/VBScript/$_.htm" -replace ' ' }
+      
     }
 
-  $command = "HH.EXE mk:@MSITStore:${GuiHelpPath}::${Postfix}"
-
-  Write-Verbose "Get-GuiHelp: using `$Postfix = $Postfix"
-  Write-Verbose "Get-GuiHelp: full command = $command"
-  Invoke-Expression -Command $command
+  "mk:@MSITStore:${GuiHelpPath}::${Postfix}" | Write-Verbose  
+  HH.EXE "mk:@MSITStore:${GuiHelpPath}::${Postfix}"
+  
 }

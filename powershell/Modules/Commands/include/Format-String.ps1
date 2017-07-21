@@ -64,7 +64,7 @@ http://www.leeholmes.com/guide
   [OUTPUTTYPE( [String[]] )]
   PARAM(
   
-      [PARAMETER( Mandatory, Position=0)]
+      [PARAMETER( Mandatory, Position=0 )]
       ## The string to format. Any portions in the form of {NAME} will be automatically replaced by 
       ## the corresponding value from the supplied hashtable.
       [String] $String,
@@ -77,7 +77,7 @@ http://www.leeholmes.com/guide
 
 
   
-  BEGIN{
+  BEGIN {
     # TODO(Set-StrictMode -Version 5)
     
     if($String -match '{{|}}') {
@@ -87,18 +87,18 @@ http://www.leeholmes.com/guide
   }
 
   
-  PROCESS{
+  PROCESS {
   
     # Now we have all items in $Replacements[] 
     # and we have to unwrap items even if there is only
     # one item in the $Replacements array 
   
-    foreach ($1replacement in $Replacements) {
+    foreach( $1replacement in $Replacements ) {
       $currentIndex = 0
       $replacementList = @()
       
       ## Go through each key in the hashtable
-      foreach($key in $1replacement.Keys) {
+      foreach( $key in $1replacement.Keys ) {
         ## Convert the key into a number, so that it can be used by String.Format
         $inputPattern = '{([^{}]*)' + $key + '([^{}]*)}'
         $replacementPattern = '{${1}' + $currentIndex + '${2}}'
@@ -115,7 +115,7 @@ http://www.leeholmes.com/guide
   }
 
   
-  END{}
+  END {}
     
 }
   
