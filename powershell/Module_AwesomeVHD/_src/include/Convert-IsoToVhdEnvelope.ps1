@@ -22,59 +22,84 @@
 #
 #
 
-[OutputType( [void] )]
-[OutputType( [Microsoft.Management.Infrastructure.CimInstance], 
-              ParameterSetName = "NoDismount" )]
-PARAM(
-    [PARAMETER( Mandatory, Position=0 )]
-    [ALIAS('From', 'Source')]
-    [String]$iso,
+Function Convert-IsoToVhdEnvelope {
 
-    [PARAMETER( Mandatory, Position=1 )]
-    [ALIAS('To', 'Destination')]
-    [String]$vhd,
+    [CMDLETBINDING( DefaultParameterSetName = "Iso&Vhd" )]
+    [OutputType( [void] )]
+    [OutputType( [Microsoft.Management.Infrastructure.CimInstance], 
+                  ParameterSetName = "NoDismount" )]
+    PARAM(
+        [PARAMETER( ParameterSetName = "Iso&Vhd", Mandatory, Position=0 )]
+        [ALIAS('From', 'Source')]
+        [String]$iso,
 
-    [PARAMETER( ParameterSetName = 'NoDismount', Mandatory )]
-    [Switch]$noDismount
-)
+        [PARAMETER( ParameterSetName = "Iso&Vhd", Mandatory, Position=1 )]
+        [ALIAS('To', 'Destination')]
+        [String]$vhd,
 
-$oldEAP = $ErrorActionPreference
-$ErrorActionPreference = "Stop"
-$tmpDir = 'c:\temp'
+        [PARAMETER( ParameterSetName = 'Iso&Vhd' )]
+        [PARAMETER( ParameterSetName = 'NoDismount', Mandatory )]
+        [Switch]$noDismount
+    )
 
-$tmpBase = ([System.Guid]::NewGuid() -as [String]) -replace '-'
-$tmpMountDir = Join-Path $tmpDir $tmpBase
-New-Item -ItemType Directory -Path $tmpMountDir
-$tmpVhd = $tmpBase + '.vhdx'
+    $oldEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Stop"
+    $tmpDir = 'c:\temp'
 
-Try {
-  ( $Partition = New-VHD -Path $tmpVhd -SizeBytes 6GB -Dynamic | 
-        Mount-VHD -PassThru |
-        Initialize-Disk -PassThru | 
-        New-Partition -UseMaximumSize |
-        Add-PartitionAccessPath -AccessPath $tmpMountDir -PassThru 
-  ) |
+    $random  = ([System.Guid]::NewGuid() -as [String]) -replace '-'
+    $mountDir = Join-Path $tmpDir $random
+    New-Item -ItemType Directory -Path $mountDir
+    $newVhd = $random + '.vhdx'
+    $newVhd = Join-Path $tmpDir $newVhd
+
+    Try { $Partition = New-VHD -Path $newVhd -SizeBytes 6GB -Dynamic }
+    Catch {
+          $Partition = $null
+          Remove-Item $mountDir -Recurse -Force
+          $ErrorActionPreference = $oldEAP
+          Write-Error "Cannot create VHD $newVhd"
+    }
+
+    Try {     
+      $Partition = ( 
+          $Partition | 
+              Mount-VHD -PassThru |
+              Initialize-Disk -PassThru | 
+              New-Partition -UseMaximumSize
+      )
+    } Catch {
+          $ErrorActionPreference = $oldEAP
+          Write-Error "Cannot create partition: $Partition"
+    }
+
+
+    Try {
+      $Partition | 
+        Add-PartitionAccessPath -AccessPath $mountDir -PassThru |
         Format-Volume -FileSystem NTFS -Confirm:$False -Force
+    } Catch {
+          $Partition = $null
+          Remove-Item $mountDir -Confirm
+          $ErrorActionPreference = $oldEAP
+          Write-Error "Cannot add Accesspath $mountDir"
+    } Finally {
+          $ErrorActionPreference = $oldEAP
+    }
 
-} Catch {
-      Write-Error 'Cannot create VHD $tmpVhd'
-      $Partition = $null
-      Remove-Item $tmpMountDir -Confirm
-} Finally {
-      $ErrorActionPreference = $oldEAP
+
+    $paramstring = 'x', '-y', ('-o"{0}"' -f $mountDir), $iso, '*', '-xr!install.wim'
+    & 7z.exe $paramstring
+
+    #if(!NoDismount) {
+    #}
+
+    Try {
+      $Partition | Remove-PartitionAccessPath -AccessPath $mountDir -PassThru | Dismount-VHD
+    } Catch {
+      Write-Error 'Cannot release mounted VHD: do it manually'
+      Return
+    }
+
+    Remove-Item $mountDir
+    Move-Item $newVhd $vhd
 }
-
-
-$paramstring = 'x', '-y', ('-o"{0}"' -f $tmpMountDir), $iso, '*', '-xr!install.wim'
-& 7z.exe $paramstring
-
-#if(!NoDismount) {
-  
-$Partition | fl
-Read-Host
-$Partition | Remove-PartitionAccessPath -AccessPath $tmpMountDir
-Remove-Item $tmpMountDir
-Dismount-VHD -Path $tmpVhd
-#}
-
-Move-Item $tmpVhd $vhd

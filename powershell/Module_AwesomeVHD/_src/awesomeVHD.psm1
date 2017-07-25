@@ -10,16 +10,7 @@
 
 #region Create aliases for functions
 
-  New-Alias touch Set-FileTime
-  New-Alias ppath Get-EnvironmentPath
-  New-Alias sst   Select-String
-  New-Alias gg    Get-GuiHelp 
-  New-Alias gh    Get-HelpWindow
-  New-Alias ghc   Get-Help
-  New-Alias ga    Get-Alias
-  New-Alias gle   Set-LogEntry
-  New-Alias gts   Get-TimeStamp
-  New-Alias Get-KnownFolders Get-SpecialFolders
+  #New-Alias touch Set-FileTime
 
 #endregion
 

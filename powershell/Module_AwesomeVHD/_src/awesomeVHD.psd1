@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = './AwesomeVHD.psm1'
+RootModule = '.\AwesomeVHD.psm1'
 
 # Version number of this module.
 ModuleVersion = '0.1.0'
@@ -67,8 +67,8 @@ RequiredModules = @('Hyper-V', 'Storage')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 NestedModules = @(
-      'include/... .ps1',
-      'include/... .ps1'
+    '.\include\Add-MountPoint.ps1',
+    '.\include\Convert-IsoToVhdEnvelope.ps1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -91,9 +91,10 @@ AliasesToExport = '*'
 
 # List of all files packaged with this module
 FileList = @(
-  'AwesomeVHD.psd1',
-  'AwesomeVHD.psm1',
-  'include/**.ps1'
+  './AwesomeVHD.psd1',
+  './AwesomeVHD.psm1',
+  './include/Add-MountPoint.ps1',
+  './include/Convert-IsoToVhdEnvelope.ps1'
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.

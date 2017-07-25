@@ -1,33 +1,30 @@
-properties {
-#   $script = "$PSScriptRoot\ServerInfo.ps1"
-    $startupScript = '.\_src\bbro-startup.ps1'
-    $logonScript = '.\_src\bbro-mao-logon.ps1'
+﻿properties {
+  $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | Select-Object -ExpandProperty FullName
+  $dest = "${ENV:psProfileDIR}/Modules/AwesomeVHD"
 }
 
 # task default -depends Analyze, Test
-task default -depends Deploy
+task default -depends Analyze, Deploy
 
 
-task Deploy {
-  Invoke-PSDeploy -Path '.\StartupLogonScripts.psdeploy.ps1' -Force -Verbose:$VerbosePreference
+task Deploy -depends Clean {
+  Invoke-PSDeploy -Path '.\Module.psdeploy.ps1' -Force -Verbose:$VerbosePreference
 }
 
-task Analyze -depends Analyze-StartupScript, Analyze-LogonScript
+task Clean {
+  Remove-Module -Force AwesomeVHD -ErrorAction 0
+  Remove-Item (Join-Path $dest '*') -Recurse -Force -ErrorAction 0
+}
 
-task Analyze-StartupScript {
-    $saResults = Invoke-ScriptAnalyzer -Path $startupScript -Severity @('Error', 'Warning') -Recurse -Verbose:$false
+
+task Analyze {
+  foreach($1file in $files){
+    $saResults = Invoke-ScriptAnalyzer -Path $1file -Severity @('Error', 'Warning') -Recurse -Verbose:$False
     if ($saResults) {
         $saResults | Format-Table  
         Write-Error -Message 'One or more Script Analyzer errors/warnings where found. Build cannot continue!'        
     }
-}
-
-task Analyze-LogonScript {
-    $saResults = Invoke-ScriptAnalyzer -Path $logonScript -Severity @('Error', 'Warning') -Recurse -Verbose:$false
-    if ($saResults) {
-        $saResults | Format-Table  
-        Write-Error -Message 'One or more Script Analyzer errors/warnings where found. Build cannot continue!'        
-    }
+  }
 }
 
 task Test {
@@ -41,16 +38,3 @@ task Test {
 task ? -Description "Helper to display task info" {
 	Write-Documentation
 }
-
-
-
-<#
-task Deploy -depends Analyze, Test {
-    Invoke-PSDeploy -Path '.\ServerInfo.psdeploy.ps1' -Force -Verbose:$VerbosePreference
-}
-#>
-
-
-
-
-
