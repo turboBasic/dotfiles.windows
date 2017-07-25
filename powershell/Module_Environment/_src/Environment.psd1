@@ -3,7 +3,7 @@
   RootModule = 'Environment.psm1'
 
   # Version number of this module.
-  ModuleVersion = '1.0.5'
+  ModuleVersion = '1.0.7'
 
   # ID used to uniquely identify this module
   GUID = '59aa5901-f7fa-4f03-b0db-b6156cb3807a'
@@ -12,7 +12,7 @@
   Author = 'Andriy Melnyk'
 
   # Company or vendor of this module
-  CompanyName = 'private'
+  CompanyName = 'Cargonautica'
 
   # Copyright statement for this module
   Copyright = 'Andriy Melnyk, 2017'
@@ -121,10 +121,10 @@
             # LicenseUri = ""
 
             # A URL to the main website for this project.
-            ProjectUri = "https://github.com/TurboBasic/dotfiles.windows/tree/master/powershell"
+            ProjectUri = "https://github.com/TurboBasic/dotfiles.windows/tree/master/powershell/Module_Environment"
 
             # A URL to an icon representing this module.
-            IconUri = "https://gist.githubusercontent.com/TurboBasic/9dfd228781a46c7b7076ec56bc40d5ab/raw/03942052ba28c4dc483efcd0ebf4bfc6809ed0d0/hexagram3D.png"
+            IconUri = "https://gist.githubusercontent.com/turboBasic/9dfd228781a46c7b7076ec56bc40d5ab/raw/03942052ba28c4dc483efcd0ebf4bfc6809ed0d0/hexagram3D.png"
 
             # ReleaseNotes of this module
             ReleaseNotes = ""
