@@ -35,4 +35,8 @@ fabric.properties
 /.idea/jsLibraryMappings.xml
 /.idea/deployment.xml
 
+
+## Visual Studio
+.vs/
+
 *.bak

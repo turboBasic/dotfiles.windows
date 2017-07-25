@@ -1,4 +1,7 @@
-# common settings that generally should always be used with your language specific settings
+# COMMON SETTINGS THAT GENERALLY SHOULD ALWAYS BE USED WITH YOUR LANGUAGE 
+# SPECIFIC SETTINGS
+#
+# taken from: https://github.com/alexkaratarakis/gitattributes
 
 # Auto detect text files and perform LF normalization
 # http://davidlaing.com/2012/09/19/customise-your-gitattributes-to-become-a-git-ninja/
@@ -8,157 +11,197 @@
 # The above will handle all files NOT found below
 #
 
+
+
+# git config
+.gitattributes  text
+.gitignore      text
+*.md            text
+
 # Documents
-*.doc	 diff=astextplain
-*.DOC	 diff=astextplain
-*.docx diff=astextplain
-*.DOCX diff=astextplain
-*.dot  diff=astextplain
-*.DOT  diff=astextplain
-*.pdf  diff=astextplain
-*.PDF	 diff=astextplain
-*.rtf	 diff=astextplain
-*.RTF	 diff=astextplain
-*.md text
-*.adoc text
-*.textile text
-*.mustache text
-*.csv text
-*.tab text
-*.tsv text
-*.sql text
+*.doc           diff=astextplain
+*.DOC           diff=astextplain
+*.docx          diff=astextplain
+*.DOCX          diff=astextplain
+*.dot           diff=astextplain
+*.DOT           diff=astextplain
+*.pdf           diff=astextplain
+*.PDF           diff=astextplain
+*.rtf           diff=astextplain
+*.RTF           diff=astextplain
+*.md            text
+*.adoc          text
+*.textile       text
+*.mustache      text
+*.csv           text
+*.tab           text
+*.tsv           text
+*.sql           text
 
 # Graphics
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.svg text
-# Basic .gitattributes for a python repo.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.tif   binary
+*.tiff  binary
+*.ico   binary
+*.eps   binary
+#
+# SVG treated as an asset (binary) by default. If you want to treat it as text,
+# comment-out the following line and uncomment the line after.
+# *.svg binary
+*.svg   text
+
+
+
+
+
+## BASIC .GITATTRIBUTES FOR A PYTHON REPO
 
 # Source files
-# ============
-*.pxd		text
-*.py 		text
-*.py3 		text
-*.pyw 		text
-*.pyx  		text
+*.pxd           text
+*.py            text
+*.py3           text
+*.pyw           text
+*.pyx           text
 
 # Binary files
-# ============
-*.db		binary
-*.p 		binary
-*.pkl 		binary
-*.pyc 		binary
-*.pyd		binary
-*.pyo 		binary
+*.db            binary
+*.p             binary
+*.pkl           binary
+*.pyc           binary
+*.pyd           binary
+*.pyo           binary
 
 # Note: .db, .p, and .pkl files are associated
 # with the python modules ``pickle``, ``dbm.*``,
 # ``shelve``, ``marshal``, ``anydbm``, & ``bsddb``
 # (among others).# These settings are for any web project
 
-# Handle line endings automatically for files detected as text
-# and leave all files detected as binary untouched.
-* text=auto
 
-#
-# The above will handle all files NOT found below
-#
+
+
+
+## GITATTRIBUTES FOR WEB PROJECTS
 
 #
 ## These files are text and should be normalized (Convert crlf => lf)
 #
 
 # source code
-*.php text
-*.css text
-*.sass text
-*.scss text
-*.less text
-*.styl text
-*.js text
-*.coffee text
-*.json text
-*.htm text
-*.html text
-*.xml text
-*.svg text
-*.txt text
-*.ini text
-*.inc text
-*.pl text
-*.rb text
-*.py text
-*.scm text
-*.sql text
-*.sh text
-*.bat text
+*.bat       text eol=crfl
+*.coffee    text
+*.css       text
+*.htm       text
+*.html      text
+*.inc       text
+*.ini       text
+*.js        text
+*.json      text
+*.jsx       text    
+*.less      text
+*.php       text
+*.pl        text
+*.py        text
+*.rb        text
+*.sass      text
+*.scm       text
+*.scss      text
+*.sh        text eol=lf
+*.sql       text
+*.styl      text
+*.svg       text
+*.tag       text
+*.ts        text
+*.tsx       text
+*.txt       text
+*.xml       text
+*.xhtml     text
+
+
+
+## Powershell (https://gist.github.com/KirkMunro/d873a755b38a7bfa2495)
+*.ps1       text eol=crlf
+*.ps1xml    text eol=crlf
+*.psc1      text eol=crlf
+*.psd1      text eol=crlf
+*.psm1      text eol=crlf
+*.clixml    text eol=crlf
+*.xml       text eol=crlf
+
 
 # templates
-*.ejs text
-*.hbt text
-*.jade text
-*.haml text
-*.hbs text
-*.dot text
-*.tmpl text
-*.phtml text
+*.ejs           text
+*.hbt           text
+*.jade          text
+*.haml          text
+*.hbs           text
+*.dot           text
+*.tmpl          text
+*.phtml         text
 
-# server config
-.htaccess text
 
-# git config
-.gitattributes text
-.gitignore text
+## LINTERS / code analysis config
+.csslintrc      text
+.eslintrc       text
+.htmlhintrc     text
+.jscsrc         text
+.jshintignore   text
+.jshintrc       text
+.stylelintrc    text
 
-# code analysis config
-.jshintrc text
-.jscsrc text
-.jshintignore text
-.csslintrc text
+
 
 # misc config
-*.yaml text
-*.yml text
-.editorconfig text
+*.bowerrc       text
+*.npmignore     text
+*.yaml          text
+*.yml           text
+.editorconfig   text
+.htaccess       text
+Makefile        text
+makefile        text
 
-# build config
-*.npmignore text
-*.bowerrc text
+
 
 # Heroku
-Procfile text
-.slugignore text
+Procfile        text
+.slugignore     text
+
 
 # Documentation
-*.md text
-LICENSE text
-AUTHORS text
+*COPYRIGHT*     text
+*README*        text
+AUTHORS         text
+CHANGELOG       text
+CHANGES         text
+CONTRIBUTING    text
+COPYING         text
+INSTALL         text
+LICENSE         text
+NEWS            text
+TODO            text
+copyright       text
+license         text
+readme          text
 
 
-#
-## These files are binary and should be left untouched
-#
 
 # (binary is a macro for -text -diff)
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.mov binary
-*.mp4 binary
-*.mp3 binary
-*.flv binary
-*.fla binary
-*.swf binary
-*.gz binary
-*.zip binary
-*.7z binary
-*.ttf binary
-*.eot binary
-*.woff binary
-*.pyc binary
-*.pdf binary
+*.7z    binary
+*.eot   binary
+*.fla   binary
+*.flv   binary
+*.gz    binary
+*.mov   binary
+*.mp3   binary
+*.mp4   binary
+*.otf   binary
+*.pdf   binary
+*.pyc   binary
+*.swf   binary
+*.ttf   binary
+*.woff  binary
+*.woff2 binary
+*.zip   binary
