@@ -38,9 +38,8 @@ Function Remove-MountPoint {
 
   BEGIN{}
 
-  PROCESS{
-    $_ | Remove-PartitionAccessPath -AccessPath $path -PassThru | Dismount-VHD
-  
+  PROCESS {
+    $_ | Remove-PartitionAccessPath -AccessPath $path -PassThru | Dismount-VHD 
   }
 
   END{}

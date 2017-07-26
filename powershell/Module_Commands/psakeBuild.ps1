@@ -1,8 +1,13 @@
 ﻿properties {
-  $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | Select-Object -ExpandProperty FullName
-  $dest = "${ENV:psProfileDIR}/Modules/Commands"
+  $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | 
+                Select-Object -ExpandProperty FullName
+                
+  $me   = ( $psScriptRoot | 
+            Split-Path -Leaf 
+          ) -replace 'Module_'
+          
+  $dest = "${ENV:psProfileDIR}/Modules/$me"
 }
-
 
 
 # task default -depends Analyze, Test
@@ -10,15 +15,17 @@ task default -depends Analyze, Deploy
 
 
 
-
 task Deploy -depends Clean {
-  Invoke-PSDeploy -Path '.\Module.psdeploy.ps1' -Force -Verbose:$VerbosePreference
+  Step-ModuleVersion -Path (Join-Path $psScriptRoot "_src\$me.psd1")
+  Invoke-PSDeploy -Path ( Join-Path $psScriptRoot 'Module.psdeploy.ps1'
+                        ) -Force -Verbose:$VerbosePreference
 }
 
 
 
+
 task Clean {
-  Remove-Module -Force Commands -ErrorAction 0
+  Remove-Module -Force $me -ErrorAction 0
   Remove-Item (Join-Path $dest '*') -Recurse -Force -ErrorAction 0
 }
 

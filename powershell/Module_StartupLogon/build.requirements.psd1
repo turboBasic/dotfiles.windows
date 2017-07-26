@@ -5,9 +5,9 @@
         AddToPath = $True
     }
 
-    'psake' = @{ DependencyType = 'PSGalleryModule' }
-    'PSDeploy' = @{ DependencyType = 'PSGalleryModule' }
-    'BuildHelpers' = @{ DependencyType = 'PSGalleryModule' }
+    'psake' =         @{ DependencyType = 'PSGalleryModule' }
+    'PSDeploy' =      @{ DependencyType = 'PSGalleryModule' }
+    'BuildHelpers' =  @{ DependencyType = 'PSGalleryModule' }
     'Pester' = @{
         DependencyType = 'PSGalleryModule'
         Version = '4.0.4'

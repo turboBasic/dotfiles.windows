@@ -77,12 +77,12 @@ Function Add-MountPoint {
         ((Get-ChildItem $path -Attributes Hidden, System).Count -eq 0)
     ) { 
           $path = (Get-Item $path).FullName
-          if($PSCmdlet.ShouldProcess( $path, "Mount partition $( $_.Guid ) to directory" )) {
-              $_ | Add-PartitionAccessPath -AccessPath $path
-          }   
+          ShouldAddEmptyAccessPath -Partition $_ -Path $path
       } elseif( -Not(Test-Path $path) ) {
           ShouldCreateEmptyDir $path -Force
-          ShouldAddEmptyAccessPath -Partition $_ -Path $path          # $_ | Add-PartitionAccessPath -AccessPath ((Get-Item $path).FullName)
+          ShouldAddEmptyAccessPath -Partition $_ -Path $path
+      } else {
+          Write-Warning "$path exists and is not empty"
       }
 
   }
