@@ -12,6 +12,18 @@
 #       Remove-PartitionAccessPath -AccessPath $vhdDir -PassThru | 
 #       Dismount-VHD
 #
+# .EXAMPLE
+#     Get-Partition -DriveLetter G | Add-MountPoint -Path 'C:\temp\22' 
+#     Get-Partition -DriveLetter G | Remove-MountPoint -Path 'C:\temp\22'
+#
+# .EXAMPLE
+#     $Partition = Mount-VHD -Path C:\temp\ws2016.vhdx -PassThru | Get-Partition -PartitionNumber 2
+#     $Partition | Add-MountPoint -Path C:\temp\22          
+#     $Partition | Remove-MountPoint -Path C:\temp\22
+#
+# .EXAMPLE
+#     Mount-VHD -Path C:\temp\ws2016.vhdx -PassThru | Get-Partition -PartitionNumber 2 | Add-MountPoint -Path c:\temp\22
+#     Get-VHD -Path C:\temp\ws2016.vhdx | Get-Partition -PartitionNumber 2 | Remove-MountPoint -Path c:\temp\22
 #
 
 Function Add-MountPoint {
@@ -23,66 +35,61 @@ Function Add-MountPoint {
 
     PARAM(
         [PARAMETER( Mandatory, 
-                    Position=0, 
+                    Position = 0, 
                     ValueFromPipeline, 
                     ValueFromPipelineByPropertyName )]
+        [Microsoft.Management.Infrastructure.CimInstance]
         $Partition,
 
         [PARAMETER( Mandatory, Position=1 )]
-        [String]$path
+        [String]
+        $path
     )
 
 
-    Function ShouldPurgeDirectory {
-      if($PSCmdlet.ShouldProcess( $path, 'Remove recursively all files inside non-empty directory')) {
-          Remove-Item (Join-Path $path '*') -Recurse -Force:$Force
-      }
-    }
+  BEGIN {
+    $oldEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Stop"
 
-    Function ShouldDeleteFile {
-      if($PSCmdlet.ShouldProcess( $path, 'Delete existing file')) {
-        Remove-Item $path -Force:$Force
-      }
-    }
-
-    Function ShouldAddEmptyAccessPath {
-        if($PSCmdlet.ShouldProcess( $path, "Mount partition $( $Partition.Guid ) to directory" )) {
-          $Partition | Add-PartitionAccessPath -AccessPath $path -Force:$Force
-        } 
-    }
-
-    Function ShouldCreateEmptyDir {
-        if($PSCmdlet.ShouldProcess( $path, 'Create empty directory' )) {
+    Function ShouldCreateEmptyDir ( [String]$path, [Switch]$Force ) {
+        if($PSCmdlet.ShouldProcess( $path, "$( 'Force '*($Force -as [int]) )Create empty directory" )) {
           New-Item -Path $path -ItemType Directory -Force:$Force
         } 
     }
 
-
-    $oldEAP = $ErrorActionPreference
-    $ErrorActionPreference = "Stop"
-
-    if( Test-Path -PathType Container -Path $path ) {
-      $path = (Get-Item $path).FullName
-      if($Force) {
-        ShouldPurgeDirectory
-        ShouldAddEmptyAccessPath
-      } elseif((Test-Path (Join-Path $path '*')) -or ((Get-ChildItem $path -Attributes Hidden,System).count)) {
-            Write-Warning "Directory $path is not empty, cannot mount drive here"
-            $ErrorActionPreference = $oldEAP
-            Return
-      } else {
-        ShouldAddEmptyAccessPath
-      }
-    } elseif( Test-Path -PathType Leaf -Path $path ) { 
-        if($Force) {
-          ShouldDeleteFile
-        }
-        ShouldCreateEmptyDir
-        ShouldAddEmptyAccessPath
-    } else {
-      $Force = $True
-      ShouldCreateEmptyDir
-      ShouldAddEmptyAccessPath
+    Function ShouldAddEmptyAccessPath (
+        [Microsoft.Management.Infrastructure.CimInstance]$partition, 
+        [String]$path, 
+        [Switch]$force 
+    ) {
+        if($PSCmdlet.ShouldProcess( $path, "Mount partition $( $partition.Guid ) to directory" )) {
+          $Partition | Add-MountPoint -Path $path -Force:$Force
+        } 
     }
+  
+  }
+
+
+  PROCESS {
+
+    if( (Test-Path -PathType Container -Path $path) -and 
+        (-not (Test-Path -Path "$path\*")) -and 
+        ((Get-ChildItem $path -Attributes Hidden, System).Count -eq 0)
+    ) { 
+          $path = (Get-Item $path).FullName
+          if($PSCmdlet.ShouldProcess( $path, "Mount partition $( $_.Guid ) to directory" )) {
+              $_ | Add-PartitionAccessPath -AccessPath $path
+          }   
+      } elseif( -Not(Test-Path $path) ) {
+          ShouldCreateEmptyDir $path -Force
+          ShouldAddEmptyAccessPath -Partition $_ -Path $path          # $_ | Add-PartitionAccessPath -AccessPath ((Get-Item $path).FullName)
+      }
+
+  }
+  
+
+  END {
     $ErrorActionPreference = $oldEAP
+  }
+
 }
