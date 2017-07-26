@@ -100,22 +100,27 @@
 
   "`n[ {0,-7} {1,-6} {2} ]" -f '', 'body', (Get-TimeStamp) | Write-Log
   Get-Environment * -Scope Machine |
-          select Name, Value |
-          ForEach { if($_.Name -NotLike '*path'){
-                      [psCustomObject][ordered]@{ Name=$_.Name; Value=$_.Value; Expanded=(Get-ExpandedName $_.Name -Scope Machine -Expand).Value }
-                    } else {
-                      $paths    = (Get-ExpandedName $_.Name -Scope Machine).Value -split ';'
-                      $pathsExp = (Get-ExpandedName $_.Name -Scope Machine -Expand).Value -split ';' 
-                      if($pathsExp.Count -gt $path.Count)  
-                          { $numberOfPaths = $pathsExp.Count }
-                      else 
-                          { $numberOfPaths = $path.Count }   
-                      foreach( $i in 0..($numberOfPaths - 1) ) { 
-                          $res = [ordered]@{ Name=''; Value=''; Expanded='' }
-                          if($i -eq 0)               { $res.Name = $_.Name }
-                          if($i -lt $paths.Count)    { $res.Value = $paths[$i] }
-                          if($i -lt $pathsExp.Count) { $res.Expanded = $pathsExp[$i] }
-                          [psCustomObject]$res
-                      }
-                    }
-          } | Out-String -width 360 -stream | Write-Log
+      Select-Object Name, Value |
+      ForEach-Object { 
+          if($_.Name -NotLike '*path') {
+            [psCustomObject][ordered]@{ 
+                Name     = $_.Name
+                Value    = $_.Value
+                Expanded = (Get-ExpandedName $_.Name -Scope Machine -Expand).Value 
+            }
+          } else {
+            $paths    = (Get-ExpandedName $_.Name -Scope Machine).Value -split ';'
+            $pathsExp = (Get-ExpandedName $_.Name -Scope Machine -Expand).Value -split ';' 
+            if($pathsExp.Count -gt $path.Count)  
+                { $numberOfPaths = $pathsExp.Count }
+            else 
+                { $numberOfPaths = $path.Count }   
+            foreach( $i in 0..($numberOfPaths - 1) ) { 
+                $res = [ordered]@{ Name=''; Value=''; Expanded='' }
+                if($i -eq 0)               { $res.Name = $_.Name }
+                if($i -lt $paths.Count)    { $res.Value = $paths[$i] }
+                if($i -lt $pathsExp.Count) { $res.Expanded = $pathsExp[$i] }
+                [psCustomObject]$res
+            }
+          }
+      } | Out-String -width 360 -stream | Write-Log
