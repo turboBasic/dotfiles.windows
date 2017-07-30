@@ -2,13 +2,19 @@
 
 [CMDLETBINDING()]
 PARAM(
-    [String[]]$Task = 'default'
+    [string[]]$Task = 'default'
+    
+    [switch]$NoDepend = $True
 )
 
-if( !(Get-Module -Name PSDepend -ListAvailable) ) 
-    { Install-Module PSDepend }  
-    
-$null = Invoke-PSDepend -Path "$PSScriptRoot\build.requirements.psd1" -Install -Import -Force    
+
+if( -not $NoDepend ) {    
+  if( !(Get-Module -name PSDepend -listAvailable) ) { 
+      Install-Module PSDepend 
+  }  
+  $null = Invoke-PSDepend -path "$psScriptRoot\build.requirements.psd1" -install -import -force    
+}
+
 
 #TODO(проверить на чистом компьютере - устанавливает ли PSDepend отсутствующие модули?)
 <#  похоже не нужно, PSDepend сам должен обо всем позаботиться.
@@ -22,5 +28,5 @@ if (!(Get-Module -Name PSDeploy -ListAvailable))
     
 #>    
 
-Invoke-Psake -buildFile "$PSScriptRoot\psakeBuild.ps1" -taskList $Task -Verbose:$VerbosePreference
+Invoke-Psake -buildFile "$psScriptRoot\psakeBuild.ps1" -taskList $Task -Verbose:$VerbosePreference
 exit ( [int]( -not $psake.build_success ) )

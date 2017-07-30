@@ -1,7 +1,7 @@
 ﻿@{
     # Some defaults for all dependencies
     PSDependOptions = @{
-        Target = '$ENV:userPROFILE\Documents\WindowsPowerShell\Modules'
+        Target = Join-Path (Split-Path $profile) Modules
         AddToPath = $True
     }
 

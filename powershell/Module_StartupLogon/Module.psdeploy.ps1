@@ -1,36 +1,30 @@
-﻿$modulesRoot =    "${ENV:projects}/dotfiles.windows/powershell/Modules"
-$modEnvironment = "$modulesRoot/Environment/include"
-$modCommands =    "$modulesRoot/Commands/include"
-$destRoot =       "${ENV:systemROOT}/system32/GroupPolicy"
+﻿$modulesRoot =       Join-Path $ENV:projects    'dotfiles.windows/powershell'
+$moduleMerged =      Join-Path $psScriptRoot    '_build/allScripts.ps1'
 
-Deploy StartupLogonScripts {                                # Deployment name. This needs to be unique. Call it whatever you want
-    By Filesystem User {                                    # Deployment type. See Get-PSDeploymentType
-        FromSource "$psScriptRoot/_src/bbro-mao-logon.ps1"  # One or more sources to deploy. Absolute, or relative to deployment.yml paren
-        To         "$destRoot/User/Scripts/Logon"           # One or more destinations to deploy the sources to
-        DependingOn CommonModules
+$sourceRoot =        Join-Path $psScriptRoot    '_src'
+$startupScript =     Join-Path $sourceRoot      'bbro-startup.ps1'
+$logonScript =       Join-Path $sourceRoot      'bbro-mao-logon.ps1'
+
+$destRoot =          Join-Path $ENV:systemROOT  'system32/GroupPolicy'
+$destUser =          Join-Path $destRoot        'User/Scripts/Logon'
+$destMachine =       Join-Path $destRoot        'Machine/Scripts/Startup'
+
+
+
+Deploy AllScripts {
+                                                          #   Deployment name. This needs to be unique. Call it whatever you want
+    By Filesystem {                                       #   Deployment type. See Get-PSDeploymentType
+        FromSource  $logonScript,                         #   One or more sources to deploy. Absolute, or relative to deployment.yml paren
+                    $moduleMerged                         #   One or more destinations to deploy the sources to
+                                                                  
+        To          $destUser                                     
     }
 
-    By Filesystem Machine {
-        FromSource "$psScriptRoot/_src/bbro-startup.ps1"
-        To         "$destRoot/Machine/Scripts/Startup"
-        DependingOn CommonModules   
+    By Filesystem {
+        FromSource  $startupScript,
+                    $moduleMerged
+
+        To          $destMachine
     }
 
-    By Filesystem CommonModules {
-        FromSource  "$modEnvironment/Add-EnvironmentScopeType.ps1",
-                    "$modEnvironment/Get-Environment.ps1",
-                    "$modEnvironment/Get-EnvironmentKey.ps1",
-                    "$modEnvironment/Get-ExpandedName.ps1",
-                    "$modEnvironment/Import-Environment.ps1",
-                    "$modEnvironment/Send-EnvironmentChanges.ps1",
-                    "$modEnvironment/Set-Environment.ps1",
-                    "$modCommands/Get-TimeStamp.ps1",
-                    "$modCommands/IsNull.ps1",
-                    "$modCommands/Set-LogEntry.ps1",
-                    "$modCommands/Send-NetMessage/ps1",
-                    "$modCommands/Write-Log.ps1"
-
-        To          "$destRoot/Machine/Scripts/Startup/include",
-                    "$destRoot/User/Scripts/Logon/include"
-    }
 }

@@ -1,43 +1,42 @@
 ﻿properties {
-  $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | 
-                Select-Object -ExpandProperty FullName
-                
-  $me   = ( $psScriptRoot | 
-            Split-Path -Leaf 
-          ) -replace 'Module_'
-          
-  $dest = "${ENV:psProfileDIR}/Modules/$me"
+  $me   = ( $psScriptRoot | Split-Path -leaf ) -replace 'Module_'
+  $files = Get-ChildItem (Join-Path $psScriptRoot _src\include) -recurse -file 
+  $simpleTestFiles =  Get-ChildItem (
+                        Join-Path $psScriptRoot _test\Test-*
+                      ) -file -errorAction SilentlyContinue
 }
 
 
-# task default -depends Analyze, Test
-task default -depends Analyze, Deploy
+
+task default -depends Deploy   # Analyze, Deploy
 
 
 
 task Deploy -depends Clean {
-  Step-ModuleVersion -Path (Join-Path $psScriptRoot "_src\$me.psd1") -By Build
-  Invoke-PSDeploy -Path ( Join-Path $psScriptRoot 'Module.psdeploy.ps1'
-                        ) -Force -Verbose:$VerbosePreference
+  Step-ModuleVersion -path (Join-Path $psScriptRoot "_src\$me.psd1") -by Build
+  Invoke-PSDeploy -path Module.psdeploy.ps1 -force -verbose:$VerbosePreference
 }
 
+
+
+task SimpleTest {
+  $simpleTestFiles | Foreach-Object { & $_ } 
+}
 
 
 
 task Clean {
-  Remove-Module -Force $me -ErrorAction 0
-  Remove-Item (Join-Path $dest '*') -Recurse -Force -ErrorAction 0
+
 }
 
 
 
-
 task Analyze {
-  foreach($1file in $files){
-    $saResults = Invoke-ScriptAnalyzer -Path $1file -Severity @('Error', 'Warning') -Recurse -Verbose:$False
+  foreach($1file in $files.FullName){
+    $saResults = Invoke-ScriptAnalyzer -path $1file -severity 'Error','Warning' -recurse -verbose:$False
     if ($saResults) {
-        $saResults | Format-Table  
-        Write-Error -Message 'One or more Script Analyzer errors/warnings where found. Build cannot continue!'        
+      $saResults | Format-Table  
+      'One or more Script Analyzer errors/warnings where found. Build cannot continue!' | Write-Error
     }
   }
 }

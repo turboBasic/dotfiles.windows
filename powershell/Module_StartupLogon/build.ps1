@@ -5,11 +5,17 @@ PARAM(
     [String[]]$Task = 'default'
 )
 
+
+<#
+
 if( !(Get-Module -Name PSDepend -ListAvailable) ) { 
   Install-Module PSDepend 
 }  
     
 $null = Invoke-PSDepend -Path "$psScriptRoot\build.requirements.psd1" -Install -Import -Force    
+
+#>
+
 
 #TODO(проверить на чистом компьютере - устанавливает ли PSDeploy отсутствующие модули?)
 <#  похоже не нужно, PSDeploy сам должен обо всем позаботиться.

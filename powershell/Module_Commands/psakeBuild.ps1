@@ -1,59 +1,71 @@
 ﻿properties {
-  $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | 
-                Select-Object -ExpandProperty FullName
-                
-  $me   = ( $psScriptRoot | 
-            Split-Path -Leaf 
-          ) -replace 'Module_'
-          
-  $dest = "${ENV:psProfileDIR}/Modules/$me"
+
+  $me   = ($psScriptRoot | Split-Path -leaf) -replace 'Module_'
+  $manifest = Join-Path $psScriptRoot "_src\$me.psd1" | Convert-Path
+  
+  $files = Get-ChildItem (Join-Path $psScriptRoot _src\include) -recurse -file
+  
+  $simpleTestFiles =  Get-ChildItem -path (
+                          Join-Path $psScriptRoot _test\Test-*
+                      ) -file -errorAction SilentlyContinue
+                      
+  $formatModuleManifest = 
+      Join-Path $psScriptRoot _src\include\Format-ModuleManifest.ps1
+      
+}
+
+  
+  
+task default -depends Deploy     # Analyze, Deploy
+
+
+task Deploy -depends Clean, Bump `
+            -description 'Deploys module to run-time locations' {
+  Invoke-PSDeploy -path (Join-Path $psScriptRoot Module.psdeploy.ps1) `
+                  -force -verbose:$VerbosePreference
 }
 
 
-# task default -depends Analyze, Test
-task default -depends Analyze, Deploy
-
-
-
-task Deploy -depends Clean {
-  Step-ModuleVersion -Path (Join-Path $psScriptRoot "_src\$me.psd1")
-  Invoke-PSDeploy -Path ( Join-Path $psScriptRoot 'Module.psdeploy.ps1'
-                        ) -Force -Verbose:$VerbosePreference
+task Clean -description 'Helper to clean buiild artifacts' {
+    # Clean only build artefacts
+    # Deployment artifacts should be cleaned in module.psdeploy.ps1
 }
 
 
-
-
-task Clean {
-  Remove-Module -Force $me -ErrorAction 0
-  Remove-Item (Join-Path $dest '*') -Recurse -Force -ErrorAction 0
+task Bump -description 'Bumps build version of module' {
+  . $formatModuleManifest
+  Step-ModuleVersion -path $manifest  
+  Format-ModuleManifest -path $manifest
 }
 
 
+task SimpleTest -description 'Helper to run ad-hoc tests from _test\Test-...' {
+  $simpleTestFiles | Foreach-Object { & $_ } 
+}
 
 
 task Analyze {
-  foreach($1file in $files){
-    $saResults = Invoke-ScriptAnalyzer -Path $1file -Severity @('Error', 'Warning') -Recurse -Verbose:$False
+  foreach( $1file in $files.FullName ) {
+    $saResults = Invoke-ScriptAnalyzer -path $1file `
+                      -severity 'Error','Warning' -recurse -verbose:$False
     if ($saResults) {
-        $saResults | Format-Table  
-        Write-Error -Message 'One or more Script Analyzer errors/warnings where found. Build cannot continue!'        
+      $saResults | Format-Table  
+      'One or more Script Analyzer errors/warnings where found. 
+      Build cannot continue!' -replace '\n\s*',' ' | Write-Error      
     }
   }
 }
 
 
-
-task Test {
-    $testResults = Invoke-Pester -Path $PSScriptRoot -PassThru
+task Test -description 'Helper to run Pester tests'  {
+    $testResults = Invoke-Pester -path $psScriptRoot -passThru
     if ($testResults.FailedCount -gt 0) {
         $testResults | Format-List
-        Write-Error -Message 'One or more Pester tests failed. Build cannot continue!'
+        'One or more Pester tests failed. Build cannot continue!' | Write-Error
     }
 }
 
 
-
-task ? -Description "Helper to display task info" {
+task ? -description "Helper to display task info" {
 	Write-Documentation
 }

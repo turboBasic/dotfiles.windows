@@ -51,7 +51,7 @@
               "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"     
       }
 
-      Get-ChildItem "$psScriptRoot/include/*.ps1" | ForEach { . $_ }
+      Get-ChildItem "$psScriptRoot/allScripts.ps1" | ForEach { . $_ }
 
       if( IsNull (Get-ItemProperty -Path 'HKCU:\Software\Cargonautika').NextBoot ) {
           Write-Verbose 'No requests to initialize. exiting...'

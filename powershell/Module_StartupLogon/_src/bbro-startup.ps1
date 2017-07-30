@@ -74,7 +74,7 @@
       }
 
 
-      Get-ChildItem "$psScriptRoot/include/*.ps1" | ForEach { . $_ }
+      Get-ChildItem "$psScriptRoot/allScripts.ps1" | ForEach { . $_ }
 
       if( IsNull (Get-ItemProperty -Path 'HKLM:\Software\Cargonautika').NextBoot ) {
           Write-Verbose 'No requests to initialize. exiting...'

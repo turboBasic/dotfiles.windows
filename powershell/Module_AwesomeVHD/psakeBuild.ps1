@@ -1,12 +1,10 @@
 ﻿properties {
-  $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | 
-                Select-Object -ExpandProperty FullName
-                
-  $me   = ( $psScriptRoot | 
-            Split-Path -Leaf 
-          ) -replace 'Module_'
-          
-  $dest = "${ENV:psProfileDIR}/Modules/$me"
+  $me   = ( $psScriptRoot | Split-Path -Leaf ) -replace 'Module_'
+  $files = Get-ChildItem (Join-Path $psScriptRoot _src\include) -recurse -file 
+                         
+  $simpleTestFiles = Get-ChildItem -path (
+                        Join-Path $psScriptRoot _test/Test-*
+                    ) -file -errorAction SilentlyContinue
 }
 
 
@@ -17,27 +15,32 @@ task default -depends Analyze, Deploy
 
 task Deploy -depends Clean {
   Step-ModuleVersion -Path (Join-Path $psScriptRoot "_src\$me.psd1")
-  Invoke-PSDeploy -Path ( Join-Path $psScriptRoot 'Module.psdeploy.ps1'
-                        ) -Force -Verbose:$VerbosePreference
+  Invoke-PSDeploy -Path (
+      Join-Path $psScriptRoot Module.psdeploy.ps1
+  ) -force -verbose:$VerbosePreference
 }
 
+
+
+task SimpleTest {
+  $simpleTestFiles | Foreach-Object { & $_ } 
+}
 
 
 
 task Clean {
-  Remove-Module -Force $me -ErrorAction 0
-  Remove-Item (Join-Path $dest '*') -Recurse -Force -ErrorAction 0
+
 }
 
 
 
-
 task Analyze {
-  foreach($1file in $files){
-    $saResults = Invoke-ScriptAnalyzer -Path $1file -Severity @('Error', 'Warning') -Recurse -Verbose:$False
+  foreach($1file in $files.FullName){
+    $saResults = Invoke-ScriptAnalyzer -path $1file -severity 'Error','Warning' -recurse -verbose:$False
     if ($saResults) {
         $saResults | Format-Table  
-        Write-Error -Message 'One or more Script Analyzer errors/warnings where found. Build cannot continue!'        
+        'One or more Script Analyzer errors/warnings where found. 
+        Build cannot continue!' -replace '\n\s*', ' ' | Write-Error      
     }
   }
 }
@@ -45,10 +48,10 @@ task Analyze {
 
 
 task Test {
-    $testResults = Invoke-Pester -Path $PSScriptRoot -PassThru
+    $testResults = Invoke-Pester -path $PSScriptRoot -passThru
     if ($testResults.FailedCount -gt 0) {
         $testResults | Format-List
-        Write-Error -Message 'One or more Pester tests failed. Build cannot continue!'
+        'One or more Pester tests failed. Build cannot continue!' | Write-Error 
     }
 }
 

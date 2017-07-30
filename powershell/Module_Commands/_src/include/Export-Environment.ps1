@@ -6,13 +6,15 @@ $environment = @{
 }
 
 $environment.data = @{
-    alias =     'Name', 'ResolvedCommand', , 'Options'
-    env =       'Name', 'Value', 'Visibility'
-    function =  'Name', 'ModuleName', 'Visibility'
-    variable =  'Name', 'Value', 'Visibility', 'Options'
+    alias =     'Name', 'Visibility', 'ResolvedCommand', 'Options'
+    env =       'Name', 'Value' 
+    function =  'Name', 'Visibility', 'ModuleName'
+    variable =  'Name', 'Visibility', 'Value', 'Options'
 }
 
 
 foreach( $key in [Array]$environment.Keys ) {
-    $environment.$key = Get-ChildItem "${key}:/"
+    $environment.$key = Get-ChildItem -path "${key}:"
 }
+
+$environment

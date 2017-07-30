@@ -6,6 +6,10 @@
             Split-Path -Leaf 
           ) -replace 'Module_'
           
+  $simpleTestFiles = Get-ChildItem -File -Path (
+      Join-Path $psScriptRoot '_test/Test-*'
+  ) | Select-Object -ExpandProperty FullName
+  
   $dest = "${ENV:psProfileDIR}/Modules/$me"
 }
 
@@ -21,6 +25,11 @@ task Deploy -depends Clean {
                         ) -Force -Verbose:$VerbosePreference
 }
 
+
+
+task SimpleTest {
+  $simpleTestFiles | Foreach-Object { & $_ } 
+}
 
 
 

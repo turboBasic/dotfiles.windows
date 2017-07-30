@@ -1,5 +1,75 @@
-Function Replace-TabsWithSpace
-{
+﻿Register-ObjectEvent -InputObject $psISE.CurrentPowerShellTab.Files CollectionChanged -Action {
+    <#
+        .SYNOPSIS
+            This command register an event handler for new files created within the ISE
+        .DESCRIPTION
+            The default encoding for PowerShell ISE is Unicode BigEndian, for some unknown
+            reason, and for those of us who use version control systems, like Subversion,
+            may have come across those files being set as binary.
+
+            I got around this issue by creating a function to change the RepoProps attribute,
+            but this solution is much more elegant. Once executed, this handler waits for a new
+            file to be created, once that happens, it immediately sets the Encoding property 
+            to ASCII.
+        .PARAMETER
+        .EXAMPLE
+        .NOTES
+            Created by   : Richard Vantreas
+            Date Coded   : 10/13/2011 12:06:31
+        .LINK
+            https://code.google.com/p/mod-posh/wiki/PSISELibrary#Register-ObjectEvent
+        .LINK
+            http://poshcode.org/3000
+    #>
+    
+    [CMDLETBINDING()]
+    PARAM()
+
+        
+        
+    Begin {}
+
+    
+    Process {
+    
+        Write-Verbose "Iterate through ISEFile objects"
+        $Event.Sender | 
+            ForEach-Object {
+                Write-Verbose 'Set private field which holds default encoding to ASCII'
+                $_.GetType().GetField('Encodindg', 'Nonpublic,Instance').
+                      SetValue( $_, [text.encoding]::ASCII )
+            }
+            
+    }
+
+    
+    End {}
+}
+
+
+Function Replace-String { 
+  [CMDLETBINDING()]
+  PARAM(
+      [PARAMETER( Mandatory, Position=0 )]
+      [String] $from,
+      
+      [PARAMETER( Mandatory, Position=1 )]
+      [String] $to,
+      
+      [PARAMETER( Position=2, ValueFromPipeline, ValueFromPipelineByPropertyName )]
+      [String] $InputObject
+  )
+  
+  $input | ForEach-Object { $_.replace($from, $to) }
+}
+
+New-Alias rs Replace-String -Scope Script
+
+
+
+
+
+Function Replace-TabsWithSpace {
     <#
         .SYNOPSIS
             Replaces a tab character with 4 spaces
@@ -61,8 +131,8 @@ Function Replace-TabsWithSpace
     {
         }
     }
-Function New-CommentBlock
-{
+
+Function New-CommentBlock {
     <#
         .SYNOPSIS
             Inserts a full comment block
@@ -138,8 +208,8 @@ Function New-CommentBlock
     {
         }
     }
-Function New-Script
-{
+
+Function New-Script{
     <#
         .SYNOPSIS
             Create a new blank script
@@ -275,8 +345,8 @@ Function New-Script
         Return $NewScript
         }
     }
-Function New-Function
-{
+
+Function New-Function {
     <#
         .SYNOPSIS
             Create a new function
@@ -308,124 +378,112 @@ Function New-Function
         .LINK
             https://code.google.com/p/mod-posh/wiki/PSISELibrary#New-Function
     #>
-    [CmdletBinding()]
-    Param
-        (
-        $SelectedText = $psISE.CurrentFile.Editor.SelectedText,
-        $InstallMenu,
-        $FunctionName
-        )
-    Begin
-    {
-        $WikiPage = ($psISE.CurrentFile.DisplayName).Substring(0,($psISE.CurrentFile.DisplayName).IndexOf("."))
-        $TemplateFunction = @(
-        "Function $FunctionName`r`n"
-        "{`r`n"
-        "   <#`r`n"
-        "       .SYNOPSIS`r`n"
-        "       .DESCRIPTION`r`n"
-        "       .PARAMETER`r`n"
-        "       .EXAMPLE`r`n"
-        "       .NOTES`r`n"
-        "           FunctionName : $FunctionName`r`n"
-        "           Created by   : $($env:username)`r`n"
-        "           Date Coded   : $(Get-Date)`r`n"
-        "       .LINK`r`n"
-        "           https://code.google.com/p/mod-posh/wiki/$($WikiPage)#$($FunctionName)`r`n"
-        "   #>`r`n"
-        "[CmdletBinding()]`r`n"
-        "Param`r`n"
-        "    (`r`n"
-        "    )`r`n"
-        "Begin`r`n"
-        "{`r`n"
-        "    }`r`n"
-        "Process`r`n"
-        "{`r`n"
-        "$($SelectedText)`r`n"
-        "    }`r`n"
-        "End`r`n"
-        "{`r`n"
-        "    }`r`n"
-        "}")
-        if ($InstallMenu)
-        {
-            Write-Verbose "Try to install the menu item, and error out if there's an issue."
-            try
-            {
-                $psISE.CurrentPowerShellTab.AddOnsMenu.SubMenus.Add("New function",{New-Function},"Ctrl+Alt+S") | Out-Null
-                }
-            catch
-            {
-                Return $Error[0].Exception
-                }
-            }
 
-        }
-    Process
-    {
-        if (!$InstallMenu)
-        {
-            Write-Verbose "Don't create a function if we're installing the menu"
-            try
-            {
-                Write-Verbose "Create a new empty function, return an error if there's an issue."
-                $psISE.CurrentFile.Editor.InsertText($TemplateFunction)
-                }
-            catch
-            {
-                Return $Error[0].Exception
-                }
-            }
-        }
-    End
-    {
-        }
-    }
-Register-ObjectEvent -InputObject $psISE.CurrentPowerShellTab.Files CollectionChanged -Action{
-    <#
-        .SYNOPSIS
-            This command register an event handler for new files created within the ISE
-        .DESCRIPTION
-            The default encoding for PowerShell ISE is Unicode BigEndian, for some unknown
-            reason, and for those of us who use version control systems, like Subversion,
-            may have come across those files being set as binary.
-
-            I got around this issue by creating a function to change the RepoProps attribute,
-            but this solution is much more elegant. Once executed, this handler waits for a new
-            file to be created, once that happens, it immediately sets the Encoding property 
-            to ASCII.
-        .PARAMETER
-        .EXAMPLE
-        .NOTES
-            Created by   : Richard Vantreas
-            Date Coded   : 10/13/2011 12:06:31
-        .LINK
-            https://code.google.com/p/mod-posh/wiki/PSISELibrary#Register-ObjectEvent
-        .LINK
-            http://poshcode.org/3000
-    #>
-    [CmdletBinding()]
-    Param
-        (
+  [CMDLETBINDING()]
+  PARAM(
+      $SelectedText = $psISE.CurrentFile.Editor.SelectedText,
+      $InstallMenu,
+      $FunctionName
+  )
+    
+    
+  BEGIN {
+    $WikiPage = ($psISE.CurrentFile.DisplayName).
+        Substring( 
+          0, ($psISE.CurrentFile.DisplayName).IndexOf(".") 
         )
-    Begin
-    {
-        }
-    Process
-    {
-        Write-Verbose "Iterate through ISEFile objects"
-        $Event.Sender | foreach {
-            Write-Verbose "Set private field which holds default encoding to ASCII"
-            $_.GetType().GetField("Encodindg","Nonpublic,Instance").SetValue($_, [text.encoding]::ASCII)
-            }
-        }
-    End
-    {
-        }
+        
+    $TemplateFunction1 = @(
+    "Function $FunctionName`r`n"
+    "{`r`n"
+    "   <#`r`n"
+    "       .SYNOPSIS`r`n"
+    "       .DESCRIPTION`r`n"
+    "       .PARAMETER`r`n"
+    "       .EXAMPLE`r`n"
+    "       .NOTES`r`n"
+    "           FunctionName : $FunctionName`r`n"
+    "           Created by   : $($env:username)`r`n"
+    "           Date Coded   : $(Get-Date)`r`n"
+    "       .LINK`r`n"
+    "           https://code.google.com/p/mod-posh/wiki/$($WikiPage)#$($FunctionName)`r`n"
+    "   #>`r`n"
+    "[CmdletBinding()]`r`n"
+    "Param`r`n"
+    "    (`r`n"
+    "    )`r`n"
+    "Begin`r`n"
+    "{`r`n"
+    "    }`r`n"
+    "Process`r`n"
+    "{`r`n"
+    "$($SelectedText)`r`n"
+    "    }`r`n"
+    "End`r`n"
+    "{`r`n"
+    "    }`r`n"
+    "}")
+    
+    $TemplateFunction = @"
+Function $FunctionName {
+<#
+  .SYNOPSIS
+  .DESCRIPTION
+  .PARAMETER
+  .EXAMPLE
+  .NOTES
+     FunctionName : $FunctionName
+     Created by   : $( $ENV:username )
+     Date Coded   : $( Get-Date )
+  .LINK
+     https://code.google.com/p/mod-posh/wiki/$( $WikiPage )#$( $FunctionName )
+#>
+
+  [CMDLETBINDING()]
+  PARAM(
+  )
+
+
+  BEGIN{}
+
+  PROCESS{
+  $( $SelectedText )
+  }
+
+  END{}
+}
+"@
+    
+      
+    if($InstallMenu) {
+      "Try to install the menu item, and error out if there's an issue." |
+          Write-Verbose 
+      Try {
+        $psISE.CurrentPowerShellTab.AddOnsMenu.SubMenus.Add(  
+            'New function', 
+            {New-Function}, 
+            'Ctrl+Alt+S' 
+        ) | 
+        Out-Null
+      } Catch { Return $Error[0].Exception }
     }
-Function Edit-File
-{
+  }
+    
+  PROCESS {
+    if( !$InstallMenu ) {
+      "Don't create a function if we're installing the menu" | Write-Verbose 
+      Try {
+        "Create a new empty function, return an error if there's an issue." |
+            Write-Verbose 
+        $psISE.CurrentFile.Editor.InsertText( $TemplateFunction )
+      } Catch { Return $Error[0].Exception }
+    }
+  }
+  
+  END {}
+}
+
+Function Edit-File {
     <#
         .SYNOPSIS
             Open files in specified editor.
@@ -448,49 +506,43 @@ Function Edit-File
         [Parameter(ValueFromPipeline=$true)]
         $FileSpec
         )
-    Begin
-    {
+    BEGIN {
         $FilesToOpen = Get-ChildItem $Filespec
+    }
+    
+    PROCESS {
+      Foreach ($File in $FilesToOpen) {
+        Try {
+            if ($POSHEditor -ne $null)
+            {
+                Invoke-Expression "$POSHEditor $File"
+                }
+            else
+            {
+                $psISE.CurrentPowerShellTab.Files.Add($File.FullName)
+                }
         }
-    Process
-    {
-        Foreach ($File in $FilesToOpen)
-        {
-            Try
-            {
-                if ($POSHEditor -ne $null)
-                {
-                    Invoke-Expression "$POSHEditor $File"
-                    }
-                else
-                {
-                    $psISE.CurrentPowerShellTab.Files.Add($File.FullName)
-                    }
-                }
-            Catch
-            {
-                if ((Get-Host).Name -eq 'Windows PowerShell ISE Host')
-                {
-                    Return $Error[0].Exception
-                    }
-                else
-                {
-                    $Message = "You appear to be running in the console. "
-                    $Message += "Please set `$Global:POSHEditor equalto the "
-                    $Message += "path of your favorite text editor. Such as "
-                    $Message += "`$Global:POSHEditor = c:\windows\notepad.exe `r`n"
-                    $Message += "You can access your profile by typing 'notepad `$profile'"
-                    Return $Message
-                    }
-                }
+        Catch {
+            if ((Get-Host).Name -eq 'Windows PowerShell ISE Host') {
+              Return $Error[0].Exception
+            } else {
+              $Message =  "You appear to be running in the console. 
+                           Please set `$Global:POSHEditor equalto the
+                           path of your favorite text editor. Such as  
+                           `$Global:POSHEditor = c:\windows\notepad.exe
+                           
+                           You can access your profile by typing 
+                           'notepad `$profile' " | rs
+              Return $Message
             }
         }
-    End
-    {
-        }
+      }
     }
-Function Save-All
-{
+    
+    END{}
+}
+
+Function Save-All {
     <#
         .SYNOPSIS
             Save all unsaved files in the editor
