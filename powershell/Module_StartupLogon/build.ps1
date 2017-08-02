@@ -1,33 +1,24 @@
-# recipe taken from https://devblackops.io/building-a-simple-release-pipeline-in-powershell-using-psake-pester-and-psdeploy/
+п»ї# recipe taken from https://devblackops.io/building-a-simple-release-pipeline-in-powershell-using-psake-pester-and-psdeploy/
 
 [CMDLETBINDING()]
 PARAM(
-    [String[]]$Task = 'default'
+    [String[]]
+    $Task = 'default',
+
+    [switch]
+    $NoDepend = $True
 )
 
 
-<#
-
-if( !(Get-Module -Name PSDepend -ListAvailable) ) { 
-  Install-Module PSDepend 
+if( -not $NoDepend ) { 
+  if( !(Get-Module -Name PSDepend -ListAvailable) ) { 
+      Install-Module PSDepend 
+  }
+  $null = Invoke-PSDepend -path (
+              Join-Path $psScriptRoot build.requirements.psd1
+          ) -install -import -force    
 }  
-    
-$null = Invoke-PSDepend -Path "$psScriptRoot\build.requirements.psd1" -Install -Import -Force    
 
-#>
-
-
-#TODO(проверить на чистом компьютере - устанавливает ли PSDeploy отсутствующие модули?)
-<#  похоже не нужно, PSDeploy сам должен обо всем позаботиться.
- 
-if (!(Get-Module -Name Pester -ListAvailable))    
-    { Install-Module -Name Pester -Scope CurrentUser }
-if (!(Get-Module -Name psake -ListAvailable))     
-    { Install-Module -Name psake -Scope CurrentUser }
-if (!(Get-Module -Name PSDeploy -ListAvailable))  
-    { Install-Module -Name PSDeploy -Scope CurrentUser }
-    
-#>    
-
-Invoke-Psake -buildFile "$psScriptRoot\psakeBuild.ps1" -taskList $Task -Verbose:$VerbosePreference
+Invoke-Psake -buildFile $psScriptRoot\psakeBuild.ps1 -taskList $Task -Verbose:$VerbosePreference
 exit ( [int]( -not $psake.build_success ) )
+

@@ -2,7 +2,7 @@
 
 [CMDLETBINDING()]
 PARAM(
-    [string[]]$Task = 'default'
+    [string[]]$Task = 'default',
     
     [switch]$NoDepend = $True
 )

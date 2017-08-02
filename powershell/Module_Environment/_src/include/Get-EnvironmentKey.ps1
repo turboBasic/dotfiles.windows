@@ -1,4 +1,4 @@
-. (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
+#. (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
 
 Function Get-EnvironmentKey {
 <#

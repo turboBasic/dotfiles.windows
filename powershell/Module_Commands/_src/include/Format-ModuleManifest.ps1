@@ -96,12 +96,6 @@ see https://poshoholic.com/2008/03/18/powershell-deep-dive-using-myinvocation-an
 
 #>
 
-
-#Write-Verbose $MyInvocation.InvocationName
-#Write-Verbose $MyInvocation.Line.Trim()
-#Write-Verbose $MyInvocation.MyCommand.Path
-
-  
 if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
     Invoke-Expression @"
       Format-ModuleManifest $(

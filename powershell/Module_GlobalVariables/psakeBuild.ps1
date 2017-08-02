@@ -20,7 +20,9 @@ task default -depends Deploy
 
 
 task Deploy -depends Clean, Bump `
-            -description 'Deploys module to run-time locations' {
+            -description 'Deploys module to run-time locations' 
+{         
+            
   Invoke-PSDeploy -path (Join-Path $psScriptRoot Module.psdeploy.ps1) `
                   -force -verbose:$VerbosePreference
 }

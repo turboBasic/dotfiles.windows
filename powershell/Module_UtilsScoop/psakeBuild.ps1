@@ -1,9 +1,17 @@
 ﻿properties {
+
   $me   = ( $psScriptRoot | Split-Path -leaf ) -replace 'Module_'
+  $manifest = Join-Path $psScriptRoot _src\$me.psd1 | Convert-Path
+  
   $files = Get-ChildItem (Join-Path $psScriptRoot _src\include) -recurse -file 
   $simpleTestFiles =  Get-ChildItem (
                         Join-Path $psScriptRoot _test\Test-*
                       ) -file -errorAction SilentlyContinue
+
+  $profileDir = Split-Path -path $profile -parent
+  $scriptsDir = Join-Path $profileDIR Scripts 
+  $formatModuleManifest = 
+      Join-Path $scriptsDir Format-ModuleManifest.ps1                     
 }
 
 
@@ -12,9 +20,9 @@ task default -depends Deploy   # Analyze, Deploy
 
 
 
-task Deploy -depends Clean {
-  Step-ModuleVersion -path (Join-Path $psScriptRoot "_src\$me.psd1") -by Build
-  Invoke-PSDeploy -path Module.psdeploy.ps1 -force -verbose:$VerbosePreference
+task Deploy -depends Clean,Bump -description 'Deploys module to run-time locations' {
+  Invoke-PSDeploy -path (Join-Path $psScriptRoot Module.psdeploy.ps1) `
+                  -force -verbose:$VerbosePreference
 }
 
 
@@ -29,6 +37,12 @@ task Clean {
 
 }
 
+
+task Bump -description 'Bumps build version of module' {
+  . $formatModuleManifest
+  Step-ModuleVersion -path $manifest  
+  Format-ModuleManifest -path $manifest
+}
 
 
 task Analyze {

@@ -1,30 +1,57 @@
-﻿$modulesRoot =       Join-Path $ENV:projects    'dotfiles.windows/powershell'
-$moduleMerged =      Join-Path $psScriptRoot    '_build/allScripts.ps1'
+﻿$me = ($psScriptRoot | Split-Path -Leaf) -replace 'Module_'
+$sourceRoot =     Join-Path $psScriptRoot    '_src'
+$moduleMerged =   Join-Path $psScriptRoot    '_build/allScripts.ps1'
+$startupScript =  Join-Path $sourceRoot      'bbro-startup.ps1'
+$logonScript =    Join-Path $sourceRoot      'bbro-mao-logon.ps1'
 
-$sourceRoot =        Join-Path $psScriptRoot    '_src'
-$startupScript =     Join-Path $sourceRoot      'bbro-startup.ps1'
-$logonScript =       Join-Path $sourceRoot      'bbro-mao-logon.ps1'
-
-$destRoot =          Join-Path $ENV:systemROOT  'system32/GroupPolicy'
-$destUser =          Join-Path $destRoot        'User/Scripts/Logon'
-$destMachine =       Join-Path $destRoot        'Machine/Scripts/Startup'
-
+$destRoot =       Join-Path $ENV:systemROOT  'system32/GroupPolicy'
+$destUser =       Join-Path $destRoot        'User/Scripts/Logon'
+$destMachine =    Join-Path $destRoot        'Machine/Scripts/Startup'
 
 
-Deploy AllScripts {
-                                                          #   Deployment name. This needs to be unique. Call it whatever you want
-    By Filesystem {                                       #   Deployment type. See Get-PSDeploymentType
-        FromSource  $logonScript,                         #   One or more sources to deploy. Absolute, or relative to deployment.yml paren
-                    $moduleMerged                         #   One or more destinations to deploy the sources to
-                                                                  
-        To          $destUser                                     
+#region     Elevated mode block 
+
+  #region     If not in Elevated Mode
+
+    $AdministratorRole = [Security.Principal.WindowsBuiltInRole]::Administrator
+    $CurrentIdentity = [Security.Principal.WindowsPrincipal]( 
+          [Security.Principal.WindowsIdentity]::GetCurrent() 
+    )
+    if( -not $CurrentIdentity.IsInRole($AdministratorRole) ) {
+      $params = @{
+          filePath =      'Powershell.exe'
+          verb =          'RunAs'
+          argumentList =  @"
+      
+              -NoProfile
+              -ExecutionPolicy Bypass
+              -File "$psCommandPath"
+            
+"@.         Trim() -replace '\n\s*', ' '
+
+      }
+
+      Write-Warning 'This script will ask for elevated priveleges if run without them'
+	    Start-Process @params 
+	    Exit 
     }
 
-    By Filesystem {
-        FromSource  $startupScript,
-                    $moduleMerged
+  #endregion  If not in Elevated Mode
 
-        To          $destMachine
+  #region     Switch to elevated mode 
+
+    Deploy AllScripts {
+      By Filesystem {
+          FromSource  $logonScript, $moduleMerged
+          To          $destUser
+      }
+
+      By Filesystem {
+          FromSource  $startupScript, $moduleMerged
+          To          $destMachine
+      }
     }
 
-}
+  #endregion  Switch to elevated mode
+
+#endregion  Elevated mode block 

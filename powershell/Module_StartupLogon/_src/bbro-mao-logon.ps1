@@ -3,6 +3,21 @@
 
   #region     constants
 
+Enum EnvironmentScope {
+    Machine  = 0x0001
+    User     = 0x0002
+    Volatile = 0x0004
+    Process  = 0x0008
+  }
+ 
+
+Enum EnvironmentData {
+    Name   = 0x0010
+    Value  = 0x0020
+    Source = 0x0004
+  }
+  
+  
       $__user_variables = @{ 
 
         appDATA =                ${ENV:appDATA} -replace 'Users','users'
@@ -46,17 +61,25 @@
       }
 
       # Default Log filename for Write-Log
-      $PSDefaultParameterValues = @{
+      $psDefaultParameterValues = @{
         'Write-Log:FilePath' = 
-              "${ENV:systemROOT}\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log"     
+            "${ENV:systemBIN}\LogFiles\
+            Startup, Shutdown, Logon scripts\
+            StartupLogon.log" -replace '\n\s*'    
       }
-
-      Get-ChildItem "$psScriptRoot/allScripts.ps1" | ForEach { . $_ }
-
-      if( IsNull (Get-ItemProperty -Path 'HKCU:\Software\Cargonautika').NextBoot ) {
+      
+      # include all helper functions
+      Get-ChildItem "$psScriptRoot\allScripts.ps1" | ForEach-Object { . $_ }
+      
+      
+      if( -not (Test-Path 'HKCU:\Software\Cargonautika')) {
+          New-Item -path 'HKCU:\Software\Cargonautika' -Force -ErrorAction SilentlyContinue
+          if (-not $?) { 'Something wrong with this' | Write-warning }
+      }
+      if( IsNull (Get-ItemProperty -path 'HKCU:\Software\Cargonautika').NextBoot ) {
           Write-Verbose 'No requests to initialize. exiting...'
       }
-      Set-ItemProperty -Path 'HKCU:\Software\Cargonautika' -Name 'NextBoot' -Value ''
+      Set-ItemProperty -path 'HKCU:\Software\Cargonautika' -name 'NextBoot' -value ''
 
 
   #endregion
@@ -67,38 +90,75 @@
       "`n[ {0,-7} {1,-6} {2} ]" -f 'user', 'header', (Get-TimeStamp) | Write-Log
 
       "User logon script '{0}', '{1}'" -f 
-            (Split-Path $PSCommandPath -Leaf), $PSCommandPath | Write-Log
+            (Split-Path $psCommandPath -Leaf), $psCommandPath | Write-Log
 
-      Send-NetMessage "User logon script $PSCommandPath"
+      Send-NetMessage "User logon script $psCommandPath"
 
   #endregion
 
 
-  Import-Environment -Environment $__user_variables -Scope User
+  Import-Environment -environment $__user_variables -scope user
 
-  "`n[ {0,-7} {1,-6} {2} ]" -f '', 'body', (Get-TimeStamp) | Write-Log
-  Get-Environment * -Scope User |
-      Select-Object Name, Value |
-      ForEach-Object { 
-          if($_.Name -NotLike '*path') {
-                  [psCustomObject][ordered]@{ 
-                      Name     = $_.Name
-                      Value    = $_.Value
-                      Expanded = (Get-ExpandedName $_.Name -Scope User -Expand).Value 
-                  }
-          } else {
-            $paths    = (Get-ExpandedName $_.Name -Scope User).Value -split ';'
-            $pathsExp = (Get-ExpandedName $_.Name -Scope User -Expand).Value -split ';'
-            if($pathsExp.Count -gt $path.Count)  
-                { $numberOfPaths = $pathsExp.Count }
-            else 
-                { $numberOfPaths = $path.Count }                    
-            foreach( $i in 0..($numberOfPaths - 1) ) { 
-                $res = [ordered]@{ Name=''; Value=''; Expanded='' }
-                if($i -eq 0)               { $res.Name = $_.Name }
-                if($i -lt $paths.Count)    { $res.Value = $paths[$i] }
-                if($i -lt $pathsExp.Count) { $res.Expanded = $pathsExp[$i] }
-                [psCustomObject]$res
-            }
-          }
-      } | Out-String -width 360 -stream | Write-Log
+  
+  #region initialization of variables dump procedure
+  
+      $params = @{ 
+        Scope = [EnvironmentScope]::User
+        Expand = $True
+      }
+      
+      $allVars = Get-Environment * -scope User | 
+          Select-Object `
+              Name, 
+              Value, 
+              @{  
+                  Name='Expanded'
+                  Expression={
+                    $params.Name = $_.Name
+                    (Get-ExpandedName @params).Value 
+                  } 
+               }
+      
+      $width = [ordered]@{ 
+          Name=27
+          Value=53
+          Expanded='any'
+      }
+      $columns = [array]$width.keys
+  
+  #endregion initialization
+  
+  #region print headings
+    "`n[ {0,-7} {1,-6} {2} ]" -f '', 'body', (Get-TimeStamp) | Write-Log
+        
+    "{0,-$( $width.Name )} {1,-$( $width.Value )} {2}" -f $columns |
+        ForEach-Object { 
+          $_ | Write-Log
+          $_ -replace '\S', '-' | Write-Log
+        }
+  #endregion
+
+      
+  #region print variables  
+    $printOnce = @{ Name=1; Value=1 }
+    $s | ForEach-Object {
+      $name = $_.Name
+      $value = $_.Value -split ';'
+      
+      $printOnce.Name = 1
+      $value | ForEach-Object {      
+        $text = "{0,-$( $width.Name )}" -f ($name * $printOnce.Name)
+        $printOnce.Name = 0
+     
+        $expValue = [Environment]::ExpandEnvironmentVariables($_) -split ';'
+
+        $currentValue = $_
+        $printOnce.Value = 1
+        $expValue | ForEach-Object { 
+          "$text {0,-$( $width.Value )} {1}" -f 
+              ($currentValue * $printOnce.Value), $_ | Write-Log  
+          $printOnce.Value = 0
+        }
+      }
+    }
+  #endregion    

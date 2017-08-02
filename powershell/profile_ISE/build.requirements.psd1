@@ -1,16 +1,14 @@
 ﻿@{
     # Some defaults for all dependencies
     PSDependOptions = @{
-        Target = Join-Path (Split-Path $profile) Modules
-        AddToPath = $True
+        Target = Split-Path $profile -parent
+        AddToPath = $False
     }
 
     'psake' =            @{ DependencyType = 'psGalleryModule' }
     'psDeploy' =         @{ DependencyType = 'psGalleryModule' }
     'psScriptAnalyzer' = @{ DependencyType = 'psGalleryModule' }
     'BuildHelpers' =     @{ DependencyType = 'psGalleryModule' }
- <# 'Pester' =   @{ DependencyType = 'psGalleryModule'
-                    Version = '4.0.4'
-                  } #>
-  # @TODO(Add dependency of Commands.psm1)
+    'Pester' =           @{ DependencyType = 'psGalleryModule'
+                            Version        = '4.0.4'           } 
 }

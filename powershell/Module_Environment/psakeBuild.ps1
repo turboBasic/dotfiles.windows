@@ -1,44 +1,49 @@
 ﻿properties {
+
+  $me   = ($psScriptRoot | Split-Path -leaf) -replace 'Module_'
+  $manifest = Join-Path $psScriptRoot "_src\$me.psd1" | Convert-Path
+  
   $files = Get-ChildItem (Join-Path $psScriptRoot '_src\include') -Recurse -File | 
                 Select-Object -ExpandProperty FullName
-                
-  $me   = ( $psScriptRoot | 
-            Split-Path -Leaf 
-          ) -replace 'Module_'
           
-  $simpleTestFiles = Get-ChildItem -File -Path (
-      Join-Path $psScriptRoot '_test/Test-*'
-  ) | Select-Object -ExpandProperty FullName
-  
-  $dest = "${ENV:psProfileDIR}/Modules/$me"
+  $simpleTestFiles =  Get-ChildItem -path (
+                          Join-Path $psScriptRoot _test\Test-*
+                      ) -file -errorAction SilentlyContinue
+                      
+  $formatModuleManifest = 
+      Join-Path (Split-path $profile) Scripts\Format-ModuleManifest.ps1
+
 }
 
 
-# task default -depends Analyze, Test
-task default -depends Analyze, Deploy
+task default -depends Deploy     # Analyze, Deploy
 
 
 
-task Deploy -depends Clean {
-  Step-ModuleVersion -Path (Join-Path $psScriptRoot "_src\$me.psd1") -By Build
-  Invoke-PSDeploy -Path ( Join-Path $psScriptRoot 'Module.psdeploy.ps1'
-                        ) -Force -Verbose:$VerbosePreference
+task Deploy -depends Clean, Bump `
+            -description 'Deploys module to run-time locations' {
+  Invoke-PSDeploy -path (Join-Path $psScriptRoot Module.psdeploy.ps1) `
+                  -force -verbose:$VerbosePreference
 }
 
 
 
-task SimpleTest {
+task SimpleTest -description 'Helper to run ad-hoc tests from _test\Test-...' {
   $simpleTestFiles | Foreach-Object { & $_ } 
 }
 
 
 
 task Clean {
-  Remove-Module -Force $me -ErrorAction 0
-  Remove-Item (Join-Path $dest '*') -Recurse -Force -ErrorAction 0
+
 }
 
 
+task Bump -description 'Bumps build version of module' {
+  . $formatModuleManifest
+  Step-ModuleVersion -path $manifest  
+  Format-ModuleManifest -path $manifest
+}
 
 
 task Analyze {

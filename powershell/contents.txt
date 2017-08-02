@@ -1,0 +1,481 @@
+Table of Contents
+
+
+Part I. Tour
+
+Part II. Fundamentals
+
+1.     The Windows PowerShell Interactive Shell 19
+1.1.   Run Programs, Scripts, and Existing Tools 19
+1.2.   Run a PowerShell Command 23
+1.3.   Resolve Errors Calling Native Executables 24
+1.4.   Supply Default Values for Parameters 26
+1.5.   Invoke a Long-Running or Background Command 28
+1.6.   Program: Monitor a Command for Changes 32
+1.7.   Notify Yourself of Job Completion 35
+1.8.   Customize Your Shell, Profile, and Prompt 36
+1.9.   Customize PowerShell’s User Input Behavior 39
+1.10.  Customize PowerShell’s Command Resolution Behavior 40
+1.11.  Find a Command to Accomplish a Task 43
+1.12.  Get Help on a Command 45
+1.13.  Update System Help Content 47
+1.14.  Program: Search Help for Text 49
+1.15.  Launch PowerShell at a Specific Location 50
+1.16.  Invoke a PowerShell Command or Script from Outside PowerShell 52
+1.17.  Understand and Customize PowerShell’s Tab Completion 55
+1.18.  Program: Learn Aliases for Common Commands 59
+1.19.  Program: Learn Aliases for Common Parameters 61
+1.20.  Access and Manage Your Console History 64
+1.21.  Program: Create Scripts from Your Session History 66
+1.22.  Invoke a Command from Your Session History 68
+1.23.  Program: Search Formatted Output for a Pattern 69
+1.24.  Interactively View and Process Command Output 70
+1.25.  Program: Interactively View and Explore Objects 72
+1.26.  Store the Output of a Command into a File 79
+1.27.  Add Information to the End of a File 80
+1.28.  Record a Transcript of Your Shell Session 81
+1.29.  Extend Your Shell with Additional Commands 82
+1.30.  Use Commands from Customized Shells 84
+1.31.  Save State Between Sessions 85
+
+2.     Pipelines 89
+2.1.   Filter Items in a List or Command Output 90
+2.2.   Group and Pivot Data by Name 91
+2.3.   Program: Simplify Most Where-Object Filters 94
+2.4.   Program: Interactively Filter Lists of Objects 96
+2.5.   Work with Each Item in a List or Command Output 99
+2.6.   Automate Data-Intensive Tasks 101
+2.7.   Program: Simplify Most Foreach-Object Pipelines 105
+2.8.   Intercept Stages of the Pipeline 108
+2.9.   Automatically Capture Pipeline Output 109
+2.10.  Capture and Redirect Binary Process Output 111
+
+3.     Variables and Objects 117
+3.1.   Display the Properties of an Item as a List 118
+3.2.   Display the Properties of an Item as a Table 120
+3.3.   Store Information in Variables 122
+3.4.   Access Environment Variables 123
+3.5.   Program: Retain Changes to Environment Variables Set by a Batch File 126
+3.6.   Control Access and Scope of Variables and Other Items 128
+3.7.   Program: Create a Dynamic Variable 130
+3.8.   Work with .NET Objects 133
+3.9.   Create an Instance of a .NET Object 138
+3.10.  Create Instances of Generic Objects 140
+3.11.  Reduce Typing for Long Class Names 141
+3.12.  Use a COM Object 143
+3.13.  Learn About Types and Objects 143
+3.14.  Get Detailed Documentation About Types and Objects 145
+3.15.  Add Custom Methods and Properties to Objects 147
+3.16.  Create and Initialize Custom Objects 150
+3.17.  Add Custom Methods and Properties to Types 154
+3.18.  Define Custom Formatting for a Type 158
+
+4.     Looping and Flow Control 163
+4.1.   Make Decisions with Comparison and Logical Operators 163
+4.2.   Adjust Script Flow Using Conditional Statements 165
+4.3.   Manage Large Conditional Statements with Switches 167
+4.4.   Repeat Operations with Loops 170
+4.5.   Add a Pause or Delay 172
+
+5.     Strings and Unstructured Text 175
+5.1.   Create a String 175
+5.2.   Create a Multiline or Formatted String 177
+5.3.   Place Special Characters in a String 178
+5.4.   Insert Dynamic Information in a String 179
+5.5.   Prevent a String from Including Dynamic Information 180
+5.6.   Place Formatted Information in a String 181
+5.7.   Search a String for Text or a Pattern 183
+5.8.   Replace Text in a String 185
+5.9.   Split a String on Text or a Pattern 187
+5.10. Combine Strings into a Larger String 190
+5.11. Convert a String to Uppercase or Lowercase 191
+5.12. Trim a String 193
+5.13. Format a Date for Output 194
+5.14. Program: Convert Text Streams to Objects 196
+5.15. Generate Large Reports and Text Streams 200
+5.16. Generate Source Code and Other Repetitive Text 202
+
+6.   Calculations and Math 207
+6.1. Perform Simple Arithmetic 207
+6.2. Perform Complex Arithmetic 209
+6.3. Measure Statistical Properties of a List 213
+6.4. Work with Numbers as Binary 214
+6.5. Simplify Math with Administrative Constants 218
+6.6. Convert Numbers Between Bases 219
+
+7.   Lists, Arrays, and Hashtables 223
+7.1. Create an Array or List of Items 223
+7.2. Create a Jagged or Multidimensional Array 225
+7.3. Access Elements of an Array 226
+7.4. Visit Each Element of an Array 228
+7.5. Sort an Array or List of Items 229
+7.6. Determine Whether an Array Contains an Item 230
+7.7. Combine Two Arrays 231
+7.8. Find Items in an Array That Match a Value 232
+7.9. Compare Two Lists 233
+7.10. Remove Elements from an Array 234
+7.11. Find Items in an Array Greater or Less Than a Value 235
+7.12. Use the ArrayList Class for Advanced Array Tasks 236
+7.13. Create a Hashtable or Associative Array 238
+7.14. Sort a Hashtable by Key or Value 239
+
+8.   Utility Tasks 243
+8.1. Get the System Date and Time 243
+8.2. Measure the Duration of a Command 244
+8.3. Read and Write from the Windows Clipboard 246
+8.4. Generate a Random Number or Object 248
+8.5. Program: Search the Windows Start Menu 250
+8.6. Program: Show Colorized Script Content 251
+
+Part III. Common Tasks
+
+9.   Simple Files 259
+9.1. Get the Content of a File 259
+9.2. Search a File for Text or a Pattern 261
+9.3. Parse and Manage Text-Based Logfiles 264
+9.4. Parse and Manage Binary Files 267
+9.5. Create a Temporary File 270
+9.6. Search and Replace Text in a File 271
+9.7. Program: Get the Encoding of a File 275
+9.8. Program: View the Hexadecimal Representation of Content 277
+
+10.  Structured Files 281
+10.1. Access Information in an XML File 281
+10.2. Perform an XPath Query Against XML 284
+10.3. Convert Objects to XML 286
+10.4. Modify Data in an XML File 287
+10.5. Easily Import and Export Your Structured Data 289
+10.6. Store the Output of a Command in a CSV or Delimited File 291
+10.7. Import CSV and Delimited Data from a File 292
+10.8. Manage JSON Data Streams 294
+10.9. Use Excel to Manage Command Output 295
+10.10. Parse and Interpret PowerShell Scripts 297
+
+11. Code Reuse 303
+11.1. Write a Script 303
+11.2. Write a Function 306
+11.3. Find a Verb Appropriate for a Command Name 308
+11.4. Write a Script Block 309
+11.5. Return Data from a Script, Function, or Script Block 311
+11.6. Package Common Commands in a Module 314
+11.7. Write Commands That Maintain State 317
+11.8. Selectively Export Commands from a Module 320
+11.9. Diagnose and Interact with Internal Module State 322
+11.10. Handle Cleanup Tasks When a Module Is Removed 324
+11.11. Access Arguments of a Script, Function, or Script Block 325
+11.12. Add Validation to Parameters 330
+11.13. Accept Script Block Parameters with Local Variables 334
+11.14. Dynamically Compose Command Parameters 336
+11.15. Provide -WhatIf, -Confirm, and Other Cmdlet Features 338
+11.16. Add Help to Scripts or Functions 340
+11.17. Add Custom Tags to a Function or Script Block 343
+11.18. Access Pipeline Input 345
+11.19. Write Pipeline-Oriented Scripts with Cmdlet Keywords 347
+11.20. Write a Pipeline-Oriented Function 351
+11.21. Organize Scripts for Improved Readability 352
+11.22. Invoke Dynamically Named Commands 354
+11.23. Program: Enhance or Extend an Existing Cmdlet 356
+
+12. Internet-Enabled Scripts 365
+12.1. Download a File from an FTP or Internet Site 365
+12.2. Upload a File to an FTP Site 366
+12.3. Download a Web Page from the Internet 368
+12.4. Parse and Analyze a Web Page from the Internet 373
+12.5. Script a Web Application Session 375
+12.6. Program: Get-PageUrls 379
+12.7. Interact with REST-Based Web APIs 383
+12.8. Connect to a Web Service 385
+12.9. Export Command Output as a Web Page 387
+12.10. Send an Email 388
+12.11. Program: Monitor Website Uptimes 389
+12.12. Program: Interact with Internet Protocols 391
+
+13. User Interaction 397
+13.1. Read a Line of User Input 397
+13.2. Read a Key of User Input 398
+13.3. Program: Display a Menu to the User 399
+13.4. Display Messages and Output to the User 401
+13.5. Provide Progress Updates on Long-Running Tasks 404
+13.6. Write Culture-Aware Scripts 405
+13.7. Support Other Languages in Script Output 409
+13.8. Program: Invoke a Script Block with Alternate Culture Settings 412
+13.9. Access Features of the Host’s User Interface 414
+13.10. Program: Add a Graphical User Interface to Your Script 415
+13.11. Interact with MTA Objects 418
+
+14. Debugging 421
+14.1. Prevent Common Scripting Errors 422
+14.2. Trace Script Execution 424
+14.3. Set a Script Breakpoint 428
+14.4. Debug a Script When It Encounters an Error 430
+14.5. Create a Conditional Breakpoint 432
+14.6. Investigate System State While Debugging 434
+14.7. Program: Watch an Expression for Changes 437
+14.8. Program: Get Script Code Coverage 440
+
+15. Tracing and Error Management 443
+15.1. Determine the Status of the Last Command 443
+15.2. View the Errors Generated by a Command 445
+15.3. Manage the Error Output of Commands 447
+15.4. Program: Resolve an Error 448
+15.5. Configure Debug, Verbose, and Progress Output 450
+15.6. Handle Warnings, Errors, and Terminating Errors 452
+15.7. Output Warnings, Errors, and Terminating Errors 455
+15.8. Program: Analyze a Script’s Performance Profile 456
+
+16. Environmental Awareness 463
+16.1. View and Modify Environment Variables 463
+16.2. Modify the User or System Path 465
+16.3. Access Information About Your Command’s Invocation 466
+16.4. Program: Investigate the InvocationInfo Variable 468
+16.5. Find Your Script’s Name 471
+16.6. Find Your Script’s Location 472
+16.7. Find the Location of Common System Paths 473
+16.8. Get the Current Location 476
+16.9. Safely Build File Paths Out of Their Components 477
+16.10. Interact with PowerShell’s Global Environment 478
+16.11. Determine PowerShell Version Information 479
+16.12. Test for Administrative Privileges 480
+
+17. Extend the Reach of Windows PowerShell 483
+17.1. Automate Programs Using COM Scripting Interfaces 483
+17.2. Program: Query a SQL Data Source 485
+17.3. Access Windows Performance Counters 488
+17.4. Access Windows API Functions 490
+17.5. Program: Invoke Simple Windows API Calls 497
+17.6. Define or Extend a .NET Class 500
+17.7. Add Inline C# to Your PowerShell Script 503
+17.8. Access a .NET SDK Library 505
+17.9. Create Your Own PowerShell Cmdlet 507
+17.10. Add PowerShell Scripting to Your Own Program 510
+
+18. Security and Script Signing 515
+18.1. Enable Scripting Through an Execution Policy 516
+18.2. Disable Warnings for UNC Paths 519
+18.3. Sign a PowerShell Script, Module, or Formatting File 520
+18.4. Program: Create a Self-Signed Certificate 522
+18.5. Manage PowerShell Security in an Enterprise 523
+18.6. Block Scripts by Publisher, Path, or Hash 526
+18.7. Verify the Digital Signature of a PowerShell Script 527
+18.8. Securely Handle Sensitive Information 529
+18.9. Securely Request Usernames and Passwords 531
+18.10. Program: Start a Process as Another User 532
+18.11. Program: Run a Temporarily Elevated Command 534
+18.12. Securely Store Credentials on Disk 537
+18.13. Access User and Machine Certificates 539
+18.14. Program: Search the Certificate Store 540
+18.15. Add and Remove Certificates 542
+18.16. Manage Security Descriptors in SDDL Form 543
+
+19. Integrated Scripting Environment 545
+19.1. Debug a Script 547
+19.2. Customize Text and User Interface Colors 549
+19.3. Connect to a Remote Computer 551
+19.4. Extend ISE Functionality Through Its Object Model 552
+19.5. Quickly Insert Script Snippets 553
+19.6. Add an Item to the Tools Menu 555
+
+Part IV. Administrator Tasks
+
+20. Files and Directories 559
+20.1. Determine the Current Location 560
+20.2. Get the Files in a Directory 561
+20.3. Find All Files Modified Before a Certain Date 563
+20.4. Clear the Content of a File 564
+20.5. Manage and Change the Attributes of a File 565
+20.6. Find Files That Match a Pattern 566
+20.7. Manage Files That Include Special Characters 569
+20.8. Program: Get Disk Usage Information 570
+20.9. Monitor a File for Changes 572
+20.10. Get the Version of a DLL or Executable 573
+20.11. Program: Get the MD5 or SHA1 Hash of a File 574
+20.12. Create a Directory 576
+20.13. Remove a File or Directory 577
+20.14. Rename a File or Directory 578
+20.15. Move a File or Directory 579
+20.16. Create and Map PowerShell Drives 580
+20.17. Access Long File and Directory Names 582
+20.18. Unblock a File 583
+20.19. Interact with Alternate Data Streams 584
+20.20. Program: Move or Remove a Locked File 586
+20.21. Get the ACL of a File or Directory 587
+20.22. Set the ACL of a File or Directory 589
+20.23. Program: Add Extended File Properties to Files 591
+20.24. Program: Create a Filesystem Hard Link 593
+20.25. Program: Create a ZIP Archive 595
+
+21. The Windows Registry 599
+21.1. Navigate the Registry 599
+21.2. View a Registry Key 600
+21.3. Modify or Remove a Registry Key Value 601
+21.4. Create a Registry Key Value 602
+21.5. Remove a Registry Key 603
+21.6. Safely Combine Related Registry Modifications 604
+21.7. Add a Site to an Internet Explorer Security Zone 606
+21.8. Modify Internet Explorer Settings 608
+21.9. Program: Search the Windows Registry 609
+
+21.10. Get the ACL of a Registry Key 611
+21.11. Set the ACL of a Registry Key 612
+21.12. Work with the Registry of a Remote Computer 614
+21.13. Program: Get Registry Items from Remote Machines 616
+21.14. Program: Get Properties of Remote Registry Keys 618
+21.15. Program: Set Properties of Remote Registry Keys 620
+21.16. Discover Registry Settings for Programs 622
+
+22. Comparing Data 627
+22.1. Compare the Output of Two Commands 627
+22.2. Determine the Differences Between Two Files 629
+22.3. Verify Integrity of File Sets 630
+
+23. Event Logs 633
+23.1. List All Event Logs 633
+23.2. Get the Newest Entries from an Event Log 635
+23.3. Find Event Log Entries with Specific Text 636
+23.4. Retrieve and Filter Event Log Entries 638
+23.5. Find Event Log Entries by Their Frequency 641
+23.6. Back Up an Event Log 643
+23.7. Create or Remove an Event Log 644
+23.8. Write to an Event Log 646
+23.9. Run a PowerShell Script for Windows Event Log Entries 646
+23.10. Clear or Maintain an Event Log 648
+23.11. Access Event Logs of a Remote Machine 650
+
+24. Processes 653
+24.1. List Currently Running Processes 654
+24.2. Launch the Application Associated with a Document 655
+24.3. Launch a Process 656
+24.4. Stop a Process 658
+24.5. Get the Owner of a Process 659
+24.6. Get the Parent Process of a Process 660
+24.7. Debug a Process 661
+
+25. System Services 663
+25.1. List All Running Services 663
+25.2. Manage a Running Service 665
+25.3. Configure a Service 666
+
+26. Active Directory 669
+26.1. Test Active Directory Scripts on a Local Installation 670
+
+26.2. Create an Organizational Unit 673
+26.3. Get the Properties of an Organizational Unit 674
+26.4. Modify Properties of an Organizational Unit 675
+26.5. Delete an Organizational Unit 675
+26.6. Get the Children of an Active Directory Container 676
+26.7. Create a User Account 677
+26.8. Program: Import Users in Bulk to Active Directory 678
+26.9. Search for a User Account 680
+26.10. Get and List the Properties of a User Account 681
+26.11. Modify Properties of a User Account 682
+26.12. Change a User Password 683
+26.13. Create a Security or Distribution Group 683
+26.14. Search for a Security or Distribution Group 685
+26.15. Get the Properties of a Group 686
+26.16. Find the Owner of a Group 687
+26.17. Modify Properties of a Security or Distribution Group 688
+26.18. Add a User to a Security or Distribution Group 688
+26.19. Remove a User from a Security or Distribution Group 689
+26.20. List a User’s Group Membership 690
+26.21. List the Members of a Group 690
+26.22. List the Users in an Organizational Unit 691
+26.23. Search for a Computer Account 692
+26.24. Get and List the Properties of a Computer Account 693
+
+27. Enterprise Computer Management 695
+27.1. Join a Computer to a Domain or Workgroup 695
+27.2. Remove a Computer from a Domain 696
+27.3. Rename a Computer 697
+27.4. Program: List Logon or Logoff Scripts for a User 698
+27.5. Program: List Startup or Shutdown Scripts for a Machine 699
+27.6. Deploy PowerShell-Based Logon Scripts 701
+27.7. Enable or Disable the Windows Firewall 702
+27.8. Open or Close Ports in the Windows Firewall 702
+27.9. Program: List All Installed Software 704
+27.10. Uninstall an Application 705
+27.11. Manage Computer Restore Points 706
+27.12. Reboot or Shut Down a Computer 708
+27.13. Determine Whether a Hotfix Is Installed 710
+27.14. Manage Scheduled Tasks on a Computer 710
+27.15. Retrieve Printer Information 714
+27.16. Retrieve Printer Queue Statistics 715
+27.17. Manage Printers and Print Queues 717
+
+27.18. Program: Summarize System Information 718
+27.19. Renew a DHCP Lease 720
+27.20. Assign a Static IP Address 721
+27.21. List All IP Addresses for a Computer 723
+27.22. List Network Adapter Properties 724
+
+28. Windows Management Instrumentation 727
+28.1. Access Windows Management Instrumentation and CIM Data 730
+28.2. Modify the Properties of a WMI or CIM Instance 732
+28.3. Invoke a Method on a WMI Instance or Class 734
+28.4. Program: Determine Properties Available to WMI and CIM Filters 736
+28.5. Program: Search for WMI Classes 737
+28.6. Use .NET to Perform Advanced WMI Tasks 740
+28.7. Improve the Performance of Large-Scale WMI Operations 742
+28.8. Convert a VBScript WMI Script to PowerShell 743
+
+29. Remoting 749
+29.1. Find Commands That Support Their Own Remoting 750
+29.2. Enable PowerShell Remoting on a Computer 752
+29.3. Interactively Manage a Remote Computer 754
+29.4. Invoke a Command on a Remote Computer 756
+29.5. Disconnect and Reconnect PowerShell Sessions 760
+29.6. Program: Remotely Enable PowerShell Remoting 763
+29.7. Program: Invoke a PowerShell Expression on a Remote Machine 765
+29.8. Test Connectivity Between Two Computers 768
+29.9. Limit Networking Scripts to Hosts That Respond 771
+29.10. Enable Remote Desktop on a Computer 772
+29.11. Configure User Permissions for Remoting 772
+29.12. Enable Remoting to Workgroup Computers 774
+29.13. Implicitly Invoke Commands from a Remote Computer 776
+29.14. Create Sessions with Full Network Access 779
+29.15. Pass Variables to Remote Sessions 783
+29.16. Configure Advanced Remoting Quotas and Options 785
+29.17. Invoke a Command on Many Computers 787
+29.18. Run a Local Script on a Remote Computer 789
+29.19. Program: Transfer a File to a Remote Computer 790
+29.20. Determine Whether a Script Is Running on a Remote Computer 793
+29.21. Create a Task-Specific Remoting Endpoint 794
+
+30. Workflows 801
+30.1. Write a Workflow 802
+30.2. Run a Workflow 808
+
+30.3. Suspend and Resume a Workflow 811
+30.4. Invoke Islands of Traditional PowerShell Script 814
+30.5. Invoke Workflow Actions in Parallel 816
+30.6. Customize an Activity’s Connection Parameters 819
+30.7. Write a Workflow That Requires Human Intervention 825
+30.8. Add Raw XAML to a Workflow 827
+30.9. Reference Custom Activities in a Workflow 828
+30.10. Debug or Troubleshoot a Workflow 830
+30.11. Use PowerShell Activities from a Traditional Windows Workflow Application 834
+
+31. Transactions 837
+31.1. Safely Experiment with Transactions 839
+31.2. Change Error Recovery Behavior in Transactions 841
+
+32. Event Handling 845
+32.1. Respond to Automatically Generated Events 846
+32.2. Create and Respond to Custom Events 849
+32.3. Create a Temporary Event Subscription 852
+32.4. Forward Events from a Remote Computer 853
+32.5. Investigate Internal Event Action State 854
+32.6. Use a Script Block as a .NET Delegate or Event Handler 856
+
+Part V. References
+
+A. PowerShell Language and Environment 861
+B. Regular Expression Reference 919
+C. XPath Quick Reference 929
+D. .NET String Formatting 933
+E. .NET DateTime Formatting 937
+F. Selected .NET Classes and Their Uses 943
+G. WMI Reference 951
+H. Selected COM Objects and Their Uses 959
+I. Selected Events and Their Uses 963
+J. Standard PowerShell Verbs 971
+Index 975

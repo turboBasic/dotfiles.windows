@@ -24,9 +24,10 @@
 
 # This is for USER only Global variables!
 
-Function Set-UserGlobalVariables {
+  #$Global:VerbosePreference = Continue  # SilentlyContinue, Inquiry, Stop
 
-  $Global:VerbosePreference = Continue  # SilentlyContinue, Inquiry, Stop
+
+Function Set-UserGlobalVariables {
 
   $vars = @(
     '__gist',
@@ -34,43 +35,42 @@ Function Set-UserGlobalVariables {
     '__githubGist2',
     '__githubUser',
     '__githubUser2',
-    '__homeDrive',
+    #'__homeDrive',    #'__systemBin' ,    #'__userName'
     '__profile',    
     '__profileDir',
     '__profileSource',
     '__projects',
-    '__systemBin',
-    '__userName'
+    '__fake'
   )       
 
   $__assets = @{
-    userName          = $ENV:userName
-    homeDrive         = $ENV:homeDrive
+    #userName          = $ENV:userName      #homeDrive         = $ENV:homeDrive    #profileSourcePath = './dotfiles.windows/powershell/Microsoft.PowerShell_profile.ps1'
     projects          = $ENV:projects   
-    profileSourcePath = 
-        './dotfiles.windows/powershell/Microsoft.PowerShell_profile.ps1'
     githubGist        = $ENV:githubGist
     githubGist2       = $ENV:githubGist2
   }
+  $_assets |  convertto-JSON | Write-verbose
+
+
+
  
   $vars | ForEach-Object { 
       New-Variable -name ($_) -value '' -scope Global -force -option None 
   }
-
+  $vars |  convertto-JSON | Write-verbose
   
   # disk with users' home directories
-  $Global:__homeDrive =     $__assets.homeDrive  
-  $Global:__userName =      if(Test-Path ENV:userName) 
-                                { $ENV:userName } 
-                            else 
-                                { $__assets.userName }
-                                
-  $Global:__systemBin =     Join-Path $ENV:systemROOT system32
+  #$Global:__homeDrive =     $__assets.homeDrive  
+  #$Global:__userName =      if(Test-Path ENV:userName) 
+  #                              { $ENV:userName } 
+  #                          else 
+  #                              { $__assets.userName }
+  #                              
+  #$Global:__systemBin =     Join-Path $ENV:systemROOT system32
   $Global:__projects =      $ENV:projects
-  $Global:__profile =       $profile
+#  $Global:__profile =       $profile
   $Global:__profileDir =    Split-Path -parent $profile
-  $Global:__profileSource = 
-      Join-Path $Global:__projects $__assets.profileSourcePath | Convert-Path
+#  $Global:__profileSource = Join-Path $Global:__projects $__assets.profileSourcePath | Convert-Path
 
   $Global:__githubUser =    $ENV:githubUser
   $Global:__githubGist =    $ENV:githubGist
@@ -112,11 +112,15 @@ see https://poshoholic.com/2008/03/18/powershell-deep-dive-using-myinvocation-an
               'Dot sourced'
           } elseif ((Resolve-Path -Path $MyInvocation.InvocationName).ProviderPath -eq $MyInvocation.MyCommand.Path) {
               "Called using path $($MyInvocation.InvocationName)"
+          } elseif ($MyInvocation.Line -match '^import-module') {
+              "Autostarted during importing module"
           }
 
 #>
 
-if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
+#$MyInvocation | ConvertTo-JSON | Out-File (Join-Path (Split-Path $profile -parent) GlobalVariablesInvocation.log)
+
+<#if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
     Invoke-Expression @"
       Set-UserGlobalVariables $(
         $passThruArgs = $Args
@@ -129,5 +133,4 @@ if ($MyInvocation.InvocationName -ne '.' -and $MyInvocation.Line -ne '') {
         }
       )
 "@
-}
-
+} #>

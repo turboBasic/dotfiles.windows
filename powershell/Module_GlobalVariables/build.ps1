@@ -1,6 +1,6 @@
-# recipe taken from https://devblackops.io/building-a-simple-release-pipeline-in-powershell-using-psake-pester-and-psdeploy/
+﻿# recipe taken from https://devblackops.io/building-a-simple-release-pipeline-in-powershell-using-psake-pester-and-psdeploy/
 
-[CMDLETBINDING()]
+[CmdletBinding()]
 PARAM(
     [String[]]$Task = 'default',
     
@@ -22,4 +22,4 @@ Invoke-Psake -buildFile (
     Join-Path $psScriptRoot psakeBuild.ps1
 ) -taskList $Task -verbose:$VerbosePreference 
 
-exit ( [Int]( -not $psake.build_success ) )
+exit ( [int]( -not $psake.build_success ) )
