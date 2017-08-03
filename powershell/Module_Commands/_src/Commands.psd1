@@ -85,6 +85,7 @@ NestedModules = @(
     'include/Merge-Hashtables.ps1',
     'include/New-Shortcut.ps1',
     'include/New-SymLink.ps1',
+    'include/Reduce-WhiteSpaces.ps1',
     'include/Remove-IndentationMark.ps1',
     'include/Remove-LeadingSpace.ps1',
     'include/Resolve-HashTable.ps1',

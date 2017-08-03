@@ -16,7 +16,7 @@
 
   
   
-task default -depends Deploy     # Analyze, Deploy
+task default -depends Deploy
 
 
 task Deploy -depends Clean, Bump `
@@ -36,11 +36,6 @@ task Bump -description 'Bumps build version of module' {
   . $formatModuleManifest
   Step-ModuleVersion -path $manifest  
   Format-ModuleManifest -path $manifest
-}
-
-
-task SimpleTest -description 'Helper to run ad-hoc tests from _test\Test-...' {
-  $simpleTestFiles | Foreach-Object { & $_ } 
 }
 
 
