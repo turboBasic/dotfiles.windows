@@ -16,11 +16,11 @@
 
 
 
-task default -depends Deploy   # Analyze, Deploy
+task default -depends Deploy {}  # Analyze, Deploy
 
 
 
-task Deploy -depends Clean,Bump -description 'Deploys module to run-time locations' {
+task Deploy -depends Clean, Bump -description 'Deploys module to run-time locations' {
   Invoke-PSDeploy -path (Join-Path $psScriptRoot Module.psdeploy.ps1) `
                   -force -verbose:$VerbosePreference
 }
