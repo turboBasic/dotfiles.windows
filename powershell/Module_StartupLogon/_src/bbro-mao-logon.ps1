@@ -1,4 +1,4 @@
-# User Logon script %systemRoot%\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1 
+﻿# User Logon script %systemRoot%\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1 
 
 
   #region     constants
@@ -63,18 +63,17 @@ Enum EnvironmentData {
       # Default Log filename for Write-Log
       $psDefaultParameterValues = @{
         'Write-Log:FilePath' = 
-            "${ENV:systemBIN}\LogFiles\
-            Startup, Shutdown, Logon scripts\
-            StartupLogon.log" -replace '\n\s*'    
+            "${ENV:systemBIN}\LogFiles\Startup, Shutdown, Logon scripts\
+                    StartupLogon.log" -replace '\n\s*'    
       }
       
       # include all helper functions
-      Get-ChildItem "$psScriptRoot\allScripts.ps1" | ForEach-Object { . $_ }
+      Get-ChildItem $psScriptRoot\allScripts.ps1 | ForEach-Object { . $_ }
       
       
       if( -not (Test-Path 'HKCU:\Software\Cargonautika')) {
-          New-Item -path 'HKCU:\Software\Cargonautika' -Force -ErrorAction SilentlyContinue
-          if (-not $?) { 'Something wrong with this' | Write-warning }
+          New-Item -path 'HKCU:\Software\Cargonautika' -force -errorAction SilentlyContinue
+          if (-not $?) { 'Something wrong with this' | Write-Warning }
       }
       if( IsNull (Get-ItemProperty -path 'HKCU:\Software\Cargonautika').NextBoot ) {
           Write-Verbose 'No requests to initialize. exiting...'
@@ -120,9 +119,9 @@ Enum EnvironmentData {
                }
       
       $width = [ordered]@{ 
-          Name=27
-          Value=53
-          Expanded='any'
+          Name =     27
+          Value =    53
+          Expanded = 'any'
       }
       $columns = [array]$width.keys
   
@@ -154,11 +153,12 @@ Enum EnvironmentData {
 
         $currentValue = $_
         $printOnce.Value = 1
-        $expValue | ForEach-Object { 
-          "$text {0,-$( $width.Value )} {1}" -f 
-              ($currentValue * $printOnce.Value), $_ | Write-Log  
-          $printOnce.Value = 0
-        }
+        $expValue | 
+            ForEach-Object { 
+              "$text {0,-$( $width.Value )} {1}" -f 
+                  ($currentValue * $printOnce.Value), $_ | Write-Log  
+              $printOnce.Value = 0
+            }
       }
     }
   #endregion    

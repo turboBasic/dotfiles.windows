@@ -1,4 +1,5 @@
 ﻿properties {
+  $sourceROOT = Join-Path $psScriptRoot installable
   $scripts = Get-ChildItem -path $sourceROOT\*.ps1
   $simpleTestFiles = Get-ChildItem -path (
                           Join-Path $psScriptRoot _test\Test-*
@@ -9,10 +10,9 @@
 task default -depends Analyze, Deploy
 
 
-task Deploy -description 'Deploys module to run-time location' 
-{
+task Deploy -description 'Deploys module to run-time location' {
     Invoke-PSDeploy -path (
-        Join-Path $psScriptRoot Script.PSDeploy.ps1
+        Join-Path $psScriptRoot Scripts.PSDeploy.ps1
     ) -force -verbose:$VerbosePreference
 }
 

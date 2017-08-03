@@ -11,7 +11,7 @@ PARAM(
 
 
 if( -not $NoDepend ) { 
-  if( !(Get-Module -Name PSDepend -ListAvailable) ) { 
+  if( !(Get-Module -name PSDepend -listAvailable) ) { 
       Install-Module PSDepend 
   }
   $null = Invoke-PSDepend -path (
@@ -19,6 +19,6 @@ if( -not $NoDepend ) {
           ) -install -import -force    
 }  
 
-Invoke-Psake -buildFile $psScriptRoot\psakeBuild.ps1 -taskList $Task -Verbose:$VerbosePreference
+Invoke-Psake -buildFile $psScriptRoot\psakeBuild.ps1 -taskList $Task -verbose:$VerbosePreference
 exit ( [int]( -not $psake.build_success ) )
 

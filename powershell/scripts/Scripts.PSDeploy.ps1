@@ -12,8 +12,8 @@ Deploy AllScripts {                                # Deployment name. This needs
     } 
     
     By Filesystem {                                # Deployment type. See Get-PSDeploymentType
-        FromSource  $scripts   
-        To          $destROOT
+        FromSource $scripts   
+        To $destROOT
     }
     
 }

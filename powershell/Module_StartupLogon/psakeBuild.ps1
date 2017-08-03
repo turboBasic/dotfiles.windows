@@ -25,7 +25,7 @@ task default -depends Clean, Deploy
 
 
 task Deploy -depends Merge -description 'Deploys module to run-time locations' {
-   sudo Invoke-PSDeploy -path 'Module.psdeploy.ps1' -force    # -verbose:$VerbosePreference
+   sudo Invoke-PSDeploy -path 'Scripts.PSDeploy.ps1' -force    # -verbose:$VerbosePreference
 }
 
 

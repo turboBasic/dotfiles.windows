@@ -1,4 +1,4 @@
-# Machine startup script %systemRoot%\System32\GroupPolicy\Machine\Scripts\Startup\bbro-startup.ps1 
+﻿# Machine startup script %systemRoot%\System32\GroupPolicy\Machine\Scripts\Startup\bbro-startup.ps1 
 
   #region     constants
 
@@ -88,14 +88,12 @@ Add-Type -TypeDefinition @"
     
     $psDefaultParameterValues = @{
       'Write-Log:FilePath' = 
-          "${ENV:systemBIN}\
-          LogFiles\
-          Startup, Shutdown, Logon scripts\
-          StartupLogon.log" -replace '\n\s*'      
+          "${ENV:systemBIN}\LogFiles\Startup, Shutdown, Logon scripts\
+                StartupLogon.log" -replace '\n\s*'      
     }
 
     # include all helper functions
-    Get-ChildItem "$psScriptRoot\allScripts.ps1" | ForEach-Object { . $_ }
+    Get-ChildItem $psScriptRoot\allScripts.ps1 | ForEach-Object { . $_ }
 
     if( IsNull (Get-ItemProperty -path 'HKLM:\Software\Cargonautika').NextBoot ) {
         Write-Verbose 'No requests to initialize. exiting...'
@@ -117,71 +115,10 @@ Add-Type -TypeDefinition @"
   #endregion
 
 
-  Import-Environment -Environment $__sys_variables -scope Machine
+  Import-Environment -environment $__sys_variables -scope Machine
 
 
-  #region Dump all Machine-scoped variables to log file
-  <# 
-    Get-Environment * -scope Machine |
-        Select-Object Name, Value |
-        ForEach-Object {
-        
-          if($_.Name -NotLike '*path') { 
-          
-            # simple Variable: substitute %...% and print
-            
-            [psCustomObject][ordered]@{ 
-              Name     = $_.Name
-              Value    = $_.Value
-              Expanded = (Get-ExpandedName $_.Name -scope Machine -expand).Value 
-            }
-            
-          } else {
-          
-            # ~path Variable: split by segment using ";" , substitute %...%,  and print
-            # every segment on separate line
-          
-            $paths    = ( Get-ExpandedName $_.Name -scope Machine |
-                              Select-Object -expandProperty Value 
-                        ) -split ';'
-            $pathsExp = ( Get-ExpandedName $_.Name -scope Machine -expand |
-                              Select-Object -expandProperty Value 
-                        ) -split ';'
-                        
-            #if($pathsExp.Count -gt $path.Count)  
-            #  { 
-                  $nPaths = $pathsExp.Count 
-            # }
-            #else 
-            #    { $numberOfPaths = $path.Count } 
-            
-            $j = 0
-            foreach( $i in 0..($nPaths - 1) ) {
-            
-              $res = [ordered]@{ 
-                  Name=''
-                  Value=''
-                  Expanded='' 
-              }
-              
-              if($i -eq 0)               { $res.Name      = $_.Name }
-              if($i -lt $paths.Count)    { $res.Value     = $paths[$i] }
-              if($i -lt $pathsExp.Count) { $res.Expanded  = $pathsExp[$i] }
-              
-              [Environment]::ExpandEnvironmentVariables($paths[$i])
-              
-              
-              [psCustomObject]$res
-                
-            }
-          }
-          
-        } | Out-String -width 360 -stream | Write-Log
-  #>        
-  #endregion
- 
-
-  #region initialization of variables dump procedure
+   #region initialization of variables dump procedure
   
       $params = @{ 
         Scope = [EnvironmentScope]::Machine
@@ -193,17 +130,17 @@ Add-Type -TypeDefinition @"
               Name, 
               Value, 
               @{  
-                  Name='Expanded'
-                  Expression={
+                  Name = 'Expanded'
+                  Expression = {
                     $params.Name = $_.Name
                     (Get-ExpandedName @params).Value 
                   } 
                }
       
       $width = [ordered]@{ 
-          Name=27
-          Value=53
-          Expanded='any'
+          Name =     27
+          Value =    53
+          Expanded = 'any'
       }
       $columns = [array]$width.keys
   
@@ -227,20 +164,22 @@ Add-Type -TypeDefinition @"
       $value = $_.Value -split ';'
       
       $printOnce.Name = 1
-      $value | ForEach-Object {      
-        $text = "{0,-$( $width.Name )}" -f ($name * $printOnce.Name)
-        $printOnce.Name = 0
+      $value | 
+          ForEach-Object {      
+            $text = "{0,-$( $width.Name )}" -f ($name * $printOnce.Name)
+            $printOnce.Name = 0
      
-        $expValue = [Environment]::ExpandEnvironmentVariables($_) -split ';'
+            $expValue = [Environment]::ExpandEnvironmentVariables($_) -split ';'
 
-        $currentValue = $_
-        $printOnce.Value = 1
-        $expValue | ForEach-Object { 
-          "$text {0,-$( $width.Value )} {1}" -f 
-              ($currentValue * $printOnce.Value), $_ | Write-Log  
-          $printOnce.Value = 0
-        }
-      }
+            $currentValue = $_
+            $printOnce.Value = 1
+            $expValue | 
+                ForEach-Object { 
+                  "$text {0,-$( $width.Value )} {1}" -f 
+                      ($currentValue * $printOnce.Value), $_ | Write-Log  
+                  $printOnce.Value = 0
+                }
+          }
     }
   #endregion
  

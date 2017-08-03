@@ -16,5 +16,5 @@ if( -not $NoDepend ) {
 }
 
 
-Invoke-Psake -buildFile "$psScriptRoot\psakeBuild.ps1" -taskList $Task -verbose:$VerbosePreference
+Invoke-Psake -buildFile $psScriptRoot\psakeBuild.ps1 -taskList $Task -verbose:$VerbosePreference
 exit ( [int]( -not $psake.build_success ) )
