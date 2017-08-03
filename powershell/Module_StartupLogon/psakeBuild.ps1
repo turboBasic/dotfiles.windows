@@ -39,12 +39,10 @@ task Merge -description 'Merges helper functions from other modules into 1 file'
   New-Item -itemType file -path $MergeFile -force
   $MergeFile = Resolve-Path $MergeFile 
   
-  "Merging all files in $moduleEnvironment, $moduleCommands to $moduleMerged" | 
-        Write-Verbose 
-  
   $includeFiles |
     Get-Item | 
     ForEach-Object { 
+      "Merge to $( $_.FullName ) to $MergeFile" | Write-Verbose
       $content = Get-Content $_.FullName -raw
       Add-Content -path $MergeFile -encoding UTF8 -value ( @"
 #region $( $_.FullName )
@@ -71,7 +69,6 @@ task Analyze {
   }
 }
 
-
 task Analyze-StartupScript {
     $saResults = Invoke-ScriptAnalyzer -path $startupScript -severity 'Error','Warning' -recurse -verbose:$false
     if ($saResults) {
@@ -87,8 +84,6 @@ task Analyze-LogonScript {
         'One or more Script Analyzer errors/warnings where found. Build cannot continue!' | Write-Error      
     }
 }
-
-
 
 task Test {
     $testResults = Invoke-Pester -path $psScriptRoot -passThru

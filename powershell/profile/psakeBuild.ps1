@@ -1,9 +1,16 @@
 ﻿properties {
 
   $me = $psScriptRoot | Split-Path -leaf 
-  $includes = Get-ChildItem -path (
-                  Join-Path $psScriptRoot _src\profile_ISE\include
-              )  -file -recurse -errorAction SilentlyContinue
+
+  $includes = , '_src/include/*.ps1'
+  $includes_console = $includes + '_src/include/console/*.ps1' | 
+      ForEach-Object { Join-Path $psScriptRoot $_ } |
+      Get-ChildItem -file | 
+      Select -expandProperty FullName
+  $includes_ISE = $includes + '_src/include/ISE/*.ps1' |
+      ForEach-Object { Join-Path $psScriptRoot $_ } |
+      Get-ChildItem -file | 
+      Select -expandProperty FullName
   
   $simpleTestFiles = Get-ChildItem -path (
                           Join-Path $psScriptRoot _test\Test-*
@@ -34,20 +41,28 @@ task Bump -description 'Bumps build version of script' {
 
 
 task SimpleTest -description 'Helper to run ad-hoc tests from _test\Test-...' {
-  $simpleTestFiles | Foreach-Object { & $_ } 
+  $simpleTestFiles | Foreach-Object { . $_ } 
+  "PsakeBuild: `$dotsourcing_include_01: $dotsourcing_include_01"
 }
 
 
 task Analyze {
-  foreach( $file in $includes.FullName ) {
-    $saResults = Invoke-ScriptAnalyzer -path $file `
-                      -severity 'Error','Warning' -recurse -verbose:$False
-    if ($saResults) {
-      $saResults | Format-Table  
-      'One or more Script Analyzer errors/warnings where found. 
-      Build cannot continue!' -replace '\n\s*',' ' | Write-Error      
-    }
-  }
+  $includes_console + $includes_ISE |
+      Select -expandProperty FullName -unique |
+      ForEach-Object {
+        $params = @{
+          path =     $_
+          severity = 'Error','Warning'
+          recurse =  $True
+          verbose =  $False
+        }
+        $saResults = Invoke-ScriptAnalyzer @params
+        if ($saResults) {
+          $saResults | Format-Table  
+          'One or more Script Analyzer errors/warnings where found. 
+          Build cannot continue!' -replace '\n\s*',' ' | Write-Error
+        }
+      }
 }
 
 
@@ -57,9 +72,4 @@ task Test -description 'Helper to run Pester tests'  {
         $testResults | Format-List
         'One or more Pester tests failed. Build cannot continue!' | Write-Error
     }
-}
-
-
-task ? -description "Helper to display task info" {
-	Write-Documentation
 }
