@@ -140,7 +140,7 @@ Enum EnvironmentData {
       
   #region print variables  
     $printOnce = @{ Name=1; Value=1 }
-    $s | ForEach-Object {
+    $allVars | ForEach-Object {
       $name = $_.Name
       $value = $_.Value -split ';'
       

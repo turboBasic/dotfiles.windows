@@ -2,22 +2,19 @@
 
   #region     constants
 
-Add-Type -TypeDefinition @"
   public Enum EnvironmentScope {
     Machine  = 0x0001
     User     = 0x0002
     Volatile = 0x0004
     Process  = 0x0008
   }
-"@  
 
-Add-Type -TypeDefinition @"
+
   public Enum EnvironmentData {
     Name   = 0x0010
     Value  = 0x0020
     Source = 0x0004
   }
-"@  
   
     $__sys_variables = @{
       '..homeDRIVE' =           'C:'
@@ -159,7 +156,7 @@ Add-Type -TypeDefinition @"
   
   #region print variables  
     $printOnce = @{ Name=1; Value=1 }
-    $s | ForEach-Object {
+    $allVars | ForEach-Object {
       $name = $_.Name
       $value = $_.Value -split ';'
       

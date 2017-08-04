@@ -1,5 +1,5 @@
-function Reduce-WhiteSpaces {
-    ($Input + $Args) | ForEach-Object { $_.Trim() -replace '\n\s*', ' ' }
+﻿function Reduce-WhiteSpaces {
+    ($Input + $Args) | ForEach-Object { $_.Trim() -replace '\s{2,}', ' ' }
 }
 
 <#
