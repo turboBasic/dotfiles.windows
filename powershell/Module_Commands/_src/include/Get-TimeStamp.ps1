@@ -1,4 +1,4 @@
-Function Get-TimeStamp {
+ï»¿function Get-TimeStamp {
 <#
 
 .SYNOPSIS
@@ -8,16 +8,16 @@ Function Get-TimeStamp {
     Get-TimeStamp produces sortable and not dependent on current culture timestamp using local time of user.
 
 .PARAMETER dateDelimiter
-    Symbol or string which delimits day, month and year numbers. Default value is ‘.’
+    Symbol or string which delimits day, month and year numbers. Default value is â€˜.â€™
 
 .PARAMETER timeDelimiter
-    Symbol or string which delimits hours, minutes and seconds. Default value is ‘:’
+    Symbol or string which delimits hours, minutes and seconds. Default value is â€˜:â€™
 
 .PARAMETER Delimiter
-    Symbol or string which delimits date and time parts of the timestamp. Default value is ‘ ’
+    Symbol or string which delimits date and time parts of the timestamp. Default value is â€˜ â€™
 
 .PARAMETER NoFractionOfSecond
-    Generates timestamp without fraction part of the seconds. By default timestamp is generated with an accuracy of a thousandth of second. This parameter has alias ‘WholeSeconds’ 
+    Generates timestamp without fraction part of the seconds. By default timestamp is generated with an accuracy of a thousandth of second. This parameter has alias â€˜WholeSecondsâ€™ 
 
 .PARAMETER NoDelimiters
     Generates timestamp without delimiters
@@ -79,37 +79,37 @@ Created: 2017.07.12 11:55:31.113
 
 
   [CMDLETBINDING( PositionalBinding=$False )]
-  [OUTPUTTYPE( [String]) ]
+  [OUTPUTTYPE( [string] )]
   PARAM(
       [PARAMETER( ParameterSetName='Full Specification' )]
       [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
-      [String]
+      [string]
       $dateDelimiter = '.',
 
       [PARAMETER( ParameterSetName='Full Specification' )]
       [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
-      [String]
+      [string]
       $timeDelimiter = ':',
 
       [PARAMETER( ParameterSetName='Full Specification' )]
       [AllowEmptyString()] [AllowEmptyCollection()] [AllowNull()]
-      [String]
+      [string]
       $Delimiter = ' ',
 
       [PARAMETER( ParameterSetName='Full Specification' )]
       [PARAMETER( ParameterSetName='No Delimiters' )]
       [ALIAS( 'WholeSeconds' )]
-      [Switch]
+      [switch]
       $NoFractionOfSecond,
 
       [PARAMETER( Mandatory, 
                   ParameterSetName='No Delimiters' )]
-      [Switch]
+      [switch]
       $NoDelimiters,
 
       [PARAMETER( Mandatory, 
                   ParameterSetName='Short' )]
-      [Switch]
+      [switch]
       $Short
   )
 

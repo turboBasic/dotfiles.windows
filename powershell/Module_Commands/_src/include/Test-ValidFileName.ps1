@@ -1,11 +1,10 @@
-
-  function Test-ValidFileName( [string]$testFileName ) { 
+﻿function Test-ValidFileName( [string]$testFileName ) { 
   
-    foreach( $char in [IO.Path]::GetInvalidFileNameChars() ) { 
-      if( $char -in [char[]]$testFileName ) { 
-          return $False 
-      } 
-    }
-    return $True
-    
+  foreach( $char in [IO.Path]::GetInvalidFileNameChars() ) { 
+    if( $char -in [char[]]$testFileName ) { 
+        return $False 
+    } 
   }
+  return $True
+    
+}

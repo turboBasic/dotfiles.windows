@@ -1,56 +1,56 @@
-
+﻿
 Function New-SymLink {
     <#
         .SYNOPSIS
-            Creates a Symbolic link to a file or directory
+Creates a Symbolic link to a file or directory
 
         .DESCRIPTION
-            Creates a Symbolic link to a file or directory as an alternative to mklink.exe
+Creates a Symbolic link to a file or directory as an alternative to mklink.exe
 
         .PARAMETER Path
-            Name of the path that you will reference with a symbolic link.
+Name of the path that you will reference with a symbolic link.
 
         .PARAMETER SymName
-            Name of the symbolic link to create. Can be a full path/unc or just the name.
-            If only a name is given, the symbolic link will be created on the current directory that the
-            function is being run on.
+Name of the symbolic link to create. Can be a full path/unc or just the name.
+If only a name is given, the symbolic link will be created on the current directory that the
+function is being run on.
 
         .PARAMETER File
-            Create a file symbolic link
+Create a file symbolic link
 
         .PARAMETER Directory
-            Create a directory symbolic link
+Create a directory symbolic link
 
         .NOTES
-            Name: New-SymLink
-            Author: Boe Prox
-            Created: 15 Jul 2013
+Name: New-SymLink
+Author: Boe Prox
+Created: 15 Jul 2013
 
 
         .EXAMPLE
-            New-SymLink -Path "C:\users\admin\downloads" -SymName "C:\users\admin\desktop\downloads" -Directory
+New-SymLink -Path "C:\users\admin\downloads" -SymName "C:\users\admin\desktop\downloads" -Directory
 
-            SymLink                             Target                      Type
-            -------                             ------                      ----
-            C:\Users\admin\Desktop\Downloads    C:\Users\admin\Downloads    Directory
+SymLink                             Target                      Type
+-------                             ------                      ----
+C:\Users\admin\Desktop\Downloads    C:\Users\admin\Downloads    Directory
 
-            Description
-            -----------
-            Creates a symbolic link to downloads folder that resides on C:\users\admin\desktop.
+Description
+-----------
+Creates a symbolic link to downloads folder that resides on C:\users\admin\desktop.
 
         .EXAMPLE
-            New-SymLink -Path "C:\users\admin\downloads\document.txt" -SymName "SomeDocument" -File
+New-SymLink -Path "C:\users\admin\downloads\document.txt" -SymName "SomeDocument" -File
 
-            SymLink                                Target                                     Type
-            -------                                ------                                     ----
-            C:\users\admin\desktop\SomeDocument    C:\users\admin\downloads\document.txt      File
+SymLink                                Target                                     Type
+-------                                ------                                     ----
+C:\users\admin\desktop\SomeDocument    C:\users\admin\downloads\document.txt      File
 
-            Description
-            -----------
-            Creates a symbolic link to document.txt file under the current directory called SomeDocument.
+Description
+-----------
+Creates a symbolic link to document.txt file under the current directory called SomeDocument.
     #>
 
-    [CMDLETBINDING( DefaultParameterSetName = 'Directory', 
+    [CMDLETBINDING( DefaultParameterSetName='Directory', 
                     SupportsShouldProcess )]
     PARAM (
         [PARAMETER( ParameterSetName='Directory', 
@@ -67,24 +67,24 @@ Function New-SymLink {
                             { $True } 
                           else  
                             { Throw "'$_' doesn't exist!" } })]
-        [String] 
+        [string] 
         $Path,
 
         [PARAMETER( ParameterSetName='FILE', 
                     Position=1 )]
         [PARAMETER( ParameterSetName='Directory', 
                     Position=1 )]
-        [String] 
+        [string] 
         $SymName,
 
         [PARAMETER( ParameterSetName='File', 
                     Position=2 )]
-        [Switch] 
+        [switch] 
         $File,
 
         [PARAMETER( ParameterSetName='Directory', 
                     Position=2 )]
-        [Switch] 
+        [switch] 
         $Directory
     )
 
@@ -108,6 +108,7 @@ Function New-SymLink {
 "@
         }
     }
+
     PROCESS {
         #Assume target Symlink is on current directory if not giving full path or UNC
         If ($SymName -notmatch '^(?:[a-z]:\\)|(?:\\\\\w+\\[a-z]\$)') {

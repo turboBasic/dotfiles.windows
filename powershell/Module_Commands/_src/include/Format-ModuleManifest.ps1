@@ -1,10 +1,12 @@
-function Format-ModuleManifest {
-    [cmdletBinding()]
-    [outputType( [void] )]
+﻿function Format-ModuleManifest {
+
+    [CmdletBinding()]
+    [OutputType( [void] )]
     PARAM(
-      [parameter( Mandatory, Position=0 )]
-      [validateScript({ Test-Path $_ -pathType Leaf })]
-      [string]$path
+      [Parameter( Mandatory, Position=0 )]
+      [ValidateScript({ Test-Path $_ -pathType Leaf })]
+      [string]
+      $path
     )
 
     

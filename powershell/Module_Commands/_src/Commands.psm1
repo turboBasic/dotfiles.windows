@@ -29,12 +29,55 @@
   New-Alias gg    Get-GuiHelp 
   New-Alias gh    Get-HelpWindow
   New-Alias ghc   Get-Help
+  New-Alias Get-KnownFolders Get-SpecialFolders
+  New-Alias gkf   Get-KnownFolders
   New-Alias ga    Get-Alias
   New-Alias gle   Set-LogEntry
   New-Alias gts   Get-TimeStamp
-  New-Alias Get-KnownFolders Get-SpecialFolders
 #endregion
 
+
+#region Variables
+
+  $KnownFolders = [enum]::GetNames([Environment+SpecialFolder]) | 
+		  ForEach-Object { 
+			  [psCustomObject]@{ 
+				  Name =  $_ 
+				  Value = [Environment]::GetFolderPath($_) 
+				  Scope = if($_ -in @( 
+										  'CommonAdminTools',
+										  'CommonApplicationData', 
+										  'CommonDesktopDirectory', 
+										  'CommonDocuments', 
+										  'CommonMusic', 
+										  'CommonOemLinks', 
+										  'CommonPictures', 
+										  'CommonProgramFiles', 
+										  'CommonProgramFilesX86', 
+										  'CommonPrograms', 
+										  'CommonStartMenu', 
+										  'CommonStartup', 
+										  'CommonTemplates', 
+										  'CommonVideos', 
+										  'Fonts', 
+										  'LocalizedResources', 
+										  'MyComputer', 
+										  'ProgramFiles', 
+										  'ProgramFilesX86', 
+										  'Resources', 
+										  'System', 
+										  'SystemX86', 
+										  'Windows' 
+									  ) 
+							  ) 
+								  {'Machine'} 
+							  else 
+								  {'User'} 
+			  } 
+		  } | 
+      Sort-Object Scope, Name
+
+#endregion
 
 #region Create Drives
 #endregion
@@ -42,7 +85,4 @@
 
 #region add custom Data types
 #endregion add custom Data Types
-
-
-
 

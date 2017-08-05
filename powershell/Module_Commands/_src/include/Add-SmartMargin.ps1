@@ -1,7 +1,6 @@
-Function Add-SmartMargin {
+﻿Function Add-SmartMargin {
 
-
-  [CMDLETBINDING( DefaultParameterSetName='Margin' )] 
+  [CmdletBinding( DefaultParameterSetName='Margin' )] 
   PARAM(  
       [PARAMETER( ParameterSetName='Value', 
                   Position=0, 
@@ -11,12 +10,12 @@ Function Add-SmartMargin {
                   Position=0, 
                   ValueFromPipeline, 
                   ValueFromPipelineByPropertyName )]          
-      [String[]] 
+      [string[]] 
       $Value,
 
       [PARAMETER( ParameterSetName='Margin', Position=0 )]  
       [PARAMETER( ParameterSetName='ValueAndMargin', Position=1 )]      
-      [Byte] 
+      [byte] 
       $Margin = 0
   )
   

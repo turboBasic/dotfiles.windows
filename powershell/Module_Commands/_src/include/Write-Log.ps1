@@ -1,10 +1,10 @@
-Function Write-Log { 
+﻿function Write-Log { 
+
   [CMDLETBINDING()]
   PARAM( 
       [PARAMETER( Mandatory, Position=0, ValueFromPipeline, ValueFromPipelineByPropertyName )]
-      [ALLOWEMPTYSTRING()]
-      [ALLOWNULL()]
-      [String[]]
+      [AllowEmptyString()] [AllowNULL()]
+      [string[]]
       $Message,
 
       [PARAMETER( Mandatory, Position=1, ValueFromPipelineByPropertyName )]
@@ -13,11 +13,12 @@ Function Write-Log {
       $logFile
   )
 
+
   BEGIN{}
 
   PROCESS{
       foreach($m in $Message) {
-          $m | Out-File -FilePath $logFile -Encoding UTF8 -Append -Force
+          $m | Out-File -filePath $logFile -encoding UTF8 -append -Force
       }
   }
 

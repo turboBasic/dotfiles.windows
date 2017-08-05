@@ -1,5 +1,5 @@
-Function Get-HelpWindow {
+﻿function Get-HelpWindow {
 
-  Get-Help $($Args -join ' ') -ShowWindow
+  Get-Help $( $Args -join ' ' ) -ShowWindow
   
 }

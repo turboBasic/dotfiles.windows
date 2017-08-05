@@ -26,7 +26,7 @@
                                 
       '..psHOME' =              '%systemROOT%\system32\windowsPowerShell\v1.0'
       psHOME =                  '%..systemBIN%\windowsPowerShell\v1.0'
-      psModulePATH =            'C:\program Files\windowsPowerShell\modules',
+      $destUser,
                                 '%..psHOME%\modules' -join ';'
 
       allUsersPROFILE =         'C:\programData'
@@ -34,8 +34,8 @@
       chocolateyInstall =       '%allUsersPROFILE%\chocolatey'
       chocoPath =               '%allUsersPROFILE%\chocolatey\bin'
                                 
-      '..tools' =               '%systemDRIVE%\tools'
-      tools =                   '%systemDRIVE%\tools'
+      '..tools' =               'D:\tools'
+      tools =                   'D:\tools'
                                 
       cmder =                   '%..tools%\cmderMini'
       cmder_Root =              '%..tools%\cmderMini'
@@ -69,6 +69,9 @@
                                 'C:\program Files (x86)\brackets\command',
                                 '%allUsersPROFILE%\oracle\java\javapath' -join ';'
 
+      pythonPath =              '%..tools%\python27', 
+                                '%..tools%\python27\scripts' -join ';'
+      
       PATH =                    '%systemROOT%',
                                 '%..systemBIN%',
                                 '%..systemBIN%\wbem',
@@ -76,7 +79,8 @@
                                 '%chocoPath%',
                                 '%..scoopGlobal%\shims',
                                 '%cmderPath%', 
-                                '%gitPath%' -join ';'
+                                '%gitPath%',
+                                '%pythonPath%' -join ';'
     }
 
 

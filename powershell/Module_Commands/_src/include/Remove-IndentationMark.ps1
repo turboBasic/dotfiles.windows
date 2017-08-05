@@ -1,4 +1,4 @@
-Function Remove-IndentationMark {
+﻿function Remove-IndentationMark {
     PARAM( 
       [String]
       $DeleteBefore = '…' 

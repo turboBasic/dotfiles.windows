@@ -28,7 +28,7 @@
       d                     c2  
 #>
 
-Function Merge-Hashtables {
+function Merge-Hashtables {
     $Result = @{}
     ($Input + $Args) | 
         Where   { ($_.Keys -ne $null) -and ($_.Values -ne $null) -and ($_.GetEnumerator -ne $null) } | 

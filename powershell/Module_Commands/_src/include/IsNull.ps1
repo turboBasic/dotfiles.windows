@@ -1,4 +1,4 @@
-Function IsNull($objectToCheck) {
+﻿function IsNull($objectToCheck) {
 
     if ($objectToCheck -eq $null) {
         return $true

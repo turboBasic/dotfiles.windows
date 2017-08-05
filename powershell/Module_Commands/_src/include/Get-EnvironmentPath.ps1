@@ -1,4 +1,4 @@
-Function Get-EnvironmentPath {
+﻿Function Get-EnvironmentPath {
 
   $ENV:Path -split ';'
 
@@ -21,7 +21,7 @@ Function Get-EnvironmentPath {
         "$ENV:scoop_Global\shims", 
         '$ENV:systemROOT' | 
         Where { Test-Path $_ } | 
-        Select-Object -First 1
+        Select-Object -first 1
 
     if( !$shimPath ) {
       " `n `nYou are probably running Linux!`n " | 
@@ -32,25 +32,23 @@ Function Get-EnvironmentPath {
     $shimPath = Join-Path $shimPath $ppath
 
     if( !(Test-Path $shimPath) ) {
-    
-        
         
         $command = @'
       
-@powershell.exe -NoLogo 
-                -NoProfile 
-                -ExecutionPolicy Bypass 
-                -Command "  $ENV:PATH -split ';'  "
+          @powershell.exe -NoLogo 
+                          -NoProfile 
+                          -ExecutionPolicy Bypass 
+                          -Command "  $ENV:PATH -split ';'  "
                 
-'@.         Trim() -replace '\s+', ' '
+'@ | Reduce-WhiteSpaces
 
         # $command = '@path | sed s/PATH=//;s/;/\n/g && echo.'
         # shim -global -norelative "$PSScriptRoot\ppath.cmd" "ppath"
-        New-Item $shimPath -Force | Add-Content -Value $command 
+        New-Item $shimPath -force | Add-Content -value $command 
         
         if( !$? ) {
           " `n `nCannot write to file $shimPath `n `n" |
-              Write-Error -Category WriteError -targetObject $shimPath 
+              Write-Error -category WriteError -targetObject $shimPath 
           return
         } 
         

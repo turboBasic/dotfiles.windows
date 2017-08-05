@@ -1,4 +1,4 @@
-Function New-Shortcut() { 
+﻿function New-Shortcut() { 
   <#
       .SYNOPSIS
           Creates old-school "soft" shortcut to file or folder
@@ -20,7 +20,7 @@ Function New-Shortcut() {
                     ValueFromPipeline, 
                     ValueFromPipelineByPropertyName )]
         [VALIDATENOTNULLOREMPTY()]
-        [String[]]
+        [string[]]
         $Name,
 
         [PARAMETER( Mandatory, 
@@ -31,23 +31,23 @@ Function New-Shortcut() {
                             { $True } 
                           Else 
                             { Throw "'$_' doesn't exist!" } })]
-        [String]
+        [string]
         $Target,
 
         [PARAMETER( ValueFromPipelineByPropertyName )]
-        [String]
+        [string]
         $arguments='',
 
         [PARAMETER( ValueFromPipelineByPropertyName )]
-        [String]
+        [string]
         $icon=$null,
 
         [PARAMETER( ValueFromPipelineByPropertyName )]
-        [String]
+        [string]
         $workDir='.',
 
         [PARAMETER( ValueFromPipelineByPropertyName )]
-        [String]
+        [string]
         $Description
     )
 

@@ -1,19 +1,19 @@
-Function Get-GuiHelp {
+﻿Function Get-GuiHelp {
 
   PARAM(  
           [PARAMETER( Position=0 )]
-          [String] $Request,
+          [string] $Request,
 
           [PARAMETER()]
-          [Switch] $List,
+          [switch] $List,
 
           [PARAMETER()]
-          [Switch] $Force            
+          [switch] $Force            
   )
 
   
   
-  $GuiHelpPath = Join-Path $ENV:DROPBOX_HOME '/Public/Powershell/powershell2.chm'
+  $GuiHelpPath = Join-Path $ENV:DROPBOX_HOME Public/Powershell/powershell2.chm
 
   if ($List) {
     Get-Content "$GuiHelpPath.TopicsList.txt"

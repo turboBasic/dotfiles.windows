@@ -1,4 +1,4 @@
-Function Write-VariableDump {
+﻿function Write-VariableDump {
   <# .SYNOPSIS
         `$variable | ConvertTo-Json | Write-Verbose` on steroids
   #> 

@@ -11,11 +11,11 @@ PARAM(
 
 
 if( -not $NoDepend ) { 
-  if( !(Get-Module -name PSDepend -listAvailable) ) { 
-      Install-Module PSDepend 
+  if( !(Get-Module -name psDepend -listAvailable) ) { 
+      Install-Module psDepend 
   }
-  $null = Invoke-PSDepend -path (
-              Join-Path $psScriptRoot build.requirements.psd1
+  $null = Invoke-psDepend -path (
+              Join-Path $psScriptRoot requirements.psd1
           ) -install -import -force    
 }  
 

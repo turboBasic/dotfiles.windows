@@ -42,13 +42,18 @@ $destMachine =    Join-Path $destRoot        Machine/Scripts/Startup
 
     Deploy AllScripts {
       By Filesystem {
-          FromSource $logonScript, $moduleMerged
+          FromSource $logonScript
           To $destUser
       }
 
       By Filesystem {
-          FromSource $startupScript, $moduleMerged
+          FromSource $startupScript
           To $destMachine
+      }
+      
+      By Filesystem {
+          FromSource $moduleMerged
+          To $destMachine, $destUser
       }
     }
 

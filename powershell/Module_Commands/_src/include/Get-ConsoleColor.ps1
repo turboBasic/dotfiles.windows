@@ -1,6 +1,6 @@
-Function Get-ConsoleColor {
+﻿Function Get-ConsoleColor {
   PARAM(
-      [Switch]
+      [switch]
       $Colorize
   )
  

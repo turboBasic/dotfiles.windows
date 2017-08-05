@@ -1,4 +1,4 @@
-Function Set-LogEntry {
+﻿function Set-LogEntry {
 
   [CMDLETBINDING()]
   [OUTPUTTYPE( [String[]] )]

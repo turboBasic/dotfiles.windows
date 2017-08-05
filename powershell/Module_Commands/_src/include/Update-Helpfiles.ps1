@@ -1,4 +1,4 @@
-Function Update-HelpFiles {
+﻿function Update-HelpFiles {
   $params = @{ 
     Name = 'UpdateHelpJob'
     Credential = "${ENV:ComputerName}\${ENV:UserName}"

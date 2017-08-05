@@ -1,4 +1,4 @@
-Function Format-String {
+﻿function Format-String {
 <#
     .SYNOPSIS
 Replaces text in a string based on named replacement tags
@@ -60,18 +60,20 @@ http://www.leeholmes.com/guide
 #>
 
 
-  [CMDLETBINDING( PositionalBinding=$False )]
-  [OUTPUTTYPE( [String[]] )]
+  [CmdletBinding( PositionalBinding=$False )]
+  [OutputType( [string[]] )]
   PARAM(
   
       [PARAMETER( Mandatory, Position=0 )]
       ## The string to format. Any portions in the form of {NAME} will be automatically replaced by 
       ## the corresponding value from the supplied hashtable.
-      [String] $String,
+      [string] 
+      $String,
 
       [PARAMETER( Mandatory, Position=1, ValueFromPipeline, ValueFromPipelineByPropertyName )]  
       ## The named replacements to use in the string
-      [Hashtable[]] $Replacements
+      [hashTable[]] 
+      $Replacements
   )
   
 

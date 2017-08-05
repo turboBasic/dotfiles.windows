@@ -45,8 +45,10 @@ Enum EnvironmentData {
         projects =               'E:\0projects'              
         winPepsiDebug =          1
              
-        psModulePATH =           '%..psProfileDIR%\modules',
-                                 '%appDATA%\boxStarter' -join ';'
+        psModulePATH =            '%..psProfileDir%\Modules',
+                                  '%psHOME%\Modules',
+                                  '%programFILES%\WindowsPowerShell\Modules' -join ';'
+
 
         PATH =                   '%..homeDRIVE%%..homePATH%\bin',  
                                  '%..scoop%\shims',
