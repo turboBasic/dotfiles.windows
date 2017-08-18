@@ -1,8 +1,8 @@
-﻿$me = ($psScriptRoot | Split-Path -Leaf) -replace 'Module_'
-$sourceRoot =     Join-Path $psScriptRoot    _src
-$moduleMerged =   Join-Path $psScriptRoot    _build/allScripts.ps1
-$startupScript =  Join-Path $sourceRoot      bbro-startup.ps1
-$logonScript =    Join-Path $sourceRoot      bbro-mao-logon.ps1
+﻿$me = (Split-Path $PSScriptRoot -leaf) -replace 'Module_'
+
+$buildDir =       Join-Path $PSScriptRoot   _build
+$startupScript =  Join-Path $buildDir        bbro-startup.ps1
+$logonScript =    Join-Path $buildDir        bbro-mao-logon.ps1
 
 $destRoot =       Join-Path $ENV:systemROOT  system32/GroupPolicy
 $destUser =       Join-Path $destRoot        User/Scripts/Logon
@@ -49,11 +49,6 @@ $destMachine =    Join-Path $destRoot        Machine/Scripts/Startup
       By Filesystem {
           FromSource $startupScript
           To $destMachine
-      }
-      
-      By Filesystem {
-          FromSource $moduleMerged
-          To $destMachine, $destUser
       }
     }
 

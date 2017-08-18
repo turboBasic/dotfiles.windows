@@ -1,0 +1,41 @@
+<NotepadPlus>
+    <Project name="StartupLogon">
+        <Folder name="_build">
+            <File name="_build\bbro-mao-logon.ps1" />
+            <File name="_build\bbro-startup.ps1" />
+        </Folder>
+        <Folder name="_dist">
+            <Folder name="Machine">
+                <Folder name="Startup">
+                    <File name="C:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\bbro-startup.ps1" />
+                </Folder>
+                <Folder name="Shutdown" />
+            </Folder>
+            <Folder name="User">
+                <Folder name="Logoff" />
+                <Folder name="Logon">
+                    <File name="C:\Windows\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1" />
+                </Folder>
+            </Folder>
+            <File name="C:\Windows\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log" />
+        </Folder>
+        <Folder name="_src">
+            <File name="_src\bbro-startup.ps1" />
+            <File name="_src\bbro-mao-logon.ps1" />
+        </Folder>
+        <Folder name="_test">
+            <File name="_test\bbro-mao-logon.Tests.ps1" />
+            <File name="_test\New-LogFolder.ps1" />
+            <File name="_test\New-LogFolder.Tests.ps1" />
+            <File name="_test\Write2eventLog.ps1" />
+        </Folder>
+        <Folder name="helpers">
+            <File name="helpers\Install-PSDepend.ps1" />
+        </Folder>
+        <File name="build.ps1" />
+        <File name="build.Psake.ps1" />
+        <File name="requirements.psd1" />
+        <File name="scripts.PSDeploy.ps1" />
+        <File name="notepad++.workspace" />
+    </Project>
+</NotepadPlus>

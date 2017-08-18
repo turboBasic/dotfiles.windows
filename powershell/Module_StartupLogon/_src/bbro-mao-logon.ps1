@@ -1,22 +1,9 @@
 ﻿# User Logon script %systemRoot%\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1 
 
 
-  #region     constants
+    #region     constants
 
-Enum EnvironmentScope {
-    Machine  = 0x0001
-    User     = 0x0002
-    Volatile = 0x0004
-    Process  = 0x0008
-  }
- 
-
-Enum EnvironmentData {
-    Name   = 0x0010
-    Value  = 0x0020
-    Source = 0x0004
-  }
-  
+      $registryKey = 'HKCU:\Software\Cargonautika'
   
       $__user_variables = @{ 
 
@@ -61,51 +48,69 @@ Enum EnvironmentData {
         TMP =                    '%localAppDATA%\temp'
         ubuntu =                 '%localAppDATA%\lxss\rootfs'
       }
-
+      
       # Default Log filename for Write-Log
-      $psDefaultParameterValues = @{
+      $PSDefaultParameterValues = @{
         'Write-Log:FilePath' = 
             "${ENV:systemBIN}\LogFiles\Startup, Shutdown, Logon scripts\
                     StartupLogon.log" -replace '\n\s*'    
       }
       
-      # include all helper functions
-      Get-ChildItem $psScriptRoot\allScripts.ps1 | ForEach-Object { . $_ }
-      
-      
-      if( -not (Test-Path 'HKCU:\Software\Cargonautika')) {
-          New-Item -path 'HKCU:\Software\Cargonautika' -force -errorAction SilentlyContinue
-          if (-not $?) { 'Something wrong with this' | Write-Warning }
+      $eventLogParams = @{
+        logName = "Application" 
+        source =  "Module_StartupLogon_User_${ENV:UserName}" 
+        eventID = 3001
       }
-      if( IsNull (Get-ItemProperty -path 'HKCU:\Software\Cargonautika').NextBoot ) {
-          Write-Verbose 'No requests to initialize. exiting...'
-      }
-      Set-ItemProperty -path 'HKCU:\Software\Cargonautika' -name 'NextBoot' -value ''
+      
+    #endregion 
 
-
-  #endregion
+     
+    # include all helper functions
+    # Get-ChildItem $psScriptRoot\allScripts.ps1 | ForEach-Object { . $_ }
+    
+    if( -not (Test-Path $registryKey) ) {
+        New-Item -path $registryKey -force -errorAction SilentlyContinue
+        if( -not $? ) { 
+          "Error during creation of registry key $registryKey" | Write-Warning 
+        }
+    }
+    if( IsNull (Get-ItemProperty -path $registryKey).NextBoot ) {
+        Write-Verbose 'No requests to initialize. exiting...'
+    }
+    Set-ItemProperty -path $registryKey -name 'NextBoot' -value ''
 
 
   #region     writing header
-
-      "`n[ {0,-7} {1,-6} {2} ]" -f 'user', 'header', (Get-TimeStamp) | Write-Log
-
-      "User logon script '{0}', '{1}'" -f 
-            (Split-Path $psCommandPath -Leaf), $psCommandPath | Write-Log
-
-      Send-NetMessage "User logon script $psCommandPath"
+      
+#      $message = "`n[ {0,-7} {1,-6} {2} ]" -f 'user', 'header', (Get-TimeStamp)
+#      $message | Write-Log
+#      Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message $message
+      
+#      $message += "`nUser logon script '{0}', '{1}'" -f 
+#            (Split-Path $PSCommandPath -leaf), $PSCommandPath
+            
+      $message = ( Remove-NewlineAndIndent @"
+          [ {0,-7} {1,-6} {2} ]
+          User logon script '{3}', '{4}'
+          
+"@    ) -f  'user', 'header', (Get-TimeStamp), 
+            (Split-Path $PSCommandPath -leaf), $PSCommandPath
+          
+#      $message | Write-Log
+      Write-EventLog @eventLogParams -message $message
+      Send-NetMessage "User logon script $PSCommandPath"
 
   #endregion
 
 
-  Import-Environment -environment $__user_variables -scope user
+  Import-Environment -environment $__user_variables -scope User
 
   
   #region initialization of variables dump procedure
   
       $params = @{ 
-        Scope = [EnvironmentScope]::User
-        Expand = $True
+        scope = [EnvironmentScope]::User
+        expand = $True
       }
       
       $allVars = Get-Environment * -scope User | 
@@ -121,8 +126,8 @@ Enum EnvironmentData {
                }
       
       $width = [ordered]@{ 
-          Name =     27
-          Value =    53
+          Name =      27
+          Value =     53
           Expanded = 'any'
       }
       $columns = [array]$width.keys
@@ -130,18 +135,33 @@ Enum EnvironmentData {
   #endregion initialization
   
   #region print headings
-    "`n[ {0,-7} {1,-6} {2} ]" -f '', 'body', (Get-TimeStamp) | Write-Log
-        
-    "{0,-$( $width.Name )} {1,-$( $width.Value )} {2}" -f $columns |
-        ForEach-Object { 
-          $_ | Write-Log
-          $_ -replace '\S', '-' | Write-Log
-        }
+#    $message = "`n[ {0,-7} {1,-6} {2} ]" -f '', 'body', (Get-TimeStamp)
+#    $message | Write-Log
+#    Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message $message
+    
+#    "{0,-$( $width.Name )} {1,-$( $width.Value )} {2}" -f $columns |
+#        ForEach-Object { 
+#          $_ | Write-Log
+#          Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message $_
+     
+    $message = ( Remove-LeadingSpace @"
+        [ {0,-7} {1,-6} {2} ]
+        {3,-$( $width.Name )} {4,-$( $width.Value )} {5}
+    
+"@    ) -f '', 'body', (Get-TimeStamp), $columns[0], $columns[1], $columns[2]
+    Write-EventLog @eventLogParams -message $message
+    
+     
+#          $_ -replace '\S', '-' | Write-Log
+#          Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message ($_ -replace '\S', '-')
+#        }
   #endregion
 
       
   #region print variables  
     $printOnce = @{ Name=1; Value=1 }
+    $message = ''
+    
     $allVars | ForEach-Object {
       $name = $_.Name
       $value = $_.Value -split ';'
@@ -157,10 +177,14 @@ Enum EnvironmentData {
         $printOnce.Value = 1
         $expValue | 
             ForEach-Object { 
-              "$text {0,-$( $width.Value )} {1}" -f 
-                  ($currentValue * $printOnce.Value), $_ | Write-Log  
+              $message += "$text {0,-$( $width.Value )} {1} `r`n" -f 
+                  ($currentValue * $printOnce.Value), $_
+#              $message | Write-Log
+#              Write-EventLog @eventLogParams -message $message
+              
               $printOnce.Value = 0
             }
       }
     }
+    Write-EventLog @eventLogParams -message $message
   #endregion    

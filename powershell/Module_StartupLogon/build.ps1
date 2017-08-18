@@ -2,7 +2,7 @@
 
 [CMDLETBINDING()]
 PARAM(
-    [String[]]
+    [string[]]
     $Task = 'default',
 
     [switch]
@@ -11,14 +11,13 @@ PARAM(
 
 
 if( -not $NoDepend ) { 
-  if( !(Get-Module -name psDepend -listAvailable) ) { 
-      Install-Module psDepend 
+  if( -not (Get-Module -name PSDepend -listAvailable) ) { 
+      Install-Module PSDepend 
   }
-  $null = Invoke-psDepend -path (
-              Join-Path $psScriptRoot requirements.psd1
+  $null = Invoke-PSDepend -path (
+              Join-Path $PSScriptRoot requirements.psd1
           ) -install -import -force    
 }  
 
-Invoke-Psake -buildFile $psScriptRoot\psakeBuild.ps1 -taskList $Task -verbose:$VerbosePreference
-exit ( [int]( -not $psake.build_success ) )
-
+Invoke-Psake -buildFile $PSScriptRoot\build.Psake.ps1 -taskList $Task -verbose:$VerbosePreference
+exit [int]( -not $psake.build_success )
