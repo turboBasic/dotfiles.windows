@@ -1,10 +1,10 @@
-﻿$me =          ($psScriptRoot | Split-Path -Leaf) -replace 'Module_'
-$sourceRoot =  Join-Path $psScriptRoot _src
-$profileDIR =  Split-Path $profile -parent
+﻿$me =          ($PSScriptRoot | Split-Path -Leaf) -replace 'Module_'
+$sourceRoot =  Join-Path $PSScriptRoot _src
+$profileDIR = Split-Path $profile -parent
 $destRoot =    Join-Path $profileDIR "Modules/$me"
 $scriptsRoot = Join-Path $profileDIR Scripts
-$formatModuleManifest = 
-      Join-Path $psScriptRoot _src\include\Format-ModuleManifest.ps1
+# $formatModuleManifest = 
+#       Join-Path $PSScriptRoot _src\include\Format-ModuleManifest.ps1
 
 Deploy AllScripts {                                # Deployment name. This needs to be unique. Call it whatever you want
 
@@ -19,10 +19,10 @@ Deploy AllScripts {                                # Deployment name. This needs
         WithOptions @{ Mirror=$True }
     }
     
-    By Filesystem {                                # Deployment type. See Get-PSDeploymentType
-        FromSource  $formatModuleManifest
-        To          $scriptsRoot
-    }
+   # By Filesystem {                                # Deployment type. See Get-PSDeploymentType
+   #     FromSource  $formatModuleManifest
+   #     To          $scriptsRoot
+   # }
 
     
 }

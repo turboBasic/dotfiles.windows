@@ -1,22 +1,24 @@
-# recipe taken from https://devblackops.io/building-a-simple-release-pipeline-in-powershell-using-psake-pester-and-psdeploy/
+﻿# recipe taken from https://devblackops.io/building-a-simple-release-pipeline-in-powershell-using-psake-pester-and-psdeploy/
 
-[cmdletBinding()]
+[CmdletBinding()]
 PARAM(
-    [string[]]$Task = 'default',
+    [string[]]
+    $task = 'default',
     
-    [switch]$NoDepend = $True
+    [switch]
+    $noDepend = $True
 )
 
 
-#$PSDefaultParameterValues = @{ "*:NoDepend" = $True }
+# $PSDefaultParameterValues = @{ "*:noDepend" = $True }
 
-if( -not $NoDepend ) {    
+if( -not $noDepend ) {    
   if( !(Get-Module -name PSDepend -listAvailable) ) { 
       Install-Module PSDepend 
   }  
-  $null = Invoke-PSDepend -path "$psScriptRoot\build.requirements.psd1" -install -import -force    
+  $null = Invoke-PSDepend -path $PSScriptRoot\build.requirements.psd1 -install -import -force    
 }
 
 
-Invoke-Psake -buildFile "$psScriptRoot\psakeBuild.ps1" -taskList $Task -Verbose:$VerbosePreference
-exit ( [Int]( -not $psake.build_success ) )
+Invoke-Psake -buildFile $PSScriptRoot\psakeBuild.ps1 -taskList $task -verbose:$verbosePreference
+exit ( [int]( -not $psake.build_success ) )

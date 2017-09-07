@@ -1,16 +1,16 @@
-﻿properties {
+﻿Properties {
 
-  $me   = ($psScriptRoot | Split-Path -leaf) -replace 'Module_'
-  $manifest = Join-Path $psScriptRoot "_src\$me.psd1" | Convert-Path
+  $me = ($PSScriptRoot | Split-Path -leaf) -replace 'Module_'
+  $manifest = Join-Path $PSScriptRoot "_src\$me.psd1" | Convert-Path
   
-  $files = Get-ChildItem (Join-Path $psScriptRoot _src\include) -recurse -file
+  $files = Get-ChildItem (Join-Path $PSScriptRoot _src\include) -recurse -file
   
   $simpleTestFiles =  Get-ChildItem -path (
-                          Join-Path $psScriptRoot _test\Test-*
+                          Join-Path $PSScriptRoot _test\Test-*
                       ) -file -errorAction SilentlyContinue
                       
   $formatModuleManifest = 
-      Join-Path $psScriptRoot _src\include\Format-ModuleManifest.ps1
+      Join-Path $PSScriptRoot _src\include\Format-ModuleManifest.ps1
       
 }
 
@@ -21,7 +21,7 @@ task default -depends Deploy
 
 task Deploy -depends Clean, Bump `
             -description 'Deploys module to run-time locations' {
-  Invoke-PSDeploy -path (Join-Path $psScriptRoot Module.psdeploy.ps1) `
+  Invoke-PSDeploy -path (Join-Path $PSScriptRoot Module.psdeploy.ps1) `
                   -force -verbose:$VerbosePreference
 }
 
@@ -33,9 +33,9 @@ task Clean -description 'Helper to clean buiild artifacts' {
 
 
 task Bump -description 'Bumps build version of module' {
-  . $formatModuleManifest
+  # . $formatModuleManifest
   Step-ModuleVersion -path $manifest  
-  Format-ModuleManifest -path $manifest
+  # Format-ModuleManifest -path $manifest
 }
 
 
@@ -53,7 +53,7 @@ task Analyze {
 
 
 task Test -description 'Helper to run Pester tests'  {
-    $testResults = Invoke-Pester -path $psScriptRoot -passThru
+    $testResults = Invoke-Pester -path $PSScriptRoot -passThru
     if ($testResults.FailedCount -gt 0) {
         $testResults | Format-List
         'One or more Pester tests failed. Build cannot continue!' | Write-Error

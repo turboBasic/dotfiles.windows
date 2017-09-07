@@ -8,40 +8,11 @@
 #endregion
 
 
-#region shortcut functions (only for saving typing and keyboards)
-    Function Private:smartShorten([string]$source, [int32]$width, [int32]$left) {
-        if($source.length -le $width) {
-            return $source
-        } else {
-            return $source.substring(0, $left) + 
-                   " ... " +
-                   $source.substring($source.length - ($width-$left-5), $width-$left-5)
-        }
-    }  
-#endregion
-
-
-
-#region Create aliases for functions
-  New-Alias touch Set-FileTime
-  New-Alias ppath Get-EnvironmentPath
-  New-Alias sst   Select-String
-  New-Alias gg    Get-GuiHelp 
-  New-Alias gh    Get-HelpWindow
-  New-Alias ghc   Get-Help
-  New-Alias Get-KnownFolders Get-SpecialFolders
-  New-Alias gkf   Get-KnownFolders
-  New-Alias ga    Get-Alias
-  New-Alias gle   Set-LogEntry
-  New-Alias gts   Get-TimeStamp
-#endregion
-
-
 #region Variables
 
-  $KnownFolders = [enum]::GetNames([Environment+SpecialFolder]) | 
+  $knownFolders = [enum]::GetNames([Environment+SpecialFolder]) | 
 		  ForEach-Object { 
-			  [psCustomObject]@{ 
+			  [PSCustomObject]@{ 
 				  Name =  $_ 
 				  Value = [Environment]::GetFolderPath($_) 
 				  Scope = if($_ -in @( 
@@ -79,10 +50,58 @@
 
 #endregion
 
+
 #region Create Drives
 #endregion
 
 
 #region add custom Data types
 #endregion add custom Data Types
+
+
+#region private functions
+
+#endregion
+
+
+
+# Get public and private function definition files.
+    $Public  = @( Get-ChildItem -path $PSScriptRoot\Public\*.ps1 -errorAction SilentlyContinue )
+    $Private = @( Get-ChildItem -path $PSScriptRoot\Private\*.ps1 -errorAction SilentlyContinue )
+
+
+# dot source the files
+    foreach( $import in @($Public + $Private) )   {
+        Try {
+            . $import.fullName
+        }
+        Catch {
+            Write-Error -message "Failed to import function $($import.fullName): $_"
+        }
+    }
+
+
+# Here I might...
+    # Read in or create an initial config file and variable
+    # Export Public functions ($Public.BaseName) for WIP modules
+    # Set variables visible to the module and its functions only
+Export-ModuleMember -function $Public.Basename -variable knownFolders
+
+
+
+
+
+#region Create aliases for functions
+  New-Alias touch Set-FileTime
+  New-Alias ppath Get-EnvironmentPath
+  New-Alias sst   Select-String
+  New-Alias gg    Get-GuiHelp 
+  New-Alias gh    Get-HelpWindow
+  New-Alias ghc   Get-Help
+  New-Alias Get-KnownFolders Get-SpecialFolders
+  New-Alias gkf   Get-KnownFolders
+  New-Alias ga    Get-Alias
+  New-Alias gle   Set-LogEntry
+  New-Alias gts   Get-TimeStamp
+#endregion
 
