@@ -3,14 +3,12 @@ $sourceRoot =  Join-Path $PSScriptRoot _src
 $profileDIR = Split-Path $profile -parent
 $destRoot =    Join-Path $profileDIR "Modules/$me"
 $scriptsRoot = Join-Path $profileDIR Scripts
-# $formatModuleManifest = 
-#       Join-Path $PSScriptRoot _src\include\Format-ModuleManifest.ps1
 
 Deploy AllScripts {                                # Deployment name. This needs to be unique. Call it whatever you want
 
     Remove-Module -force $me -errorAction SilentlyContinue
     if( -not(Test-Path $destRoot) ) { 
-      $null = New-Item -path $destRoot -itemType directory 
+      $null = New-Item -path $destRoot -itemType Directory 
     } 
     
     By Filesystem {                                # Deployment type. See Get-PSDeploymentType
@@ -18,13 +16,7 @@ Deploy AllScripts {                                # Deployment name. This needs
         To          $destRoot
         WithOptions @{ Mirror=$True }
     }
-    
-   # By Filesystem {                                # Deployment type. See Get-PSDeploymentType
-   #     FromSource  $formatModuleManifest
-   #     To          $scriptsRoot
-   # }
 
-    
 }
 
 

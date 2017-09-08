@@ -9,8 +9,8 @@
                           Join-Path $PSScriptRoot _test\Test-*
                       ) -file -errorAction SilentlyContinue
                       
-  $formatModuleManifest = 
-      Join-Path $PSScriptRoot _src\include\Format-ModuleManifest.ps1
+#  $formatModuleManifest = 
+#      Join-Path $PSScriptRoot _src\include\Format-ModuleManifest.ps1
       
 }
 
