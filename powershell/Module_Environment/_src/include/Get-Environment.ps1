@@ -69,58 +69,69 @@ Credits:    Sorry but I have lost the initial source code which inspired me.  Wi
 #>
 
 
-
-
-  #region FunctionParameters
   
     [CmdletBinding( PositionalBinding=$False )]
-    [OutputType([System.Array])]
+    [OutputType( [Array] )]
     PARAM(
         [PARAMETER( Mandatory, Position=0, ValueFromPipeline,  ValueFromPipelineByPropertyName )]
-        [ValidateNotNullOrEmpty()]  
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript( {
+          $_[0].length -gt 0   -or 
+          $(Throw "name is mandatory ({0})" -f $MyInvocation.MyCommand)
+        } )]        
         [string[]] 
-        $Names,
+        $name,
 
         [PARAMETER( Position=1, ValueFromPipelineByPropertyName )]
-        [ALIAS( 'From', 'Context' )]
-        [ValidateScript({
-          ($_ -in [enum]::GetNames([EnvironmentScope])) -or ($_ -eq '*') 
-        })]
+        [ALIAS( 'from', 'context' )]
+        [ValidateScript( {
+            if( [Management.Automation.WildcardPattern]::
+                    ContainsWildcardCharacters($_)
+            ){
+                $_ = [enum]::GetNames([EnvironmentScope]) -like $_
+                $True
+            } elseif( $_ -notIn [enum]::GetNames([EnvironmentScope])
+            ){   
+                Throw "name is mandatory ({0})" -f $MyInvocation.MyCommand
+            }
+            $True
+        } )]
         [string[]]
-        $Scope='Process',
+        $scope='Process',
 
-        [PARAMETER( Position=2 )]
+        [PARAMETER()]
         [switch] 
-        $Expand
+        $expand
     )
     
-  #endregion
 
 
 
   BEGIN {
-    Write-Verbose "Get-Environment: `$Names=$Names, `$Scope=$Scope, `$Expand=$Expand"
-    if ([System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Scope)) {
-      $Scope = [enum]::GetNames([EnvironmentScope]) | Where { $_ -like $Scope }
+    Write-Verbose "Get-Environment: `$names=$names, `$scope=$scope, `$expand=$expand"
+    if ([Management.Automation.WildcardPattern]::ContainsWildcardCharacters($scope)) {
+      $scope = [enum]::GetNames([EnvironmentScope]) -like $scope
     }
     $res = @()
   }
 
   PROCESS {
-    foreach ($name in $Names) {
-      $isWild = [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters($Names)
+    foreach ($1name in $name) {
+      $isWild = [Management.Automation.WildcardPattern]::ContainsWildcardCharacters($1name)
       $type = @{ $False='Simple'; $True='Wildcard' }[$isWild]
 
-      Write-Verbose "Get-Environment: $type variable name request: `$Name: $name, `$Scope: $Scope, `$Expand: $Expand"
+      Write-Verbose "Get-Environment: $type variable name request: `$name: $1name, `$scope: $scope, `$expand: $expand"
 
-      foreach ($_scope in $Scope) {
-        $res += (Get-ExpandedName -Name $name -Scope $_scope $Expand)
+      foreach ($1scope in $scope) {
+        $res += (Get-ExpandedName -name $1name -scope $1scope $expand)
       }
     }
   }
 
   END {
-    $res | Sort -Property Scope, Name, Value          # | Select Scope, Name, Value -Unique
+    $res | Sort-Object -property Scope, Name, Value 
   }
 
 }
+
+

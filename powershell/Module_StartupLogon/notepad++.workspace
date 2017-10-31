@@ -17,7 +17,6 @@
                     <File name="C:\Windows\System32\GroupPolicy\User\Scripts\Logon\bbro-mao-logon.ps1" />
                 </Folder>
             </Folder>
-            <File name="C:\Windows\System32\LogFiles\Startup, Shutdown, Logon scripts\StartupLogon.log" />
         </Folder>
         <Folder name="_src">
             <File name="_src\bbro-startup.ps1" />

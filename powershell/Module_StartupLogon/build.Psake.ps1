@@ -24,13 +24,6 @@
           ForEach-Object {
             Join-Path $modulesDir $_
           }
-  
-  $logDir = Join-Path -path $ENV:systemROOT -childPath (
-              "System32\
-               LogFiles\
-               Startup, Shutdown, Logon scripts" | Remove-NewlineAndIndent
-            )
-  $logFileName = Join-Path $logDir StartupLogon.log     
 }
 
 
@@ -38,7 +31,7 @@ task default -depends Clean, Deploy
 
 
 task Deploy -depends Merge, CreateEventLogSource -description 'Deploys module to run-time locations' {
-   sudo Invoke-PSDeploy -path $deployScript -force    # -verbose:$VerbosePreference
+   sudo Invoke-PSDeploy -path $deployScript -force
 }
 
 
@@ -47,21 +40,15 @@ task Clean -description 'Clean build artifacts' {
 }
 
 
-task CreateEventLogSource -description 'Registers event sources for the Applications event log' {
-
-    "Application, Module_StartupLogon_Machine",
-    "Application, Module_StartupLogon_User_${ENV:UserName}" | 
-        ForEach-Object {
-          $log, $source = $_ -split ', '
-          if( -not [Diagnostics.EventLog]::SourceExists($source) ) {
-            "Creating event source $source on event log $log" | Write-Verbose
-            [Diagnostics.EventLog]::CreateEventSource($source, $log)
-          } else {
-            "Warning: Event source $source already exists in Event log $log" | 
-                Write-Warning
-          }
-        }
-        
+task CreateEventLogSource -description 'Registers event source for the Applications event log' {
+    $log, $source = "Application", "Module_StartupLogon"
+    if( -not [Diagnostics.EventLog]::SourceExists($source) ) {
+        "Creating event source $source on event log $log" | Write-Verbose
+        [Diagnostics.EventLog]::CreateEventSource($source, $log)
+    } else {
+        "Warning: Event source $source already exists in Event log $log" | 
+            Write-Warning
+    }
 }
 
 
@@ -80,13 +67,6 @@ task EnsureLogDir -description 'Ensures that directory and Log file exist, other
 
 
 task Merge -depends Clean -description 'Merges helper functions from other modules into 1 file' {
-  
-<#
-function Remove-LeadingSpace {
-    ($Input + $Args) | ForEach { $_ -replace '(?mx) ^ [^\S\n\r]*' } 
-} 
-#>
-  
   $content = ''
   $includeFiles |
     ForEach-Object { 
@@ -101,9 +81,7 @@ function Remove-LeadingSpace {
           
 '@        -replace '(?mx) ^ [^\S\n\r]*'
       ) -f $_, (Get-Content $_ -raw)
-      
     }
-    
     
   $sourceFiles |
       ForEach-Object {
@@ -114,9 +92,7 @@ function Remove-LeadingSpace {
         }
         New-Item @params
       }
-    
 }
-
 
 
 task Analyze {

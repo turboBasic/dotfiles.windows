@@ -17,6 +17,21 @@
       Push-Location (Split-Path $profile -parent)
   }
 
+  
+  function clistl {
+	"choco list -lo $($args -join ' ')" | Invoke-Expression
+  }
+
+
+  function clists {
+	"choco list --id-starts-with $($args -join ' ')" | Invoke-Expression
+  }
+
+
+  function cinsty {
+	"choco install -y $($args -join ' ')" | Invoke-Expression
+  }
+  
 
   function Get-GithubGistApiUrlOfCurrentUser { $Global:__githubGist }
 

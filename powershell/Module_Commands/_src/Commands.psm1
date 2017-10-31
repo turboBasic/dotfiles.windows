@@ -48,14 +48,14 @@ foreach( $import in @($Public + $Private) )   {
 
 # create aliases
 $functions = $aliases.Keys
-Write-Verbose "Functions: $functions"
+
 foreach( $function in $functions) {
-  Write-Verbose "$function, $( $functions.$function )"
+
   foreach($alias in $aliases[$function]) {
     New-Alias -name $alias -value $function
-    Write-Verbose "Alias $alias -> $function created"
   }
 }
+
 
 # initialise  variables
 $knownFolders = Get-SpecialFolders
@@ -72,5 +72,3 @@ Export-ModuleMember -function $Public.Basename `
                                         ForEach-Object{ $_ } 
                                     }
                               )
-
-$aliases.values | ForEach-Object{ $_ | ForEach-Object{ $_ } } | Write-Verbose

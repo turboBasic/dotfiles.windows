@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- *******************************************************************
+These sample files contain formatting information used by the Windows 
+PowerShell engine. Do not edit or change the contents of this file 
+directly. Please see the Windows PowerShell documentation or type 
+Get-Help Update-FormatData for more information.
+
+Copyright (c) Microsoft Corporation.  All rights reserved.
+ 
+THIS SAMPLE CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY 
+OF ANY KIND,WHETHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+PURPOSE. IF THIS CODE AND INFORMATION IS MODIFIED, THE ENTIRE RISK OF USE
+OR RESULTS IN CONNECTION WITH THE USE OF THIS CODE AND INFORMATION 
+REMAINS WITH THE USER.
+******************************************************************** -->
+
+<Configuration>
+
+  <SelectionSets>
+    <SelectionSet>
+      <Name>xxxTypes</Name>
+      <Types>
+          <TypeName>xxx1</TypeName>
+          <TypeName>xxx2</TypeName>
+      </Types>
+    </SelectionSet>
+  </SelectionSets>
+
+  <!-- ################ GLOBAL CONTROL DEFINITIONS ################ -->
+  <Controls>
+    <Control>
+      <Name>HashTable-GroupingFormat</Name>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <Frame>
+                <LeftIndent>4</LeftIndent>
+                <CustomItem>
+                  <Text AssemblyName="System.Management.Automation" BaseName="FileSystemProviderStrings" ResourceId="DirectoryDisplayGrouping"/>
+                  <ExpressionBinding>
+                    <ScriptBlock>
+                      $_.PSParentPath.Replace("Microsoft.PowerShell.Core\FileSystem::", "")                                                  
+                    </ScriptBlock>
+                  </ExpressionBinding>
+                  <NewLine/>
+                </CustomItem> 
+              </Frame>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </Control>
+  </Controls>
+
+  <!-- ################ VIEW DEFINITIONS ################ -->
+  <ViewDefinitions>
+    <View>
+      <Name>Environment</Name>
+      <ViewSelectedBy>
+        <TypeName>System.Collections.Hashtable</TypeName>
+      </ViewSelectedBy>
+      
+      <TableControl>
+      
+        <TableHeaders>
+        
+          <TableColumnHeader>
+            <Label>Scope</Label>
+            <Width>7</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          
+          <TableColumnHeader>
+            <Label>Name</Label>
+            <Width>25</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          
+          <TableColumnHeader>
+            <Label>Value</Label>
+            <Width>50</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          
+          <TableColumnHeader>
+            <Label>Expanded</Label>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          
+        </TableHeaders>
+        
+        <TableRowEntries>
+        
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Id</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommandLine</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+          
+        </TableRowEntries>
+        
+      </TableControl>
+    </View>
+
+    <View>
+      <Name>history</Name>
+      <ViewSelectedBy>
+        <TypeName>Microsoft.PowerShell.Commands.HistoryInfo</TypeName>
+      </ViewSelectedBy>
+      <WideControl>
+        <WideEntries>
+          <WideEntry>
+            <WideItem>
+              <PropertyName>CommandLine</PropertyName>
+            </WideItem>
+          </WideEntry>
+        </WideEntries>
+      </WideControl>
+    </View>
+  </ViewDefinitions>
+  
+</Configuration>

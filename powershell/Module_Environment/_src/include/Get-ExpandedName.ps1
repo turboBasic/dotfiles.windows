@@ -1,98 +1,87 @@
-Function Get-ExpandedName {
+function Get-ExpandedName {
 <#
+    .SYNOPSIS
+Expands references to a Variable (%VARIABLE%) in specified Windows environment scope
 
-.SYNOPSIS
-    Expands references to a Variable (%VARIABLE%) in specified Windows environment scope
+    .DESCRIPTION
+Expands references to variables in CMD.EXE format (eg. %VARIABLE%) and replaces them with actual content of variable. Argument Scope specifies the scope from which the utility is going to take Variable's content.
 
-.DESCRIPTION
-    Expands references to variables in CMD.EXE format (eg. %VARIABLE%) and replaces them with actual content of variable. Argument Scope specifies the scope from which the utility is going to take Variable's content.
+    .PARAMETER name
 
-.PARAMETER dateDelimiter
+    .PARAMETER scope
 
-.PARAMETER timeDelimiter
+    .PARAMETER expand
 
-.PARAMETER Delimiter
+    .EXAMPLE
+PS> Get-ExpandedName -name PATH -scope Machine -expand | Format-List   
 
-.PARAMETER NoFractionOfSecond
+Scope : Machine
+Name  : PATH
+Value : C:\WINDOWS;C:\WINDOWS\system32;C:\WINDOWS\system32\wbem;C:\WINDOWS\system32\windowsPowerShell\v1.0;C:\Python27\;C:\Python27\Scripts
 
-.PARAMETER NoDelimiters
+    .INPUTS
+Does not accept input from the pipeline
 
-.PARAMETER Short
+    .OUTPUTS
+Outputs [PSCustomObject] as the only type of result
 
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.EXAMPLE
-
-.INPUTS
-    Does not accept input from the pipeline
-
-.OUTPUTS
-    Outputs [psCustomObject] as the only type of result
-
-.NOTES
+    .NOTES
 Name:    Get-TimeStamp
-Author:  Andriy Melnyk  https://github.com/TurboBasic/
+Author:  Andriy Melnyk  https://github.com/turboBasic/
 Created: 2017.03.10 10:54:31.713
 
 #>
 
-  #region Get-ExpandedName Parameters
-      [CMDLETBINDING()] 
-      [OUTPUTTYPE( [psCustomObject] )]
-      PARAM( 
-          [PARAMETER( Mandatory, Position=0 )]
-          [VALIDATENOTNULLOREMPTY()]
-          [String] 
-          $Name,
 
-          [PARAMETER( Position=1 )]
-          [EnvironmentScope] 
-          $Scope='Process',
+    [CmdletBinding()] 
+    [OutputType( [PSCustomObject] )]
+    PARAM( 
+        [PARAMETER( Mandatory, Position=0 )]
+        [ValidateNotNullOrEmpty()]
+        [string] 
+        $name,
 
-          [PARAMETER( Position=2 )]
-          [Switch] 
-          $Expand
-      )
-  #endregion
+        [PARAMETER( Position=1 )]
+        [EnvironmentScope] 
+        $scope = [EnvironmentScope]::Process,
 
+        [PARAMETER( Position=2 )]
+        [switch] 
+        $expand
+    )
 
 
-  switch ([String]$Scope) {
 
-    'Process' {
+    switch( $scope ) {
 
-      $res = Get-ChildItem -Path ENV:\$Name -EA SilentlyContinue | 
-                ForEach { [psCustomObject][ordered]@{ 
-                        Scope = $Scope 
-                        Name  = $_.Name; 
-                        Value = $_.Value; 
-                    } 
+        [EnvironmentScope]::Process {
+
+            Get-ChildItem -path ENV:\$Name -errorAction SilentlyContinue | 
+                ForEach-Object { 
+                  [PSCustomObject][ordered]@{ 
+                      Scope = $scope 
+                      Name  = $_.Name; 
+                      Value = $_.Value; 
+                  } 
                 }
-      break
-    }
+            break
+        }
 
-    { $_ -in @('Volatile', 'User', 'Machine') } {
-
-      $key = Get-EnvironmentKey -From $Scope -Write:$False
-      $res = $key.GetValueNames() | 
-                Where { $_ -like $Name } |
-                ForEach { 
-                  $item = [ordered]@{ Scope = $Scope; Name = $_ } 
-                  if (!$Expand) { 
+        { $_ -in [EnvironmentScope]::Volatile, 
+                 [EnvironmentScope]::User, 
+                 [EnvironmentScope]::Machine } {
+                 
+            $key = Get-EnvironmentKey -from $scope
+            $key.GetValueNames() | 
+                Where-Object { 
+                  $_ -like $Name 
+                } |
+                ForEach-Object { 
+                  $item = [ordered]@{ 
+                      Scope = $Scope
+                      Name = $_ 
+                  } 
+                  if( -not $Expand ) { 
                     $item.Add( 
                         'Value', 
                         $key.GetValue(
@@ -104,15 +93,14 @@ Created: 2017.03.10 10:54:31.713
                   } else { 
                     $item.Add( 'Value', $key.GetValue($_, $null) ) 
                   }
-                  [psCustomObject]$item
+                  [PSCustomObject]$item
                 }
-      break
+            break
+        }
+
+        default { 
+            Throw "Get-ExpandedName: Argument 'Scope' has illegal value $Scope" 
+        }
     }
-
-    default { Throw "Get-ExpandedName: Argument 'Scope' has illegal value $Scope" }
-
-  }
-
-  $res
 
 }

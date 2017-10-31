@@ -38,6 +38,6 @@ function Main {
 
 #endregion
 
-Import-Module Posh-Git -ErrorAction SilentlyContinue
+Import-Module Posh-Git -errorAction SilentlyContinue
 
 . "$psScriptRoot/profile/__finish/__finish.ps1"

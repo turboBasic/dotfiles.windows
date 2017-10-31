@@ -3,12 +3,12 @@
     Name = 'UpdateHelpJob'
     Credential = "${ENV:ComputerName}\${ENV:UserName}"
     ScriptBlock = {
-      Update-Help -EA 0
+      Update-Help -errorAction SilentlyContinue
     }
-    Trigger = (New-JobTrigger -Daily -At '3 AM')
+    Trigger = (New-JobTrigger -daily -at '03:00')
   }
 
-  if (!(Get-ScheduledJob -Name UpdateHelpJob)) {
+  if (-not (Get-ScheduledJob -name UpdateHelpJob)) {
     Register-ScheduledJob @params
   }
 }

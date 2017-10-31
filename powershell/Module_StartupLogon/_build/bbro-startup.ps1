@@ -381,8 +381,6 @@ Function Send-EnvironmentChanges {
 
 #region E:\0projects\dotfiles.windows\powershell\Module_Environment\_src\include\Get-EnvironmentKey.ps1
 
-#. (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
-
 function Get-EnvironmentKey {
 <#
   .SYNOPSIS
@@ -400,56 +398,32 @@ Does not modify registry.
         [PARAMETER( Mandatory, Position=0 )]
         [EnvironmentScope]
         [ALIAS( 'scope', 'context' )]
-        $from,
-
-        [PARAMETER( Position=1 )]
-        [switch] 
-        $write
+        $from
     )
 
 
 
     switch( $from ) {
     
+        'Process' {
+            $Null
+            break
+        }
+    
         'User' {
-            #$key =  [Microsoft.Win32.RegistryKey]::OpenBaseKey(
-            #            [Microsoft.Win32.RegistryHive]::CurrentUser,
-            #            [Microsoft.Win32.RegistryView]::Default
-            #        ).OpenSubKey( 'Environment', $write ) 
-
             Get-Item -path HKCU:/Environment
             break
         }
         
         'Volatile' {
-            #$key  = [Microsoft.Win32.RegistryKey]::OpenBaseKey(
-            #            [Microsoft.Win32.RegistryHive]::CurrentUser,
-            #            [Microsoft.Win32.RegistryView]::Default
-            #        ).OpenSubKey( 'Volatile Environment', $write )       
-                    
-            Get-Item -path HKCU:/Volatile` Environment
+            Get-Item -path 'HKCU:/Volatile Environment'
             break
         }
         
         'Machine' {
-            #$key  = [Microsoft.Win32.RegistryKey]::OpenBaseKey(
-            #            [Microsoft.Win32.RegistryHive]::LocalMachine,
-            #            [Microsoft.Win32.RegistryView]::Default
-            #        ).OpenSubKey( (Remove-NewlineAndIndent 'SYSTEM\
-            #                                                    CurrentControlSet\
-            #                                                    Control\
-            #                                                    Session Manager\
-            #                                                    Environment'
-            #                      ), 
-            #                      $write 
-            #        )  
-                    
             Get-Item -path ( 
-                      'HKLM:/SYSTEM/
-                          CurrentControlSet/
-                          Control/
-                          Session Manager/
-                          Environment' | Remove-NewlineAndIndent
+              'HKLM:/SYSTEM/CurrentControlSet/
+                  Control/Session Manager/Environment' | Remove-NewlineAndIndent
             )
             break
         }
@@ -458,23 +432,13 @@ Does not modify registry.
 
 }
 
-
-# Deprecated
-function Get-RegistryKey {
-
-    PARAM( $From, $Write )
- 
-    Write-Warning 'Get-RegistryKey deprecated, use Get-EnvironmentKey instead!'
-    Get-EnvironmentKey -from $From -write $Write 
-}
-
 #endregion
 
 #region E:\0projects\dotfiles.windows\powershell\Module_Environment\_src\include\Set-Environment.ps1
 
 function Set-Environment {
 
-  [CMDLETBINDING( PositionalBinding = $False )] 
+  [CmdletBinding( PositionalBinding = $False )] 
   PARAM(
       [PARAMETER( Mandatory, Position=0 )]
       [string]
@@ -495,49 +459,32 @@ function Set-Environment {
 
 
   BEGIN {
-    #$_type = [Microsoft.Win32.RegistryValueKind]::String
-    $_type = 'String'
-    if( $Expand ) { 
-        #$_type = [Microsoft.Win32.RegistryValueKind]::ExpandString 
-        $_type = 'ExpandString' 
-    }
-    "Set-Environment: 
-     Name =   $Name 
-     Value =  $Value 
-     Scope =  $Scope 
-     Expand = $Expand
-     _type =  $_type" | Remove-LeadingSpace | Write-Verbose 
+      $type = 'String'
+      if( $Expand ) { 
+          $type = 'ExpandString' 
+      }
   }
 
   PROCESS {
-    if( $Scope -eq 'Process' ) {
-      if( $Expand ) { 
-          $Value = [Environment]::ExpandEnvironmentVariables( $Value ) 
-      }
-      Set-Item -path ENV:\$Name -value $Value
-      return  
-    } 
+      if( $Scope -eq 'Process' ) {
+          if( $Expand ) { 
+              $Value = [Environment]::ExpandEnvironmentVariables( $Value ) 
+          }
+          Set-Item -path ENV:\$Name -value $Value
+          return  
+      } 
 
-    Try { 
-      #$key = Get-EnvironmentKey $Scope $True
-      $key = Get-EnvironmentKey -scope $Scope # -write
-      #$key.SetValue( $Name, $Value, $_type )
-      
-     "Set-ItemProperty:
-      path =  $key
-      name =  $Name
-      value = $Value
-      type =  $_type" | Remove-LeadingSpace | Write-Verbose
-      Set-ItemProperty -path $key.PSPath -name $Name -value $Value -type $_type
-    }
-    Catch { 
-      Write-Error "Cannot open $Scope / $Name for editing - please switch to elevated cmd!" 
-    }
-    Finally { 
-      #if( $key ) { 
-      #  $key.Flush() 
-      #}
-    }    
+      Try { 
+          $key = Get-EnvironmentKey -scope $Scope
+          Set-ItemProperty -path $key.PSPath -name $Name -value $Value -type $type
+      } Catch { 
+          "Cannot open $Scope / $Name for editing - please 
+              switch to elevated cmd!" | Remove-NewLineAndIndent | Write-Error
+      } Finally { 
+          if( $key ) { 
+            $key.Flush() 
+          }
+      }    
   }
 
   END {}
@@ -756,52 +703,55 @@ Created: 2017.03.10 10:54:31.713
 #>
 
 
-      [CmdletBinding()] 
-      [OutputType( [PSCustomObject] )]
-      PARAM( 
-          [PARAMETER( Mandatory, Position=0 )]
-          [ValidateNotNullOrEmpty()]
-          [string] 
-          $name,
+    [CmdletBinding()] 
+    [OutputType( [PSCustomObject] )]
+    PARAM( 
+        [PARAMETER( Mandatory, Position=0 )]
+        [ValidateNotNullOrEmpty()]
+        [string] 
+        $name,
 
-          [PARAMETER( Position=1 )]
-          [EnvironmentScope] 
-          $scope=[EnvironmentScope]::Process,
+        [PARAMETER( Position=1 )]
+        [EnvironmentScope] 
+        $scope = [EnvironmentScope]::Process,
 
-          [PARAMETER( Position=2 )]
-          [switch] 
-          $expand
-      )
+        [PARAMETER( Position=2 )]
+        [switch] 
+        $expand
+    )
 
 
 
-  switch( $scope ) {
+    switch( $scope ) {
 
-    [EnvironmentScope]::Process {
+        [EnvironmentScope]::Process {
 
-      $res = Get-ChildItem -path ENV:\$Name -errorAction SilentlyContinue | 
-                ForEach { 
+            Get-ChildItem -path ENV:\$Name -errorAction SilentlyContinue | 
+                ForEach-Object { 
                   [PSCustomObject][ordered]@{ 
                       Scope = $scope 
                       Name  = $_.Name; 
                       Value = $_.Value; 
                   } 
                 }
-      break
-    }
+            break
+        }
 
-    { $_ -in @(
-                [EnvironmentScope]::Volatile, 
-                [EnvironmentScope]::User, 
-                [EnvironmentScope]::Machine
-              ) 
-    } {
-          $key = Get-EnvironmentKey -from $scope # -write:$False
-          $res = $key.GetValueNames() | 
-                Where { $_ -like $Name } |
-                ForEach { 
-                  $item = [ordered]@{ Scope = $Scope; Name = $_ } 
-                  if (!$Expand) { 
+        { $_ -in [EnvironmentScope]::Volatile, 
+                 [EnvironmentScope]::User, 
+                 [EnvironmentScope]::Machine } {
+                 
+            $key = Get-EnvironmentKey -from $scope
+            $key.GetValueNames() | 
+                Where-Object { 
+                  $_ -like $Name 
+                } |
+                ForEach-Object { 
+                  $item = [ordered]@{ 
+                      Scope = $Scope
+                      Name = $_ 
+                  } 
+                  if( -not $Expand ) { 
                     $item.Add( 
                         'Value', 
                         $key.GetValue(
@@ -813,16 +763,15 @@ Created: 2017.03.10 10:54:31.713
                   } else { 
                     $item.Add( 'Value', $key.GetValue($_, $null) ) 
                   }
-                  [psCustomObject]$item
+                  [PSCustomObject]$item
                 }
-      break
+            break
+        }
+
+        default { 
+            Throw "Get-ExpandedName: Argument 'Scope' has illegal value $Scope" 
+        }
     }
-
-    default { Throw "Get-ExpandedName: Argument 'Scope' has illegal value $Scope" }
-
-  }
-
-  $res
 
 }
 

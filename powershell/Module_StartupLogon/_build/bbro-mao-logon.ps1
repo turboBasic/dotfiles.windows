@@ -381,8 +381,6 @@ Function Send-EnvironmentChanges {
 
 #region E:\0projects\dotfiles.windows\powershell\Module_Environment\_src\include\Get-EnvironmentKey.ps1
 
-#. (Join-Path $psScriptRoot 'Add-EnvironmentScopeType.ps1')
-
 function Get-EnvironmentKey {
 <#
   .SYNOPSIS
@@ -400,56 +398,32 @@ Does not modify registry.
         [PARAMETER( Mandatory, Position=0 )]
         [EnvironmentScope]
         [ALIAS( 'scope', 'context' )]
-        $from,
-
-        [PARAMETER( Position=1 )]
-        [switch] 
-        $write
+        $from
     )
 
 
 
     switch( $from ) {
     
+        'Process' {
+            $Null
+            break
+        }
+    
         'User' {
-            #$key =  [Microsoft.Win32.RegistryKey]::OpenBaseKey(
-            #            [Microsoft.Win32.RegistryHive]::CurrentUser,
-            #            [Microsoft.Win32.RegistryView]::Default
-            #        ).OpenSubKey( 'Environment', $write ) 
-
             Get-Item -path HKCU:/Environment
             break
         }
         
         'Volatile' {
-            #$key  = [Microsoft.Win32.RegistryKey]::OpenBaseKey(
-            #            [Microsoft.Win32.RegistryHive]::CurrentUser,
-            #            [Microsoft.Win32.RegistryView]::Default
-            #        ).OpenSubKey( 'Volatile Environment', $write )       
-                    
-            Get-Item -path HKCU:/Volatile` Environment
+            Get-Item -path 'HKCU:/Volatile Environment'
             break
         }
         
         'Machine' {
-            #$key  = [Microsoft.Win32.RegistryKey]::OpenBaseKey(
-            #            [Microsoft.Win32.RegistryHive]::LocalMachine,
-            #            [Microsoft.Win32.RegistryView]::Default
-            #        ).OpenSubKey( (Remove-NewlineAndIndent 'SYSTEM\
-            #                                                    CurrentControlSet\
-            #                                                    Control\
-            #                                                    Session Manager\
-            #                                                    Environment'
-            #                      ), 
-            #                      $write 
-            #        )  
-                    
             Get-Item -path ( 
-                      'HKLM:/SYSTEM/
-                          CurrentControlSet/
-                          Control/
-                          Session Manager/
-                          Environment' | Remove-NewlineAndIndent
+              'HKLM:/SYSTEM/CurrentControlSet/
+                  Control/Session Manager/Environment' | Remove-NewlineAndIndent
             )
             break
         }
@@ -458,23 +432,13 @@ Does not modify registry.
 
 }
 
-
-# Deprecated
-function Get-RegistryKey {
-
-    PARAM( $From, $Write )
- 
-    Write-Warning 'Get-RegistryKey deprecated, use Get-EnvironmentKey instead!'
-    Get-EnvironmentKey -from $From -write $Write 
-}
-
 #endregion
 
 #region E:\0projects\dotfiles.windows\powershell\Module_Environment\_src\include\Set-Environment.ps1
 
 function Set-Environment {
 
-  [CMDLETBINDING( PositionalBinding = $False )] 
+  [CmdletBinding( PositionalBinding = $False )] 
   PARAM(
       [PARAMETER( Mandatory, Position=0 )]
       [string]
@@ -495,49 +459,32 @@ function Set-Environment {
 
 
   BEGIN {
-    #$_type = [Microsoft.Win32.RegistryValueKind]::String
-    $_type = 'String'
-    if( $Expand ) { 
-        #$_type = [Microsoft.Win32.RegistryValueKind]::ExpandString 
-        $_type = 'ExpandString' 
-    }
-    "Set-Environment: 
-     Name =   $Name 
-     Value =  $Value 
-     Scope =  $Scope 
-     Expand = $Expand
-     _type =  $_type" | Remove-LeadingSpace | Write-Verbose 
+      $type = 'String'
+      if( $Expand ) { 
+          $type = 'ExpandString' 
+      }
   }
 
   PROCESS {
-    if( $Scope -eq 'Process' ) {
-      if( $Expand ) { 
-          $Value = [Environment]::ExpandEnvironmentVariables( $Value ) 
-      }
-      Set-Item -path ENV:\$Name -value $Value
-      return  
-    } 
+      if( $Scope -eq 'Process' ) {
+          if( $Expand ) { 
+              $Value = [Environment]::ExpandEnvironmentVariables( $Value ) 
+          }
+          Set-Item -path ENV:\$Name -value $Value
+          return  
+      } 
 
-    Try { 
-      #$key = Get-EnvironmentKey $Scope $True
-      $key = Get-EnvironmentKey -scope $Scope # -write
-      #$key.SetValue( $Name, $Value, $_type )
-      
-     "Set-ItemProperty:
-      path =  $key
-      name =  $Name
-      value = $Value
-      type =  $_type" | Remove-LeadingSpace | Write-Verbose
-      Set-ItemProperty -path $key.PSPath -name $Name -value $Value -type $_type
-    }
-    Catch { 
-      Write-Error "Cannot open $Scope / $Name for editing - please switch to elevated cmd!" 
-    }
-    Finally { 
-      #if( $key ) { 
-      #  $key.Flush() 
-      #}
-    }    
+      Try { 
+          $key = Get-EnvironmentKey -scope $Scope
+          Set-ItemProperty -path $key.PSPath -name $Name -value $Value -type $type
+      } Catch { 
+          "Cannot open $Scope / $Name for editing - please 
+              switch to elevated cmd!" | Remove-NewLineAndIndent | Write-Error
+      } Finally { 
+          if( $key ) { 
+            $key.Flush() 
+          }
+      }    
   }
 
   END {}
@@ -756,52 +703,55 @@ Created: 2017.03.10 10:54:31.713
 #>
 
 
-      [CmdletBinding()] 
-      [OutputType( [PSCustomObject] )]
-      PARAM( 
-          [PARAMETER( Mandatory, Position=0 )]
-          [ValidateNotNullOrEmpty()]
-          [string] 
-          $name,
+    [CmdletBinding()] 
+    [OutputType( [PSCustomObject] )]
+    PARAM( 
+        [PARAMETER( Mandatory, Position=0 )]
+        [ValidateNotNullOrEmpty()]
+        [string] 
+        $name,
 
-          [PARAMETER( Position=1 )]
-          [EnvironmentScope] 
-          $scope=[EnvironmentScope]::Process,
+        [PARAMETER( Position=1 )]
+        [EnvironmentScope] 
+        $scope = [EnvironmentScope]::Process,
 
-          [PARAMETER( Position=2 )]
-          [switch] 
-          $expand
-      )
+        [PARAMETER( Position=2 )]
+        [switch] 
+        $expand
+    )
 
 
 
-  switch( $scope ) {
+    switch( $scope ) {
 
-    [EnvironmentScope]::Process {
+        [EnvironmentScope]::Process {
 
-      $res = Get-ChildItem -path ENV:\$Name -errorAction SilentlyContinue | 
-                ForEach { 
+            Get-ChildItem -path ENV:\$Name -errorAction SilentlyContinue | 
+                ForEach-Object { 
                   [PSCustomObject][ordered]@{ 
                       Scope = $scope 
                       Name  = $_.Name; 
                       Value = $_.Value; 
                   } 
                 }
-      break
-    }
+            break
+        }
 
-    { $_ -in @(
-                [EnvironmentScope]::Volatile, 
-                [EnvironmentScope]::User, 
-                [EnvironmentScope]::Machine
-              ) 
-    } {
-          $key = Get-EnvironmentKey -from $scope # -write:$False
-          $res = $key.GetValueNames() | 
-                Where { $_ -like $Name } |
-                ForEach { 
-                  $item = [ordered]@{ Scope = $Scope; Name = $_ } 
-                  if (!$Expand) { 
+        { $_ -in [EnvironmentScope]::Volatile, 
+                 [EnvironmentScope]::User, 
+                 [EnvironmentScope]::Machine } {
+                 
+            $key = Get-EnvironmentKey -from $scope
+            $key.GetValueNames() | 
+                Where-Object { 
+                  $_ -like $Name 
+                } |
+                ForEach-Object { 
+                  $item = [ordered]@{ 
+                      Scope = $Scope
+                      Name = $_ 
+                  } 
+                  if( -not $Expand ) { 
                     $item.Add( 
                         'Value', 
                         $key.GetValue(
@@ -813,16 +763,15 @@ Created: 2017.03.10 10:54:31.713
                   } else { 
                     $item.Add( 'Value', $key.GetValue($_, $null) ) 
                   }
-                  [psCustomObject]$item
+                  [PSCustomObject]$item
                 }
-      break
+            break
+        }
+
+        default { 
+            Throw "Get-ExpandedName: Argument 'Scope' has illegal value $Scope" 
+        }
     }
-
-    default { Throw "Get-ExpandedName: Argument 'Scope' has illegal value $Scope" }
-
-  }
-
-  $res
 
 }
 
@@ -837,66 +786,58 @@ Created: 2017.03.10 10:54:31.713
   
       $__user_variables = @{ 
 
-        appDATA =                ${ENV:appDATA} -replace 'Users','users'
+        appDATA =       ${ENV:appDATA} -replace 'Users','users'
 
-     '..userFullNAME' =          Split-Path ([Environment]::GetFolderPath('UserProfile')) -Leaf
-     '..homePATH' =              '%..usersROOT%\%..userFullNAME%'
-     '..scoop' =                 '%..homeDRIVE%%..homePATH%\scoop'
-        scoop  =                 '%..homeDRIVE%%..homePATH%\scoop'
-                                 
-     '..psProfileDIR' =          '%..homeDRIVE%%..homePATH%\documents\windowsPowerShell'
-        psProfileDIR  =          '%..homeDRIVE%%..homePATH%\documents\windowsPowerShell'
+     '..userFullNAME' = [Environment]::GetFolderPath('UserProfile') | 
+                            Split-Path -leaf
+                            
+     '..homePATH' =     '%..usersROOT%\%..userFullNAME%'
+     '..scoop' =        '%..homeDRIVE%%..homePATH%\scoop'
+        scoop  =        '%..homeDRIVE%%..homePATH%\scoop'
+                        
+     '..psProfileDIR' = '%..homeDRIVE%%..homePATH%\documents\windowsPowerShell'
+        psProfileDIR  = '%..homeDRIVE%%..homePATH%\documents\windowsPowerShell'
 
-        nvm_Home =               '%..scoop%\apps\nvm\current'
-        nvm_Symlink =            '%..scoop%\apps\nvm\current\nodeJs'
-        nodePath =               '%..scoop%\apps\nvm\current\nodeJs' -join ';'
+        nvm_Home =      '%..scoop%\apps\nvm\current'
+        nvm_Symlink =   '%..scoop%\apps\nvm\current\nodeJs'
+        nodePath =      '%..scoop%\apps\nvm\current\nodeJs' -join ';'
 
-        githubUser =             'turboBasic'
-        githubUser2 =            'maoizm'
-        githubGist =             '%githubAPI%/users/%githubUser%/gists'
-        githubGist2 =            '%githubAPI%/users/%githubUser2%/gists'  
+        githubUser =    'turboBasic'
+        githubUser2 =   'maoizm'
+        githubGist =    '%githubAPI%/users/%githubUser%/gists'
+        githubGist2 =   '%githubAPI%/users/%githubUser2%/gists'  
 
-        dropbox =                '%systemDRIVE%\dropbox'
-        dropbox_Home =           '%systemDRIVE%\dropbox'
-        oneDRIVE =               '%systemDRIVE%\oneDRIVE'
-        projects =               'E:\0projects'              
-        winPepsiDebug =          1
+        dropbox =       '%systemDRIVE%\dropbox'
+        dropbox_Home =  '%systemDRIVE%\dropbox'
+        oneDRIVE =      '%systemDRIVE%\oneDRIVE'
+        projects =      'E:\0projects'              
+        winPepsiDebug = 1
              
-        psModulePATH =            '%..psProfileDir%\Modules',
-                                  '%psHOME%\Modules',
-                                  '%programFILES%\WindowsPowerShell\Modules' -join ';'
+        PSModulePATH =   '%..psProfileDir%\Modules',
+                         '%psHOME%\Modules',
+                         '%programFILES%\WindowsPowerShell\Modules' -join ';'
 
 
-        PATH =                   '%..homeDRIVE%%..homePATH%\bin',  
-                                 '%..scoop%\shims',
-                                 '%nodePath%',      
-                                 '%appDATA%\boxStarter',
-                                 '%oneDrive%\01_portable_apps',
-                                 '%junkPath%'  -join ';'                    
-                                 
-        TEMP =                   '%localAppDATA%\temp'
-        TMP =                    '%localAppDATA%\temp'
-        ubuntu =                 '%localAppDATA%\lxss\rootfs'
-      }
-      
-      # Default Log filename for Write-Log
-      $PSDefaultParameterValues = @{
-        'Write-Log:FilePath' = 
-            "${ENV:systemBIN}\LogFiles\Startup, Shutdown, Logon scripts\
-                    StartupLogon.log" -replace '\n\s*'    
+        PATH =          '%..homeDRIVE%%..homePATH%\bin',  
+                        '%..scoop%\shims',
+                        '%nodePath%',      
+                        '%appDATA%\boxStarter',
+                        '%oneDrive%\01_portable_apps',
+                        '%junkPath%'  -join ';'                    
+                        
+        TEMP =          '%localAppDATA%\temp'
+        TMP =           '%localAppDATA%\temp'
+        ubuntu =        '%localAppDATA%\lxss\rootfs'
       }
       
       $eventLogParams = @{
         logName = "Application" 
-        source =  "Module_StartupLogon_User_${ENV:UserName}" 
-        eventID = 3001
+        source =  "Module_StartupLogon" 
+        eventID =  3001
       }
       
     #endregion 
 
-     
-    # include all helper functions
-    # Get-ChildItem $psScriptRoot\allScripts.ps1 | ForEach-Object { . $_ }
     
     if( -not (Test-Path $registryKey) ) {
         New-Item -path $registryKey -force -errorAction SilentlyContinue
@@ -905,20 +846,13 @@ Created: 2017.03.10 10:54:31.713
         }
     }
     if( IsNull (Get-ItemProperty -path $registryKey).NextBoot ) {
-        Write-Verbose 'No requests to initialize. exiting...'
+        'No requests to initialize. exiting...' | Write-Verbose 
     }
     Set-ItemProperty -path $registryKey -name 'NextBoot' -value ''
 
 
   #region     writing header
       
-#      $message = "`n[ {0,-7} {1,-6} {2} ]" -f 'user', 'header', (Get-TimeStamp)
-#      $message | Write-Log
-#      Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message $message
-      
-#      $message += "`nUser logon script '{0}', '{1}'" -f 
-#            (Split-Path $PSCommandPath -leaf), $PSCommandPath
-            
       $message = ( Remove-NewlineAndIndent @"
           [ {0,-7} {1,-6} {2} ]
           User logon script '{3}', '{4}'
@@ -926,7 +860,6 @@ Created: 2017.03.10 10:54:31.713
 "@    ) -f  'user', 'header', (Get-TimeStamp), 
             (Split-Path $PSCommandPath -leaf), $PSCommandPath
           
-#      $message | Write-Log
       Write-EventLog @eventLogParams -message $message
       Send-NetMessage "User logon script $PSCommandPath"
 
@@ -944,16 +877,12 @@ Created: 2017.03.10 10:54:31.713
       }
       
       $allVars = Get-Environment * -scope User | 
-          Select-Object `
-              Name, 
-              Value, 
-              @{  
-                  Name='Expanded'
-                  Expression={
-                    $params.Name = $_.Name
-                    (Get-ExpandedName @params).Value 
-                  } 
-               }
+          Select-Object Name, Value, @{ Name = 'Expanded'
+                                        Expression = {
+                                          $params.Name = $_.Name
+                                          (Get-ExpandedName @params).Value 
+                                        } 
+          }
       
       $width = [ordered]@{ 
           Name =      27
@@ -965,14 +894,6 @@ Created: 2017.03.10 10:54:31.713
   #endregion initialization
   
   #region print headings
-#    $message = "`n[ {0,-7} {1,-6} {2} ]" -f '', 'body', (Get-TimeStamp)
-#    $message | Write-Log
-#    Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message $message
-    
-#    "{0,-$( $width.Name )} {1,-$( $width.Value )} {2}" -f $columns |
-#        ForEach-Object { 
-#          $_ | Write-Log
-#          Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message $_
      
     $message = ( Remove-LeadingSpace @"
         [ {0,-7} {1,-6} {2} ]
@@ -981,10 +902,6 @@ Created: 2017.03.10 10:54:31.713
 "@    ) -f '', 'body', (Get-TimeStamp), $columns[0], $columns[1], $columns[2]
     Write-EventLog @eventLogParams -message $message
     
-     
-#          $_ -replace '\S', '-' | Write-Log
-#          Write-EventLog -logName Application -source "Module_StartupLogon_User_${ENV:UserName}" -eventID 3001 -message ($_ -replace '\S', '-')
-#        }
   #endregion
 
       
@@ -992,29 +909,29 @@ Created: 2017.03.10 10:54:31.713
     $printOnce = @{ Name=1; Value=1 }
     $message = ''
     
-    $allVars | ForEach-Object {
-      $name = $_.Name
-      $value = $_.Value -split ';'
-      
-      $printOnce.Name = 1
-      $value | ForEach-Object {      
-        $text = "{0,-$( $width.Name )}" -f ($name * $printOnce.Name)
-        $printOnce.Name = 0
-     
-        $expValue = [Environment]::ExpandEnvironmentVariables($_) -split ';'
+    $allVars | 
+        ForEach-Object {
+          $name = $_.Name
+          $value = $_.Value -split ';'
+          
+          $printOnce.Name = 1
+          $value | 
+              ForEach-Object {      
+                $text = "{0,-$( $width.Name )}" -f ($name * $printOnce.Name)
+                $printOnce.Name = 0
+             
+                $expValue = [Environment]::ExpandEnvironmentVariables($_) -split ';'
 
-        $currentValue = $_
-        $printOnce.Value = 1
-        $expValue | 
-            ForEach-Object { 
-              $message += "$text {0,-$( $width.Value )} {1} `r`n" -f 
-                  ($currentValue * $printOnce.Value), $_
-#              $message | Write-Log
-#              Write-EventLog @eventLogParams -message $message
-              
-              $printOnce.Value = 0
-            }
-      }
+                $currentValue = $_
+                $printOnce.Value = 1
+                $expValue | 
+                    ForEach-Object { 
+                      $message += "$text {0,-$( $width.Value )} {1} `r`n" -f 
+                          ($currentValue * $printOnce.Value), $_
+                      
+                      $printOnce.Value = 0
+                    }
+          }
     }
     Write-EventLog @eventLogParams -message $message
   #endregion    
