@@ -1,7 +1,7 @@
 ﻿@{
     # Some defaults for all dependencies
     PSDependOptions = @{
-        Target = Split-Path $profile -parent
+        Target = "~\Documents\WindowsPowerShell"
         AddToPath = $False
     }
 

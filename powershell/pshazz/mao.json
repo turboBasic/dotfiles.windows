@@ -1,0 +1,34 @@
+﻿{
+	"plugins": [ "git", "z", "aliases", "dircolors" ],
+	"prompt": [
+		[ "cyan",  "", "$dir" ],
+		[ "red",   "", " $git_branch$git_dirty" ],
+		[ "green", "", " `$" ]
+	],
+	"git": {
+		"prompt_dirty": "*"
+	},
+	"aliases": {
+		"rm": [ "help", "man" ],
+		"add": {
+			"help($name)": "get-help $name -detailed | less",
+			"man": "help"
+		}
+	},
+    "dircolors": {
+        "dirs": [
+          [".*", "gray", ""]
+        ],
+        "files": [
+            ["(?ix).(7z|zip|tar|gz|rar)$",                        "darkcyan",   ""],
+            ["(?ix).(exe|bat|cmd|py|pl|ps1|psm1|vbs|rb|reg|css)$",    "darkgreen",  ""],
+            ["(?ix).(doc|docx|ppt|pptx|xls|xlsx|mdb|mdf|ldf)$",   "magenta",    ""],
+            ["(?ix).(txt|cfg|conf|config|yml|ini|csv|log|json)$", "darkyellow", ""],
+            ["(?ix).(php)$", "darkmagenta", ""],
+            ["(?ix).(js)$", "darkblue", ""],
+            ["(?ix).(sln|csproj|sqlproj|proj|targets|html)$",          "darkred",    ""],
+            [".*",                                                "darkgray",   ""]
+        ]
+    }
+}
+
