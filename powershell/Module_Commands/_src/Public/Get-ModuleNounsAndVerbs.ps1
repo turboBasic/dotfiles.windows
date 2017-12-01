@@ -4,7 +4,8 @@
 Gets list of cmdlet nouns in a module, each noun is complimented with the list of cmdlet verbs
 
         .DESCRIPTION
-Gets list of cmdlet nouns in a module, each noun is complimented with the list of cmdlet verbs
+Helps to understand internal logic of a module by summarizing its cmdlets by used nouns.  
+Cmdlet gets sorted list of unique cmdlet nouns in a module, and complement each one with the list of verbs implemented in a module
 
         .INPUTS
 [System.String[]]
@@ -62,29 +63,33 @@ https://github.com/turboBasic/
     BEGIN {
         if (-not $psBoundParameters.ContainsKey('Confirm')) {
             $ConfirmPreference = $psCmdlet.SessionState.psVariable.GetValue('ConfirmPreference')
+        } else {
+            if ($psBoundParameters.Item('Confirm') -eq $False) {
+                $allConfirmed = $True
+            } else {
+                $allConfirmed = $False
+            }
         }
         if (-not $psBoundParameters.ContainsKey('WhatIf')) {
             $WhatIfPreference = $psCmdlet.SessionState.psVariable.GetValue('WhatIfPreference')
         }
         if (-not $psBoundParameters.ContainsKey('Verbose')) {
-            $WhatIfPreference = $psCmdlet.SessionState.psVariable.GetValue('VerbosePreference')
+            $VerbosefPreference = $psCmdlet.SessionState.psVariable.GetValue('VerbosePreference')
         }
         if (-not $psBoundParameters.ContainsKey('Debug')) {
-            $WhatIfPreference = $psCmdlet.SessionState.psVariable.GetValue('DebugPreference')
+            $DebugPreference = $psCmdlet.SessionState.psVariable.GetValue('DebugPreference')
         }
         # Write-Verbose ('[{0}] Confirm={1} ConfirmPreference={2} WhatIf={3} WhatIfPreference={4}' -f $MyInvocation.MyCommand, $Confirm, $ConfirmPreference, $WhatIf, $WhatIfPreference)
-
-        $psBoundParameters.Remove('Force') | Out-Null            
-        $psBoundParameters.Confirm = $false    
     }
 
     PROCESS 
     {
-        if ($force -or $psCmdlet.ShouldProcess($name, 'Get all nouns and verbs from Powershell module')) 
+        if ($allConfirmed -or $psCmdlet.ShouldProcess($name, 'Get all nouns and verbs from Powershell module')) 
         {
             foreach ($1module in (
                 $name | ForEach { (Get-Module -name $_).Name }
-            )) {
+            )) 
+            {
                 "Get list of cmdlets from module $1module" | Write-Verbose
 
                 $commands = Get-Command -module $1module -commandType Cmdlet, Function
@@ -97,11 +102,7 @@ https://github.com/turboBasic/
                         [psCustomObject]@{
                             Module = $1module 
                             Noun =   $_.Noun
-                            Verbs =  [Array](
-                                $commands | 
-                                    Where-Object Noun -EQ $_.Noun | 
-                                    Select-Object -expandProperty Verb
-                            )
+                            Verbs =  , ( $commands | Where-Object Noun -EQ $_.Noun ).Verb     # force [Array] result even for single-verb cmdlets
                         }
                     }
             }
