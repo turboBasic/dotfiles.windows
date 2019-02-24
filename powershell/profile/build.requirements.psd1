@@ -1,14 +1,28 @@
 ﻿@{
     # Some defaults for all dependencies
-    PSDependOptions = @{
-        Target = "~\Documents\WindowsPowerShell"
-        AddToPath = $False
-    }
+    #psDependOptions = @{
+    #    Target = "~\Documents\WindowsPowerShell"
+    #    AddToPath = $False
+    #}
 
-    'psake' =            @{ DependencyType = 'psGalleryModule' }
-    'psDeploy' =         @{ DependencyType = 'psGalleryModule' }
-    'psScriptAnalyzer' = @{ DependencyType = 'psGalleryModule' }
-    'BuildHelpers' =     @{ DependencyType = 'psGalleryModule' }
-    'Pester' =           @{ DependencyType = 'psGalleryModule'
-                            Version        = '4.0.4'           } 
+    psake = @{ 
+        DependencyType = 'psGalleryModule' 
+        Version =        'latest'
+    }
+    psDeploy = @{ 
+        DependencyType = 'psGalleryModule' 
+        Version =        'latest'
+    }
+    psScriptAnalyzer = @{ 
+        DependencyType = 'psGalleryModule' 
+        Version =        'latest'
+    }
+    BuildHelpers = @{ 
+        DependencyType = 'psGalleryModule' 
+        Version =        'latest'
+    }
+    Pester = @{ 
+        DependencyType = 'psGalleryModule'
+        Version        = '4.0.4'           
+    } 
 }
